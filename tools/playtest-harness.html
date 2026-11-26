@@ -127,7 +127,8 @@
   19:()=>act('look','spring'), // Chapter Nineteen: at Antipatris at dawn, the spring off the way
   20:()=>act('look','sky_over_the_harbor'), // Chapter Twenty: the window in the second spring, the storks going north over the harbor
   21:()=>act('look','ox_goad'), // Chapter Twenty-One: in the court before the hearing, the carter's ox goad by the cart at the side
-  22:()=>act('look','stub22_coast'), // Chapter Twenty-Two: STUB, the stub's coast. LOGIC22: from treasure.at, the steps that look at Tarsus while the leg off Cilicia is on the map
+  22:async()=>{await act('use','gangplank');const M=SHARED.map;for(let i=0;i<900&&!(M.state.places&&G.scene===M.draw&&!G.busy);i++)await wait(30);await wait(60);
+    const[x,y]=M.where('tarsus'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,clientX:r.left+x*r.width/VW,clientY:r.top+y*r.height/VH}));await wait(120);await idle()}, // Chapter Twenty-Two: from the quay at Caesarea, aboard; on the map of the voyage out, Tarsus is looked at while the leg off Cilicia is shown (nothing has changed until Myra is clicked)
   23:()=>act('look','stub23_stone'), // Chapter Twenty-Three: STUB, the stub's stone. LOGIC23: from treasure.at, the steps that look at the stone at the gate of Publius's estate
  };
  (async()=>{try{
@@ -5237,66 +5238,266 @@
   /* ==== CHAPTER TWENTY-TWO: begin ==== Chapter Twenty-Two's own stops: whoever builds the chapter extends this section, and nothing outside it but
      its line in TSTEPS, the chain of the full run (ch22 after ch21) and the title checks of the chapters before it. */
   /* Chapter Twenty-Two stops start Chapter Twenty-Two from the title screen; the full run calls its test when Chapter Twenty-One has ended.
-     all22 halts nowhere. Its halts: STUB: stub22 (the stub's room) · marks22 (the six marks set) · final22. The stops that begin with "p" open
-     one room at once, with the story's flags set for it, and say the safe-point code of their point (CODE): STUB: pstub22. The generic stops
-     card22, routes22 and shadows22 (above) run against whatever rooms the chapter has. LOGIC22: replace every STUB name here with the chapter's
-     own halts and room stops, as Chapter Twenty-One's section does, and add the stops that drive the beat by its exposed phase (on the phone too).
-     The stop carry (after Chapter Twenty-Three's section) needs CHAP[22].marks (the twelve mark flags) and CHAP[22].end (the end screen, from
-     wherever the story stands): keep both in the chapter's definition. */
-  /* rooms22: every picture of Chapter Twenty-Two on one sheet at twice its size (rooms22.png), for the art and the cross-shape check */
-  if(stop==='rooms22'){clearInterval(sk);sk=0;await loadLevel(22);setChapter(22);ov.className='';ov.onclick=null;const C=CHAP[22],ids=C.rooms,K=2;
-    const pic=(id,q,x,y)=>{G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
+     all22 halts nowhere. Its halts: quay22 (the quay at Caesarea, 27:1) · map22 (the voyage out on the map, Myra to be clicked, Tarsus
+     to be seen) · myra22 (the harbor of Myra, 27:6) · deck22 (the evening on the grain ship's deck) · shelter22 (the shelter made) ·
+     havens22 (Fair Havens, 27:9) · skiff22 (the lee of Cauda, Luke at the rope) · girded22 (27:17 over the ship girded) · syrtis22 (the
+     map with the Syrtis) · load22 (the next day, the bales) · bales22 (the second bale carried across) · tablet22 (Luke's tablet open) ·
+     marks22 (the six marks set) · midst22 (Paul stands up among them) · final22. The stops that begin with "p" open one room at once, with
+     the story's flags set for it, and say the safe-point code of their point (CODE): pscroll22 (27:1 on the narrator's scroll) · pquay22
+     (the treasure's point) · pmap22 (the voyage out on the map) · pmyra22 · pdeck22 · pshelter22 · phavens22 · pskiff22 · pgirded22 ·
+     psyrtis22 · pload22 · pnight22 · ptablet22 · pmidst22. The timed acts, driven by the beat's exposed phase: beatskiff22 (the skiff:
+     misses, the call, the carry, four pulls), beatdeck22 (a crossing: a hit, a miss back at the hold with no line, the call after three,
+     the carry after six), phonedeck22 (a crossing tapped on a phone held sideways). The generic stops card22, routes22, shadows22 (above)
+     run against whatever rooms the chapter has. The stop carry (after Chapter Twenty-Three's section) needs CHAP[22].marks (the twelve
+     mark flags) and CHAP[22].end (the end screen, from wherever the story stands). */
+  /* rooms22: every picture of Chapter Twenty-Two on one sheet at twice its size (rooms22.png), each of its variants with the flags that
+     call for it, for the art and the cross-shape check */
+  if(stop==='rooms22'){clearInterval(sk);sk=0;await loadLevel(22);setChapter(22);ov.className='';ov.onclick=null;const C=CHAP[22],K=2,ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1);
+    const V=[['quay22',[]],['myra22',upto('out')],['deck22',upto('cord')],['deck22',upto('shelter')],['deck22',upto('fh')],['storm22',upto('advised')],
+      ['storm22',upto('skiff')],['storm22',upto('load3')],['storm22',upto('t6')],['tablet22',upto('load3').concat(['t1','t2','t3','m1a','m2b','m3a','m3b'])],['girded22',upto('skiff')]];
+    const pic=(id,fl,q,x,y)=>{for(const k in F)delete F[k];for(const k of fl)F[k]=1;G.room=id;const W=ART[id].w,cv=document.createElement('canvas');cv.width=W;cv.height=144;const g=cv.getContext('2d');g.drawImage(bg(id),0,0,W,144);
       const DQ0=DQ;try{DQ=[];ART[id].draw(g,1000);for(const e of DQ.sort((a,b)=>a[0]-b[0]))e[1]();ART[id].front&&ART[id].front(g,1000)}catch(e){L('draw '+id+' '+e.message)}DQ=DQ0;
       q.drawImage(cv,0,0,320,144,x,y,320*K,144*K)};
-    const[c,g]=mk(320*K*2+8,Math.ceil(ids.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
-    ids.forEach((id,i)=>pic(id,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];
+    const[c,g]=mk(320*K*2+8,Math.ceil(V.length/2)*(144*K+8));g.imageSmoothingEnabled=false;g.fillStyle='#222';g.fillRect(0,0,c.width,c.height);
+    V.forEach(([id,fl],i)=>pic(id,fl,g,(i%2)*(320*K+8),(i/2|0)*(144*K+8)));for(const k in F)delete F[k];if(SHARED.beat)SHARED.beat.stop();
     window.SHEETS={rooms22:c.toDataURL()};halt('rooms22')}
-  const C22=/^(stub22|marks22|final22|all22)$/.test(stop);   /* STUB: stub22, marks22 */
-  if(!C22&&/^p[a-z]+22$/.test(stop)){await loadLevel(22);ov.className='';ov.onclick=null;const C=CHAP[22],ALL=C.flags,upto=k=>ALL.slice(0,ALL.indexOf(k)+1),
-      S={pstub22:[[],'stub22']}[stop];   /* STUB: pstub22; each stop is [flags, room], upto(k) = every flag up to k in the order of FLAGS */
-    if(!S)throw new Error('no such stop '+stop);setChapter(22);for(const k of S[0])F[k]=1;
-    const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
-    G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
+  const C22=/^(quay22|map22|myra22|deck22|shelter22|havens22|skiff22|girded22|syrtis22|load22|bales22|tablet22|marks22|midst22|final22|all22)$/.test(stop);
+  /* open22: Chapter Twenty-Two at one point at once, with the flags given, in the room given */
+  const open22=async(fl,room)=>{await loadLevel(22);ov.className='';ov.onclick=null;const C=CHAP[22];setChapter(22);for(const k of fl)F[k]=1;
+    C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn()};
+  const up22=k=>{const A=CHAP[22].flags;return A.slice(0,A.indexOf(k)+1)};
+  if(!C22&&/^p[a-z]+22$/.test(stop)&&!/^phone/.test(stop)){await loadLevel(22);const C=CHAP[22],upto=up22,
+      S={pscroll22:[[],'quay22'],pquay22:[[],'quay22'],pmap22:[[],'quay22'],pmyra22:[upto('out'),'myra22'],pdeck22:[upto('aboard'),'deck22'],
+        pshelter22:[upto('shelter'),'deck22'],phavens22:[upto('fh'),'deck22'],pskiff22:[upto('advised'),'storm22'],pgirded22:[upto('skiff'),'girded22'],
+        psyrtis22:[upto('skiff'),'storm22'],pload22:[upto('skiff'),'storm22'],pnight22:[upto('load3'),'storm22'],ptablet22:[upto('load3').concat(['t1','m1a','t2','m2b']),'tablet22'],
+        pmidst22:[upto('t6'),'storm22']}[stop];
+    if(!S)throw new Error('no such stop '+stop);await open22(S[0],S[1]);L('CODE '+stop+' '+(G.room?makeCode():'-'));
+    if(stop==='pscroll22'){G.scene=DARK;narr(C.told.v1,{dur:60000})}
+    if(stop==='pmap22'){const M=await need('map');M.pick(C.out.ids,'myra',{view:'outward',legs:C.out.legs,hint:'click_myra_where_we_put_in'})}
+    if(stop==='psyrtis22'){const M=await need('map');await M.journey([['myra','cnidus','sea'],['cnidus','salmone','sea'],['salmone','fairhavens','sea'],['fairhavens','cauda','sea']],{view:'adria',regions:['the_syrtis'],instant:1})}
     await wait(1100);halt(stop)}
+  /* the timed acts, driven by the beat's exposed phase: the stops beatskiff22, beatdeck22 and phonedeck22 (and the playthrough) */
+  /* cross22: how many times two routes of the map cross each other */
+  const cross22=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let n=0;
+    for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))n++;return n};
+  const B22=()=>G.beat,now22=()=>performance.now(),
+    till22=async(fn,n)=>{for(let i=0;i<(n||900)&&!fn();i++)await wait(10);return!!fn()},
+    calm22=()=>B22()&&B22().inPause()&&B22().next().to-now22()>=B22().need+150,
+    wave22=()=>B22()&&!B22().inPause()&&B22().phase()>.02&&B22().phase()<B22().from-.04,
+    quiet22=()=>!G.skip&&!$('#speech').textContent.trim(),
+    /* a click on a hotspot of the room, as the player makes it: on a phone a tap (pointer down and up, then the click), kept apart from
+       the last one, since a phone holds back a second tap within 350 ms */
+    tap22=async(name,ph)=>{const h=ROOMS[G.room].hs.find(h=>h.name===name&&(!h.vis||h.vis()));if(!h)throw new Error('no hs '+name);const x=h.x+h.w/2,y=h.y+h.h/2;
+      if(ph){await wait(400);const[cx,cy]=toClient(x,y),pe=t=>cv.dispatchEvent(new PointerEvent(t,{pointerId:1,pointerType:'touch',isPrimary:true,clientX:cx,clientY:cy,bubbles:true,cancelable:true}));
+        pe('pointerdown');pe('pointerup');vp.dispatchEvent(new MouseEvent('click',{clientX:cx,clientY:cy,bubbles:true}))}else view(x,y);await idle()};
+  if(/^(beatskiff22|beatdeck22|phonedeck22)$/.test(stop)){const ph=stop==='phonedeck22';if(ph){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120)}
+    G.speedAll=500;
+    if(stop==='beatskiff22'){await open22(up22('advised'),'storm22');await till22(()=>B22());const b=B22(),C=CHAP[22],LK=ACT.luke22;
+      ok(G.room==='storm22'&&PC()===LK&&b&&b.room==='storm22'&&b.sticky&&b.period===1800&&b.pause===900&&b.need===270&&C.phase()==='skiff',
+        'the skiff in the lee of Cauda: Luke is played, and the beat runs from the room itself, shortened under the playtest ('+b.period+' ms, a pause of '+b.pause+', a pull of '+b.need+')');
+      await till22(wave22);await tap22('skiff_rope');ok((G.sk22||0)===0&&b.misses===1&&quiet22()&&!G.busy,'a pull on the wave (the stern up) gains nothing, and no line stands to be clicked away');
+      await till22(calm22);await tap22('skiff_rope');ok(G.sk22===1&&b.misses===1,'a pull while the stern is down brings her in a little (one of '+C.pulls+'); the call, once due, would stay (sticky)');
+      for(let n=2;n<=3;n++){await till22(wave22);await tap22('skiff_rope')}
+      ok(b.misses===3&&b.help===1&&G.sk22===1,'after three misses the sailor calls the moment');
+      {await till22(()=>b.calling());SHARED.beat.cap.last=null;await wait(80);const c=SHARED.beat.cap.last;
+        ok(b.calling()&&c&&c.key==='now'&&c.w<=c.max,'he calls it in the pause, over his head: '+(c&&c.s))}
+      await till22(calm22);await tap22('skiff_rope');ok(G.sk22===2&&b.help===1,'a pull on the call gains; the call goes on (sticky)');
+      for(let n=4;n<=6;n++){await till22(wave22);await tap22('skiff_rope')}
+      ok(b.help===2,'after six misses the sailors take it in hand');
+      await till22(wave22);await tap22('skiff_rope');ok(G.sk22===3,'then a pull counts even on the wave: nobody can get stuck');
+      await till22(calm22);tap22('skiff_rope');await till22(()=>C.flags&&F.skiff,900);
+      ok(F.skiff&&(!G.beat||G.beat.act22==='load'),'four pulls bring her aboard, and the skiff\'s beat stops');halt(stop)}
+    /* a crossing with a bale: the hatch, the mast, the cask, the lee rail */
+    await open22(up22('skiff'),'storm22');await till22(()=>B22());const b=B22(),C=CHAP[22],H=C.holds,SD=ACT.sail22d;
+    ok(G.room==='storm22'&&PC()===P&&b&&b.room==='storm22'&&b.sticky&&b.need===420&&C.phase()==='load'&&Math.abs(P.x-H[0][0])<1,
+      'the next day: Paul at the hatch, and the beat runs from the room ('+b.period+' ms, a pause of '+b.pause+', a step of '+b.need+')');
+    await tap22('mast_step',ph);ok(!G.bale22&&Math.abs(P.x-H[0][0])<1&&quiet22(),'without a bale he does not cross');
+    await tap22('hatch',ph);ok(G.bale22===1&&P.pose==='bundle','a bale from the hatch, carried low before him');
+    const W=ROOMS.storm22.walk;ok(W[0]===W[1]&&W[2]===W[3],'during the crossing the floor is his own place: only the next hold moves him');
+    await till22(calm22);await tap22('mast_step',ph);ok(G.hold22===1&&Math.abs(P.x-H[1][0])<1&&b.misses===0,'a step to the mast in the pause between two seas');
+    for(let n=1;n<=3;n++){await till22(wave22);await tap22('cask',ph);
+      ok(G.hold22===1&&Math.abs(P.x-H[1][0])<1&&b.misses===n&&quiet22()&&!G.busy&&P.pose==='bundle',`a step on the wave is a miss (${n}): back at the mast, the bale still in his arms, and no line stands to be clicked away`)}
+    ok(b.help===1,'after three misses the sailor at the rail calls the moment');
+    {await till22(()=>b.calling());SHARED.beat.cap.last=null;await wait(80);const c=SHARED.beat.cap.last;
+      ok(b.calling()&&c&&c.key==='now'&&c.w<=c.max&&Math.abs(SD.x-H[3][0])<40,'he calls it in the pause, at the rail: '+(c&&c.s))}
+    for(let n=4;n<=6;n++){await till22(wave22);const p=tap22('cask',ph);if(n<6)await p}
+    await till22(()=>F.load1&&!G.busy,1500);
+    ok(F.load1&&b.help===0&&b.misses===0&&G.hold22===0&&Math.abs(P.x-H[0][0])<2&&!G.bale22&&Math.abs(SD.x-302)<2,'after six misses the sailor walks him across: the bale goes over the lee rail, nobody goes overboard; back at the hatch, and the next crossing starts afresh');
+    await tap22('hatch',ph);for(const[i,n]of[[1,'mast_step'],[2,'cask'],[3,'lee_rail']]){await till22(calm22);await tap22(n,ph)}
+    await till22(()=>F.load2&&!G.busy,1500);ok(F.load2&&G.hold22===0,'the second bale across in three steps, each in a pause');
+    halt(stop)}
   /* marks22: the marks that Chapter Twenty-Two's playthrough set on Luke's tablet, for Chapter Twenty-Three's to find carried in the full run */
   let marks22=null;
   const ch22=async()=>{const said=t=>heard.includes(T(t)),A=id=>ACT[id],C=()=>CHAP[22],told=k=>heard.includes(T(C().told[k])),
     until=async(fn,n)=>{for(let i=0;i<(n||2000)&&!fn();i++)await wait(30);await idle()},
     onH=async(name,v,i)=>{const hl=(ROOMS[G.room].hs||[]).filter(h=>h.name===name&&(!h.vis||h.vis())),h=hl[i<0?hl.length-1:i||0];if(!h)throw new Error('no hs '+name+' in '+G.room);if(v==='walk'){G.verb='walk';G.item=null}else if(v)verb(v);clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
+    talkTo=async(a,v)=>{verb(v||'talk');clickView(a.x,a.y-10,a.hs);await idle()},
+    useOnH=async(id,name)=>{verb('use');item(id);const h=ROOMS[G.room].hs.find(h=>h.name===name&&(!h.vis||h.vis()));clickView(h.x+h.w/2,h.y+h.h/2,h);await idle()},
     pray22=async()=>{const h=heard.length;await new Promise(r=>{pray();setTimeout(r,60)});await idle();return heard.length>h},
-    hints=async(a,b,where)=>{heard.length=0;const p=await pray22(),first=said(a)&&!said(b),q=await pray22();ok(p&&q&&first&&said(b),'two prayers '+where+': a gentle hint, then a direct one ['+a+', '+b+']')},
-    line=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await wait(60)},
-    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)};
+    hints=async(a,b,where)=>{heard.length=0;const me=PC(),n0=G.prays,p=await pray22(),first=said(a)&&!said(b),q=await pray22(),
+        prayed=heard.some(h=>PRAYERS.concat(PRAYERS2).some(l=>h===T(l,{name:T(storyName(me))})));
+      ok(p&&q&&first&&said(b)&&prayed&&G.prays===n0+2,'two prayers '+where+' ('+T(storyName(me))+'): a gentle hint, then a direct one ['+a+', '+b+']')},
+    asked=async()=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);return[...document.querySelectorAll('#choices button')].map(x=>x.dataset.src)},
+    line=async k=>{for(let i=0;i<300&&!$('#choices').classList.contains('on');i++)await wait(30);const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src===k);if(!b)throw new Error('no choice '+k);b.click();await idle()},
+    seenTold=new Set(),note=()=>{for(const k in C().told)if(told(k))seenTold.add(k)},
+    M=()=>SHARED.map,mapUp=async()=>{for(let i=0;i<900&&!(M()&&M().state.places&&G.scene===M().draw&&!G.busy);i++)await wait(30);await wait(60)},
+    clickAt=k=>{const[x,y]=M().where(k),vp=$('#view'),r=vp.getBoundingClientRect();vp.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,clientX:r.left+x*r.width/VW,clientY:r.top+y*r.height/VH}))},
+    pickPlace=async k=>{clickAt(k);await wait(120);await mapUp()},
+    code=async(what,fn)=>{const cd=makeCode();await enter(cd);for(let i=0;i<40&&(G.busy||ov.classList.contains('on'));i++){if(G.skip)G.skip();await wait(50)}await idle();ok(fn(),'a code '+what+': '+cd)};
   heard.length=0;
   if(C22){const l=ov.querySelector('.chs'),chs=[...l.querySelectorAll('[data-ch]')],plans=l.querySelector('.plans');
     {const c=chs.find(c=>c.dataset.ch==='22');ok(c&&c.textContent.includes(T('chapter_twenty_two'))&&c.textContent.includes(T('euroaquilo_2'))&&PLANNED[0].label==='chapter_twenty_four'&&plans.textContent.includes(T('twenty_four')),
       'the title lists Chapter Twenty-Two, Euroaquilo, and the chapters in preparation begin with the twenty-fourth')}}
   (C22?document.querySelector('#overlay [data-ch="22"]'):ov).click();
-  /* STUB: from here to halt('final22') the steps play the stub; LOGIC22 replaces them with the chapter's playthrough */
-  await until(()=>G.ch===22&&G.room==='stub22'&&!G.busy,6000);note();
-  ok(seenTold.has('stub_open')&&decode(makeCode()).ch===22&&PC()===P&&A('luke22').room==='stub22'&&C().party.join()==='paul,luke22'&&C().swap===false,
-    'STUB: the stub of Chapter Twenty-Two opens in its room, Paul played and Luke with him, and its first line is told: '+makeCode());
-  halt('stub22');
-  await hints('stub22_hint_1','stub22_hint_2','in the stub');
-  /* STUB: the placeholder choice sets the six marks (south-west, west, north-west, only the day, west, north-west); the chapter's tablet22 replaces it */
-  {const want=[1,2,3,0,2,3],K=['stub22_mark_only_the_day','stub22_mark_south_west','stub22_mark_west','stub22_mark_north_west'];heard.length=0;onH('stub22_tablet','use');
-    for(const v of want)await line(K[v]);await until(()=>F.marked&&!G.busy);marks22=[1,2,3,4,5,6].map(C().markOf);
-    ok(marks22.join()===want.join()&&said('stub22_six_marks'),'STUB: six marks on Luke\'s tablet: '+marks22)}
+  await until(()=>G.ch===22&&G.room==='quay22'&&!G.busy,6000);note();
+  const LK=A('luke22'),AR=A('aris22'),JU=A('julius22'),GU=A('guard22'),SA=A('sail22a'),SB=A('sail22b'),SC=A('sail22c'),SD=A('sail22d'),PI=A('pilot22'),OW=A('owner22');
+  ok(seenTold.has('v1')&&said('paul_two_years_and_now_the_sea')&&PC()===P&&LK.room==='quay22'&&AR.room==='quay22'&&JU.room==='quay22'&&JU.look===LOOK.julius22&&GU.room==='quay22'
+    &&A('pris22a').room==='quay22'&&C().party.join()==='paul,luke22'&&C().swap===false&&has('pouch22'),
+    'Julius takes charge of Paul and some other prisoners, for Italy (Acts 27:1), from the scroll; the quay at Caesarea: Julius in his cuirass, soldiers, prisoners, Luke and Aristarchus; Paul is played');
+  ok(/^22(-[0-9A-Z]{3}){2,5}$/.test(makeCode())&&decode(makeCode()).ch===22,'a code of Chapter Twenty-Two: '+makeCode());
+  ok(AU.score===C().music&&C().music.steps===18&&C().music.root===46&&C().music.group.join()==='4,4,4,3,3'&&C().music.scale.join()==='0,2,3,5,7,8,11','the chapter\'s score, in B flat harmonic minor and in bars of eighteen');
+  ok(ART.quay22.light.sun&&ROOMS.quay22.birds.gulls,'the quay by day: the sun casts shadows, gulls over the harbor');
+  halt('quay22');
+  await hints('hint_aboard_the_coaster_1','hint_aboard_the_coaster_2','on the quay');
+  heard.length=0;await talkTo(JU);ok(said('julius_we_sail_with_the_coaster'),'Julius: this coaster as far as she takes us');
+  /* aboard, and the voyage out on the map: nothing changes in the story until Myra is clicked */
+  {const was=JSON.stringify([F,G.invs]);heard.length=0;onH('gangplank','use');await mapUp();note();
+    ok(said('julius_aboard_all_of_you')&&seenTold.has('v2')&&seenTold.has('v3')&&said('paul_the_brothers_have_packed_a_bundle')&&seenTold.has('v4')&&M().state.places.join()===C().out.ids.join()
+      &&M().state.legs.length===2&&M().state.pulse==='myra'&&!G.busy&&JSON.stringify([F,G.invs])===was,
+      'a ship of Adramyttium; Aristarchus with us (Acts 27:2); Sidon (27:3); the shelter of Cyprus, Cilicia and Pamphylia, Myra (27:4, 5): the map waits, the game idle, nothing in the story changed')}
+  {const cl=mapClear(),cr=cross22(M().state.legs);ok(cl&&!cr,'on the map of the voyage out no name crosses a coast or a route, and no route crosses another'+(cl?'':': '+[...mapClear.bad].join(', ')))}
+  halt('map22');
+  heard.length=0;await pickPlace('caesarea');ok(said('paul_caesarea_behind_us')&&M().state.places,'Caesarea, behind us; the map stays');
+  heard.length=0;await pickPlace('sidon');ok(said('paul_the_brothers_at_sidon')&&M().state.places,'Sidon, the brothers; the map stays');
+  {const was=JSON.stringify([F,G.invs]);heard.length=0;await pickPlace('tarsus');
+    ok(said('paul_tarsus_from_the_sea')&&treasures().has(22)&&JSON.stringify([F,G.invs])===was&&M().state.places,'Tarsus, his own town, passed without a stop: the chapter\'s hidden treasure; nothing has changed, and the map stays')}
+  dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));await wait(200);await mapUp();ok(M().state.places&&G.scene===M().draw,'Esc: the voyage stays on the map');
+  heard.length=0;clickAt('myra');await until(()=>G.room==='myra22'&&!G.busy,6000);note();
+  ok(F.out&&seenTold.has('v6')&&said('paul_the_brothers_bundle')&&has('bedding22')&&has('bread22')&&has('sail22')&&JU.look!==LOOK.julius22&&SA.room==='myra22'&&!G.scene,
+    'Myra: a ship of Alexandria bound for Italy (Acts 27:6); the brothers\' bundle (bedding, bread, sailcloth); Julius at sea in his tunic');
+  await code('at Myra',()=>G.room==='myra22'&&F.out&&has('sail22')&&has('pouch22'));
+  halt('myra22');
+  await hints('hint_aboard_the_grain_ship_1','hint_aboard_the_grain_ship_2','at Myra');
+  heard.length=0;await talkTo(SA);ok(said('we_supply_the_water'),'a sailor of the grain ship: we supply the water');
+  heard.length=0;onH('gangplank','use');await until(()=>G.room==='deck22'&&F.aboard&&!G.busy,6000);
+  ok(said('paul_a_roof_for_the_night')&&ART.deck22.variant()==='m'&&ART.deck22.light.sun[0]>0&&SB.room==='deck22'&&GU.room==='deck22','aboard the grain ship: the evening at Myra, the low sun at the left; a soldier near Paul');
+  halt('deck22');
+  /* a roof for the night */
+  await hints('hint_my_pouch_1','hint_my_pouch_2','with the pouch shut');
+  verb('open');item('pouch22');await idle();ok(F.pouch&&has('awl')&&has('needle22')&&has('thread')&&said('paul_awl_needle_and_thread'),'the tool pouch: awl, needle and thread');
+  await hints('hint_mend_the_sailcloth_1','hint_mend_the_sailcloth_2','with the sailcloth torn');
+  heard.length=0;await useOnH('sail22','lee_of_the_deckhouse');ok(said('paul_not_with_that_tear')&&!F.shelter,'not with that tear in it');
+  heard.length=0;await use('needle22','sail22');ok(said('paul_the_needle_needs_thread'),'the needle needs thread');
+  heard.length=0;await use('thread','needle22');ok(F.threaded&&has('tneedle22')&&!has('needle22')&&!has('thread'),'the needle threaded');
+  heard.length=0;await use('tneedle22','sail22');ok(said('paul_holes_first')&&!F.mended,'sailcloth that heavy needs the awl first');
+  heard.length=0;await use('awl','sail22');ok(F.pierced&&said('paul_i_pierce_along_the_tear'),'the awl pierces along the tear');
+  heard.length=0;await use('tneedle22','sail22');ok(F.mended&&has('msail22')&&has('needle22')&&has('thread')&&!has('sail22'),'the tear sewn: mended sailcloth');
+  await hints('hint_cord_1','hint_cord_2','with no cord');
+  heard.length=0;await useOnH('msail22','lee_of_the_deckhouse');ok(said('paul_it_needs_cord')&&!F.shelter,'it needs cord');
+  heard.length=0;await onH('pennant','look');ok(said('pennant_look22'),'the pennant streams out to the left: the wind comes from the right');
+  heard.length=0;await talkTo(SB);ok(F.cord&&has('cord22')&&said('sailor_old_cord_take_it'),'a sailor spares old cord');
+  await hints('hint_out_of_the_wind_1','hint_out_of_the_wind_2','with cloth and cord');
+  heard.length=0;await useOnH('msail22','beside_the_deckhouse');ok(said('paul_the_wind_would_fill_it')&&!F.shelter,'on the weather side: the wind would fill it like a sail, the true reason');
+  heard.length=0;await useOnH('cord22','lee_of_the_deckhouse');
+  ok(F.shelter&&!has('msail22')&&!has('cord22')&&!has('bedding22')&&!has('bread22')&&said('paul_the_shelter_stands')&&ROOMS.deck22.birds().stand.length,'in the lee of the deckhouse the shelter stands, the bedding and the bread under it; a gull comes to the bundle');
+  heard.length=0;await onH('shelter','look');ok(said('a_good_tent_on_a_ship'),'low and crooked: a good tent, on a ship');
+  heard.length=0;await onH('gull','look',-1);ok(said('my_first_guest_under_the_new_roof'),'the first guest');
+  heard.length=0;await talkTo(GU);ok(said('soldier_a_flap_of_sailcloth_is_new'),'the soldier: a flap of sailcloth is new');
+  heard.length=0;await onH('anchor','look');ok(said('anchor_look22'),'the anchor on deck, as it was');
+  await code('with the shelter made',()=>G.room==='deck22'&&F.shelter&&!F.fh&&ART.deck22.variant()==='ms');
+  halt('shelter22');
+  await hints('hint_shelter_rest_1','hint_shelter_rest_2','under the shelter');
+  /* the night; slowly to Cnidus, past Salmone, to Fair Havens; Fair Havens */
+  heard.length=0;onH('shelter','use');
+  for(let i=0;i<600&&!(M().state.legs.length>=5&&G.scene===M().draw);i++)await wait(30);
+  {const cl=mapClear(),cr=cross22(M().state.legs);ok(cl&&!cr,'Myra to Fair Havens on the map: no name crosses a line, no route another'+(cl?'':': '+[...mapClear.bad].join(', ')))}
+  await until(()=>G.room==='deck22'&&F.fh&&!G.busy,9000);note();
+  ok(seenTold.has('v7')&&seenTold.has('v8')&&seenTold.has('v9')&&said('paul_before_i_say_anything')&&ART.deck22.variant()==='h'&&JU.room==='deck22'&&PI.room==='deck22'&&OW.room==='deck22',
+    'slowly to Cnidus, past Salmone, in the shelter of Crete (Acts 27:7); Fair Havens near Lasea (27:8); the fast of Atonement Day behind them (27:9)');
+  halt('havens22');
+  /* not listened to */
+  await hints('hint_what_i_have_seen_1','hint_what_i_have_seen_2','at Fair Havens');
+  heard.length=0;await talkTo(JU);ok(said('paul_not_yet_julius')&&!F.advised,'not yet: first what he has seen');
+  heard.length=0;await talkTo(PI);ok(said('pilot_the_officer_decides'),'the pilot: the officer has the last word');
+  heard.length=0;await talkTo(LK);ok(F.kWeeks&&said('luke_weve_lost_weeks'),'Luke: weeks lost');
+  heard.length=0;await talkTo(SC);ok(F.kSeason&&said('sailor_the_fast_is_behind_us'),'a sailor: the fast is behind us');
+  heard.length=0;await onH('pennant','look');ok(F.kWind&&said('paul_the_wind_against_us_since_sidon'),'the pennant: the wind against them since Sidon');
+  await code('with three things seen',()=>G.room==='deck22'&&F.fh&&F.kWeeks&&F.kSeason&&F.kWind&&!F.kWrecks);
+  heard.length=0;await onH('open_sea','look');ok(F.kWrecks&&said('paul_three_times_a_ship_has_gone_down')&&said('paul_i_have_seen_enough'),'the open sea: three shipwrecks of his own; enough');
+  await hints('hint_speak_to_julius_1','hint_speak_to_julius_2','with everything seen');
+  heard.length=0;talkTo(JU);await until(()=>G.room==='storm22'&&PC()===LK&&!G.busy,12000);note();
+  ok(said('i_can_see_how_this_voyage_ends')&&said('pilot_this_bay_is_no_place_to_winter')&&said('owner_phoenix_is_a_day_west')&&seenTold.has('v11')&&seenTold.has('v12')&&said('paul_i_said_it_as_plainly_as_i_could'),
+    'the recommendation (Acts 27:10); the pilot and the shipowner answer; the officer goes by them (27:11); most for Phoenix (27:12); Paul: the choice was never his');
+  ok(seenTold.has('v13')&&seenTold.has('v14')&&seenTold.has('v15')&&seenTold.has('v16')&&said('luke_shes_full_of_water')&&!ROOMS.storm22.birds&&!ART.storm22.light.sun&&C().haul.every(h=>h.a.room==='storm22'&&h.a.pose==='haul'),
+    'a soft south wind (27:13); Euroaquilo (27:14); driven (27:15); the skiff under Cauda (27:16): Luke is played on the rope; no birds, no sun');
+  await code('at the skiff',()=>G.room==='storm22'&&PC()===LK&&C().phase()==='skiff'&&!!G.beat);
+  halt('skiff22');
+  /* the skiff, on the beat */
+  await hints('hint_the_skiff_1','hint_the_skiff_2','at the skiff');
+  await till22(()=>B22());await till22(wave22);await tap22('skiff_rope');ok(!G.sk22&&quiet22(),'a pull on the wave gains nothing');
+  for(let n=0;n<C().pulls-1;n++){await till22(calm22);await tap22('skiff_rope')}
+  ok(G.sk22===C().pulls-1,'three good pulls, each while the stern is down');
+  await till22(calm22);tap22('skiff_rope');await until(()=>G.room==='girded22',6000);note();
+  ok(said('luke_shes_aboard')&&F.skiff,'she\'s aboard');
+  halt('girded22');
+  for(let i=0;i<900&&!(G.scene===M().draw&&M().state.regions.has('the_syrtis'));i++)await wait(30);note();
+  ok(seenTold.has('v17')&&M().state.regions.has('the_syrtis'),'girded, the Syrtis feared, the gear lowered (27:17); the map shows where the Syrtis lies');
+  halt('syrtis22');
+  await until(()=>G.room==='storm22'&&PC()===P&&!G.busy,9000);note();
+  ok(seenTold.has('v18')&&said('paul_whatever_is_in_these_bales')&&C().phase()==='load'&&Math.abs(P.x-C().holds[0][0])<1,'the next day they start to make the ship lighter (27:18): Paul at the hatch');
+  halt('load22');
+  /* between two waves */
+  await hints('hint_the_bales_1','hint_the_bales_2','with the bales');
+  await till22(()=>B22());
+  for(let n=1;n<=2;n++){await tap22('hatch');ok(G.bale22===1,'a bale from the hatch ('+n+')');
+    for(const nm of['mast_step','cask','lee_rail']){await till22(calm22);await tap22(nm)}
+    await until(()=>F['load'+n]&&G.hold22===0&&!G.busy,3000);ok(F['load'+n],'the bale over the lee rail ('+n+')')}
+  await code('between the bales',()=>G.room==='storm22'&&PC()===P&&F.load2&&!F.load3&&Math.abs(P.x-C().holds[0][0])<1);
+  halt('bales22');
+  await till22(()=>B22());await tap22('hatch');{const b=B22();await till22(wave22);await tap22('mast_step');ok(G.hold22===0&&b.misses===1&&quiet22(),'a miss: back at the hatch, no line')}
+  for(const nm of['mast_step','cask','lee_rail']){await till22(calm22);await tap22(nm)}
+  await until(()=>F.load3&&C().phase()==='tablet'&&PC()===LK&&!G.busy,9000);note();
+  ok(seenTold.has('v19')&&said('luke_ill_keep_the_days')&&!G.beat&&ART.storm22.variant()==='n'&&ART.storm22.light.amb&&!ART.storm22.light.sun,'the third day the tackling (27:19); the dark days: Luke is played, no lamp, no beat');
+  await code('in the dark days',()=>G.room==='storm22'&&PC()===LK&&F.load3&&!F.t1&&has('ltab22'));
+  /* no sun, no stars */
+  await hints('hint_the_tablet_1','hint_the_tablet_2','in the dark days');
+  heard.length=0;await talkTo(PI);ok(said('luke_where_are_we_heading')&&said('pilot_no_sun_no_bearing'),'the pilot: no sun, no stars, no bearing');
+  heard.length=0;await onH('clouds','look');ok(said('luke_cloud_and_more_cloud'),'the sky: cloud and more cloud');
+  heard.length=0;await onH('the_wind','look');ok(said('luke_the_wind_from_behind_my_shoulder'),'the wind: felt for a moment, then gone');
+  verb('open');item('ltab22');await until(()=>G.room==='tablet22'&&!G.busy,3000);
+  ok(G.room==='tablet22'&&ART.tablet22.light===null,'Luke\'s tablet, close');
+  halt('tablet22');
+  const want=[1,2,3,0,2,3],MK=C().markKeys;
+  for(let n=1;n<=6;n++){if(G.room!=='tablet22'){verb('open');item('ltab22');await until(()=>G.room==='tablet22'&&!G.busy,3000)}
+    if(n===2){onH('todays_mark','use');const o=await asked();ok(MK.every(k=>o.includes(k))&&o.at(-1)==='leave_it_for_now','four marks to choose from, mixed by key, and a line that leaves');await line('leave_it_for_now');ok(!F.t2,'left for now')}
+    heard.length=0;onH('todays_mark','use');await line(MK[want[n-1]]);
+    if(n<6)await until(()=>G.room==='storm22'&&F['t'+n]&&!G.busy,3000);
+    ok(F['t'+n]&&C().markOf(n)===want[n-1]&&said(C().marksay[want[n-1]]),'day '+n+': '+T(MK[want[n-1]])+', and Luke\'s own true line for it')}
+  marks22=[1,2,3,4,5,6].map(C().markOf);
   halt('marks22');
-  await hints('stub22_hint_hatch_1','stub22_hint_hatch_2','after the marks');
-  {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('stub22_coast','look');
-    ok(said('stub22_coast_look')&&treasures().has(22)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'STUB: the chapter\'s hidden treasure; nothing has changed ('+cd+')')}
-  heard.length=0;await onH('stub22_hatch','use');for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
+  await until(()=>C().phase()==='midst'&&G.room==='storm22'&&PC()===P&&!G.busy,9000);note();
+  ok(seenTold.has('v20')&&seenTold.has('v21')&&said('paul_they_need_to_hear_it')&&ART.storm22.variant()==='d','neither sun nor stars, hope fading (Acts 27:20); Paul stands up among them (27:21)');
+  await code('in their midst',()=>G.room==='storm22'&&PC()===P&&F.t6&&!F.p1);
+  halt('midst22');
+  /* in their midst */
+  await hints('hint_in_their_midst_1','hint_in_their_midst_2','in their midst');
+  const SP=C().speech;
+  heard.length=0;talkTo(JU);const o1=await asked();ok(SP.every(s=>o1.includes(s.c))&&o1.at(-1)==='say_nothing_yet','six parts to say, mixed by key, and a line that leaves');
+  await line(SP[2].c);ok(said('paul_first_what_they_need_to_hear_first')&&!said(SP[2].k)&&!F.p1,'a part out of order: a true thought, and nothing said');
+  heard.length=0;talkTo(PI);await line(SP[0].c);ok(F.p1&&said(SP[0].k),'his advice at Crete (Acts 27:21)');
+  heard.length=0;talkTo(PI);await line(SP[0].c);ok(said('paul_ive_said_that_part'),'said already: it stays on offer');
+  heard.length=0;talkTo(A('pris22a'));const o2=await asked();ok(o2.join()===o1.join(),'the used parts stay on offer, in the same order');await line(SP[5].c);ok(said('paul_not_that_yet')&&!F.p2,'another part too soon: another true thought');
+  for(let i=1;i<6;i++){heard.length=0;talkTo(JU);await line(SP[i].c);if(i<5)ok(F['p'+(i+1)]&&said(SP[i].k),'part '+(i+1)+' (Acts 27:'+(21+i)+')')}
+  for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);note();
   {const bits=marks22.reduce((b,v,i)=>b|v<<(2*i+1),1),code=codeOf(23,bits);
-    ok(ov.classList.contains('end')&&ov.textContent.includes(T('euroaquilo_2'))&&/27:1-26/.test(ov.textContent)&&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_three'))
+    ok(ov.classList.contains('end')&&said(SP[5].k)&&ov.textContent.includes(T('euroaquilo_2'))&&ov.textContent.includes(T('euroaquilo_end'))&&/27:1-26/.test(ov.textContent)&&ov.textContent.includes(T('click_to_continue_to_chapter_twenty_three'))
       &&ov.textContent.includes(T('chapter_twenty_three_code_code',{code}))&&store('paul.save')===code&&C().carry23()===bits&&inOv(),
-      'the end screen of Chapter Twenty-Two leads on to Chapter Twenty-Three with its first code, which carries the six marks: '+code)}
+      'cast ashore on some island (27:26); the end screen says what is invented and what the account leaves unsaid, and leads on to Chapter Twenty-Three with its first code, which carries the six marks: '+code)}
   {const miss=Object.keys(C().told).filter(k=>!seenTold.has(k));ok(!miss.length,'every line of Acts 27:1-26 was told'+(miss.length?' MISSING '+miss:''))}
   halt('final22')};
   if(C22){await ch22();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
     ok(prayers>0&&!prayBad.length,prayers+' prayers, and not one of them changed anything in the game'+(prayBad.length?'. CHANGED before: '+prayBad.slice(0,6).join(' | '):''));
-    /* STUB: LOGIC22 adds talked() after the next check once the chapter speaks (it needs more than forty lines spoken in a room) */
-    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
+    ok(!unkeyed.size,'every choice that is mixed is mixed by its keys, the same in every language'+(unkeyed.size?'. BY TEXT: '+[...unkeyed].slice(0,6).join(' | '):''));talked();fitVerbs();ok(!tight.size,'no text overflows its box'+(tight.size?'. TOO LONG: '+[...tight].slice(0,10).join(' | '):''));L('DONE');throw 'halt'}
   /* ==== CHAPTER TWENTY-TWO: end ==== */
   /* ==== CHAPTER TWENTY-THREE: begin ==== Chapter Twenty-Three's own stops: whoever builds the chapter extends this section, and nothing outside it
      but its line in TSTEPS, the chain of the full run (ch23 after ch22) and the title checks of the chapters before it. */

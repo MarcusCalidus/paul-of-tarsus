@@ -264,8 +264,11 @@ ART.storm22={w:320,q:12,variant:()=>nightNow22()?'n':phase22()==='skiff'?'s':'d'
     for(let i=0;i<60;i++)R(g,r()*320,10+r()*70,10+r()*30,1,rgba(N?'#2a3446':'#8a929c',.3));
     /* the stern rail and post at the left; the lee rail at the right */
     R(g,0,S.rail,S.stern[1],8,N?'#1e160e':'#5a4028');R(g,S.lee[0],S.rail,S.lee[1]-S.lee[0],8,N?'#1e160e':'#5a4028');
-    R(g,S.stern[1],S.rail+2,S.lee[0]-S.stern[1],6,N?'#160f0a':'#4a3422');
-    planks22(g,100,144,N?'#2e2418':'#7a6044');
+    /* between the two rails no rail is seen (spray), and the deck at the back of the strip, where the holds stand, is one wet sheen with no
+       seams: nothing level runs behind the mast, so that it crosses nothing */
+    g.fillStyle=lg(g,0,S.rail,0,116,N?['#0e1220','#1a1610']:['#6a727c','#6a5a46']);g.fillRect(S.stern[1],S.rail,S.lee[0]-S.stern[1],8);
+    g.fillStyle=N?'#1e1810':'#6a5640';g.fillRect(0,100,320,16);
+    planks22(g,116,144,N?'#2e2418':'#7a6044');
     R(g,S.hatch[0],S.hatch[2],S.hatch[1]-S.hatch[0],S.hatch[3]-S.hatch[2],N?'#120c08':'#3a2818');
     R(g,S.mast[0],0,S.mast[1]-S.mast[0],116,N?'#1a120c':'#5e4428');
     R(g,S.cask[0],S.cask[2],S.cask[1]-S.cask[0],S.cask[3]-S.cask[2],N?'#22180e':'#7a5a34')},
@@ -304,7 +307,7 @@ ART.tablet22={w:320,q:12,paint(g){const r=rng(2205);g.fillStyle=lg(g,0,0,320,144
   light:null,
   draw(g){for(let n=1;n<=6;n++){const[cx,cy]=DAYS22[n-1];if(!F['t'+n])continue;
       R(g,cx-.5,cy,1.2,16,'#c8b48c');
-      const m=markOf(n);if(!m)continue;const dy=m===1?-5:m===2?0:5,y=cy+40;
+      const m=markOf(n);if(!m)continue;const dy=m===1?5:m===2?0:-5,y=cy+40;
       /* the mark: from the east end down (or up, or level) to the west end, where a small wedge stands */
       stroke(g,[cx+8,y-dy,cx-6,y+dy],'#c8b48c',1.1);poly(g,[cx-9,y+dy*1.2,cx-4,y+dy-2.4,cx-4,y+dy+2.4],'#c8b48c')}
     const n=today22();if(n<=6&&lukePlays()){const[cx,cy]=DAYS22[n-1];g.strokeStyle='rgba(200,180,140,.25)';g.lineWidth=.5;g.strokeRect(cx-18,cy-6,36,70)}},
@@ -777,7 +780,7 @@ function hint22(){const ph=phase22();
    tablet22 or girded22. They change nothing in the story. */
 ROOMS.quay22.birds={gulls:[0,8,320,40],stand:[[30,96,1],[132,96,-1]]};
 ROOMS.myra22.birds={gulls:[0,8,110,44],stand:[[136,96,1]]};
-ROOMS.deck22.birds=()=>F.fh?{gulls:[0,6,200,30]}:{gulls:[0,6,320,30],stand:F.shelter?[[161,104,-1]]:[]};
+ROOMS.deck22.birds=()=>F.fh?{gulls:[0,6,200,30]}:F.shelter?{gulls:[0,6,320,30],stand:[[161,104,-1]]}:{gulls:[0,6,320,30]};
 /* every hotspot answers Luke as it answers Paul (see act: another member uses h.as[his id]) */
 for(const id of['quay22','myra22','deck22','storm22','tablet22','girded22'])for(const h of ROOMS[id].hs)if(!h.as)h.as={luke22:h};
 for(const a of EVERY)if(a!==LK&&a.hs&&!a.hs.as)a.hs.as={luke22:a.hs};

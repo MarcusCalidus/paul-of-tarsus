@@ -68,7 +68,7 @@ const SEA={'-62,-96':[60,56],'0,0':[92,84],'26,-41':[60,65],'-40,-101':[95.7,35.
 /* where the hint under a map to pick from stands, in screen pixels from the top, where the usual place (H - 14) would cross a coast.
    In the usual window ('') the coast of Marmarica comes into the lower left corner, so the hint stands higher, in the open sea between
    Crete and Africa; in the levant window, where a corner of Marmarica comes in below its left end, a few pixels higher than usual. */
-const HINT={journeys:H-5,'':100,levant:H-18};
+const HINT={journeys:H-5,'':100,levant:H-18,outward:112};   /* outward: Chapter Twenty-Two's voyage out, between the Great Sea's name and the coast of Cyrenaica */
 /* VLAB: where the names stand in a view that has names of its own (as a chapter gives journey and pick its labels), unless the chapter
    gives others */
 const VLAB={journeys:{salamis:{lab:'r'},paphos:{lab:'l',dy:2},thessalonica:{lab:'l',dy:-4},corinth:{lab:'l',dy:2},athens:{lab:'r',dy:12}},
