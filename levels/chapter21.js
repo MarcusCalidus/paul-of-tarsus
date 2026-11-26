@@ -524,21 +524,15 @@ CL.noPray=1;CL.thought=TC;
 const THP={thought:1,color:'#cfe2ff'};  /* Paul's */
 const mk21=()=>G.mk21||(G.mk21={});
 const markOf21=k=>F.report?REPORT21.find(c=>c.k===k).ok:mk21()[k];
-/* the chain: one soldier, chained by his wrist to Paul's, a step behind him on his left (shared/cast.js, custody, one keeper) */
-/* In the court the soldier stands a step behind Paul on his left; in the hall a step ahead of him on his right, between him and the dais, so
-   that when Paul raises his far hand (26:29) the chain goes up to it without crossing his body */
+/* the chain: one light chain on one of Paul's wrists, to the one soldier beside him (shared/cast.js, custody 'one') */
+/* In the court the soldier stands a step behind Paul on his left, so the near wrist is the chained one. In the hall he stands a step ahead of
+   him on his right, between him and the dais, so the far wrist is: when Paul raises that hand (26:29), bent, the chain goes up with it and
+   does not cross his body. custody places the chain's end from P.ges, so the script sets P.ges itself. */
 const guardAhead21=()=>P.room==='hall21';
-function chain21(){const C=SHARED.cast.custody;if(guardAhead21())C.place('chain',P,null,GU);else C.place('chain',P,GU,null)}
+function chain21(){const C=SHARED.cast.custody;if(guardAhead21())C.place('one',P,null,GU);else C.place('one',P,GU,null)}
 /* in a room's draw: the chain between them, link by link */
 function chains21(g){if(!(P.chained&&P.room===G.room&&GU.room===G.room))return;
-  if(P.ges!==1)return guardAhead21()?SHARED.cast.custody.chains(g,P,null,GU):SHARED.cast.custody.chains(g,P,GU,null);
-  /* "these bonds" (26:29): the far hand is up, bent, and the chain goes up with it, from the soldier's wrist to Paul's raised one, hanging a
-     little, link by link as custody draws a chain (small squares of iron, light and dark in turn, in the room's light) */
-  const C=SHARED.cast.custody,p=C.cuffPt(P,'far'),q=C.cuffPt(GU,GU.keeper==='near'?'near':'far');if(!p||!q)return;
-  const lit=lightAt(P.room,P.x,P.y),mul=(c,l)=>{if(!l)return c;const a=hex(c),b=hex(l);return toHex(a[0]*b[0]/255,a[1]*b[1]/255,a[2]*b[2]/255)},
-    col=[mul(CUFF[1],lit),mul(CUFF[3],lit)],d=Math.hypot(q[0]-p[0],q[1]-p[1]),L=d*1.06+1,sag=Math.sqrt(Math.max(0,L*L-d*d))*.42,n=Math.max(2,Math.ceil(L*2));
-  depth(Math.max(P.y,GU.y)+.01,()=>{let last='';for(let i=0;i<=n;i++){const t=i/n,x=p[0]+(q[0]-p[0])*t,y=p[1]+(q[1]-p[1])*t+sag*4*t*(1-t),k=Math.round(x*2)+','+Math.round(y*2);
-    if(k===last)continue;last=k;g.fillStyle=col[i%2];g.fillRect(Math.round(x*2)/2,Math.round(y*2)/2,.5,.5)}})}
+  if(guardAhead21())SHARED.cast.custody.chains(g,P,null,GU);else SHARED.cast.custody.chains(g,P,GU,null)}
 /* the chain in Paul's inventory whenever he is played chained, and not otherwise */
 function chainItem21(){const L=G.invs.paul||(G.invs.paul=['tablets']),i=L.indexOf('chain21');if(chainedNow()&&i<0)L.push('chain21');else if(!chainedNow()&&i>=0)L.splice(i,1);drawInv()}
 
