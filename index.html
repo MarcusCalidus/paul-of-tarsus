@@ -1948,7 +1948,32 @@ const camAt=(id,x,y)=>{const z=zoomOf(id),w=VW/z,h=VH/z;return[clamp(x-w/2,0,Mat
 /* A room whose light changes (a lamp put out, shutters opened) names its current variant, and gets one backdrop per variant. */
 function bg(id){const a=ART[id],v=a.variant?a.variant():'',k=id+v;return BG[k]||(BG[k]=bake(a.w,g=>a.paint(g,v),a.q,a.h))}
 function fg(id){const a=ART[id];if(!a.fore)return null;return FG[id]||(FG[id]=bake(Math.round(VW+(a.w-VW)*(a.fp||1)),g=>a.fore(g),a.q))}
-const backdrop=(g,id,cam,camY)=>{LID=planOf(id)?null:id;g.drawImage(bg(id),-(cam||0),-(camY||0),ART[id].w,roomH(id))};
+const backdrop=(g,id,cam,camY,P)=>{LID=planOf(id)?null:id;const c=bg(id),w=ART[id].w,h=roomH(id);
+  if(P){const q=padded(c,P),e=(q.width-c.width)/2/HR;g.drawImage(q,-(cam||0)-e,-(camY||0)-e,w+2*e,h+2*e)}else g.drawImage(c,-(cam||0),-(camY||0),w,h)};
+/* A room whose ship moves with the sea (Chapters Twenty-Two and Twenty-Three) says how it lies at the moment t: ART[id].sway(t) gives
+   {a, dx, dy, cx, cy}, an angle in radians (a positive one turns the picture clockwise), a shift in room pixels, and the pivot it turns
+   about (by default the middle of the room's foot). It gets the time and reads no clock of its own: a level takes its angle from the
+   beat's phase (G.beat.phase(t)). render draws the world without the transform (ART[id].behind: the sea and the sky, which the backdrop
+   leaves open above the rail) and the ship with it (the backdrop, the shadows, draw, the props, the actors, the foreground and front),
+   then ART[id].air (spray and rain) without it again; speech and everything of the interface stand level. G.sway is how the picture lay
+   in the last frame drawn: its matrix m maps a place in the room to where it is seen (swayPt), and swayBack maps a pointer back, so that
+   a click lands on what is seen while walks, depth, footprints and routes stay in the room's own coordinates. Nothing sways while the
+   system asks for reduced motion or the player has chosen calm movement (OPTS.mov 0), on a plan, or in a room that does not ask. */
+const calmSea=()=>OPTS.mov===0||!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+function swayOf(id,t){const A=ART[id];if(!A||!A.sway||planOf(id)||calmSea())return null;const s=A.sway(t);if(!s)return null;
+  const a=+s.a||0,dx=+s.dx||0,dy=+s.dy||0,px=s.cx!=null?s.cx:A.w/2,py=s.cy!=null?s.cy:roomH(id),c=Math.cos(a),n=Math.sin(a);
+  return{a,dx,dy,cx:px,cy:py,m:[c,n,-n,c,px+dx-c*px+n*py,py+dy-n*px-c*py]}}
+const swayPt=(x,y,s=G.sway)=>s?[s.m[0]*x+s.m[2]*y+s.m[4],s.m[1]*x+s.m[3]*y+s.m[5]]:[x,y];
+const swayBack=(x,y,s=G.sway)=>{if(!s)return[x,y];const[c,n,,,e,f]=s.m,u=x-e,v=y-f;return[c*u+n*v,c*v-n*u]};
+/* bleedOf: how far past its edges a swaying room's backdrop and foreground reach (ART[id].bleed, 24 room pixels by default), so that
+   no gap opens at a corner as the ship heels. padded: a baked layer with that margin, mirrored out of its own edges (planks run on as
+   planks, a mast on past the top), made once for each layer and kept. */
+const bleedOf=A=>A.bleed!=null?A.bleed:24,PADC=new WeakMap();
+function padded(c,P){const o=PADC.get(c);if(o&&o.P===P)return o.c;const W=c.width,H=c.height,p=Math.min(Math.round(P*HR),W,H),[d,g]=mk(W+2*p,H+2*p);
+  const m=(sx,sy,sw,sh,dx,dy,fx,fy)=>{g.save();g.translate(dx+(fx<0?sw:0),dy+(fy<0?sh:0));g.scale(fx,fy);g.drawImage(c,sx,sy,sw,sh,0,0,sw,sh);g.restore()};
+  g.drawImage(c,p,p);m(0,0,W,p,p,0,1,-1);m(0,H-p,W,p,p,p+H,1,-1);m(0,0,p,H,0,p,-1,1);m(W-p,0,p,H,p+W,p,-1,1);
+  m(0,0,p,p,0,0,-1,-1);m(W-p,0,p,p,p+W,0,-1,-1);m(0,H-p,p,p,0,p+H,-1,-1);m(W-p,H-p,p,p,p+W,p+H,-1,-1);
+  PADC.set(c,{P,c:d});return d}
 /* planOf: a room seen from above (a lane map, shared/lanes.js) has a plan, which walks, draws and moves the people in it: see walk, update,
    drawActor and clickView. Its fig is the size of a figure on it, [half its width, its height]; a room's own figures are [10, 49]. */
 const planOf=id=>id&&ROOMS[id]&&ROOMS[id].plan||null;
@@ -2129,14 +2154,15 @@ const narr=(t,o)=>say(null,t,o);
    tells, as it always did. DARK is the scene for what is told and not shown (a vision by night, a beating): a chapter sets it as G.scene. */
 function DARK(g){g.fillStyle='#05060e';g.fillRect(0,0,VW,VH)}
 const inDark=()=>!G.white&&(+$('#dim').style.opacity>=1||G.scene===DARK);
+/* posSpeech: a line stands over its speaker; in a room that sways, level, over the place where his head is seen (swayPt) */
 function posSpeech(){if(!cur||cur.ink||cur.white)return;if(PH.on)return posSpeechPh();const{el,a}=cur,vw=$('#view').clientWidth,s=vw/320,hw=el.offsetWidth/2+4*s;
-  if(a&&a.room===G.room&&!G.scene){const z=zoomNow();el.style.left=clamp((a.x-G.cam)*z*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(a.y-G.camY-figBox(a.room)[1])*z+7,40,Math.max(40,Math.min(132,VH-el.offsetHeight/s-2)))*s+'px';el.style.top=''}   /* a line of several rows over a speaker near the top of the view comes down far enough to stay inside it */
+  if(a&&a.room===G.room&&!G.scene){const z=zoomNow(),[ax,ay]=swayPt(a.x,a.y-figBox(a.room)[1]);el.style.left=clamp((ax-G.cam)*z*s,hw,vw-hw)+'px';el.style.bottom=clamp(VH-(ay-G.camY)*z+7,40,Math.max(40,Math.min(132,VH-el.offsetHeight/s-2)))*s+'px';el.style.top=''}   /* a line of several rows over a speaker near the top of the view comes down far enough to stay inside it */
   else if(cur.low){el.style.left='50%';el.style.top='';el.style.bottom=7*s+'px'}   /* low: a line told over a map whose road runs along its upper edge stands at the foot of the view */
   else{el.style.left='50%';el.style.top=10*s+'px';el.style.bottom=''}}
 /* posSpeechPh: on a phone a line stands over its speaker where the field shows him, inside the field, and the narrator's lines at its top,
    below the status line. The words keep their size when the field is zoomed. */
 function posSpeechPh(){const{el,a}=cur,L=LENS,F=L.F,ts=PH.ts,hw=el.offsetWidth/2+4*ts,H=PH.H,eh=el.offsetHeight;
-  if(a&&a.room===G.room&&!G.scene){const z=zoomNow(),X=L.tx+(a.x-G.cam)*z*L.k,Y=L.ty+(a.y-G.camY-figBox(a.room)[1])*z*L.k;
+  if(a&&a.room===G.room&&!G.scene){const z=zoomNow(),[ax,ay]=swayPt(a.x,a.y-figBox(a.room)[1]),X=L.tx+(ax-G.cam)*z*L.k,Y=L.ty+(ay-G.camY)*z*L.k;
     el.style.left=clamp(X,F.l+hw,F.l+F.w-hw)+'px';el.style.bottom=clamp(H-Y+5*ts,H*.22,H-eh-3*ts-(PH.it||0))+'px';el.style.top=''}
   else if(cur.low){el.style.left=(F.l+F.w/2)+'px';el.style.top='';el.style.bottom=7*ts+'px'}
   else{el.style.left=(F.l+F.w/2)+'px';el.style.top=12*ts+(PH.it||0)+'px';el.style.bottom=''}}
@@ -2281,7 +2307,7 @@ async function act(v,h,item){const who=PC(),o=who===P?h:(h.as&&h.as[who.id])||{}
 async function clickView(x,y,at,t){
   if(G.skip){if(performance.now()-G.lineT>230)G.skip();return}
   if(G.busy||G.scene||!G.room)return;audioInit();
-  const h=at||hsAt(x,y),item=G.item;let v=G.verb;G.actPos=[(x-G.cam)*zoomNow(),(y-G.camY)*zoomNow()];G.actT=t||performance.now();
+  const h=at||hsAt(x,y),item=G.item;let v=G.verb;{const[sx,sy]=swayPt(x,y);G.actPos=[(sx-G.cam)*zoomNow(),(sy-G.camY)*zoomNow()]}G.actT=t||performance.now();
   const me=PC(),pl=planOf(G.room);
   if(!h){if(v!=='walk'||item){G.verb='walk';G.item=null;syncVerbs();drawInv();status()}walk(me,x,y,{click:1});return}
   if(v==='walk'){v=defVerb(h);if(v==='walk')v=h.exit?'exit':'look'}
@@ -2299,12 +2325,13 @@ async function clickView(x,y,at,t){
   me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);if(pl)pl.face(me,A?A.x:h.x+h.w/2,A?A.y:h.y+h.h/2);
   await cut(()=>act(v,h,item))}
 const vp=$('#view');
-/* evPos: where a pointer event is, in the room; framePos: in the picture (VW by VH); toClient: where a place in the room is on the screen */
-function evPos(e){if(PH.on){const[x,y]=framePos(e),z=zoomNow();return[x/z+G.cam,y/z+G.camY]}const r=vp.getBoundingClientRect(),z=zoomNow();return[(e.clientX-r.left)/r.width*VW/z+G.cam,(e.clientY-r.top)/r.height*VH/z+G.camY]}
+/* evPos: where a pointer event is, in the room; framePos: in the picture (VW by VH); toClient: where a place in the room is on the screen.
+   In a room that sways (see swayOf) evPos maps the pointer back through the sway, and toClient finds a place where it is seen. */
+function evPos(e){if(PH.on){const[x,y]=framePos(e),z=zoomNow();return swayBack(x/z+G.cam,y/z+G.camY)}const r=vp.getBoundingClientRect(),z=zoomNow();return swayBack((e.clientX-r.left)/r.width*VW/z+G.cam,(e.clientY-r.top)/r.height*VH/z+G.camY)}
 const vpq=()=>{const r=vp.getBoundingClientRect();return[r,r.width/(vp.offsetWidth||r.width)||1]};   /* q: screen pixels to one of the view's own (below 1 while Safari zooms, see vvFit) */
 function framePos(e){if(PH.on){const[r,q]=vpq();return[((e.clientX-r.left)/q-LENS.tx)/LENS.k,((e.clientY-r.top)/q-LENS.ty)/LENS.k]}const r=vp.getBoundingClientRect();
   return[(e.clientX-r.left)/r.width*VW,(e.clientY-r.top)/r.height*VH]}
-function toClient(x,y){const r=vp.getBoundingClientRect(),z=zoomNow();if(PH.on){const q=vpq()[1];return[r.left+(LENS.tx+(x-G.cam)*z*LENS.k)*q,r.top+(LENS.ty+(y-G.camY)*z*LENS.k)*q]}
+function toClient(x,y){[x,y]=swayPt(x,y);const r=vp.getBoundingClientRect(),z=zoomNow();if(PH.on){const q=vpq()[1];return[r.left+(LENS.tx+(x-G.cam)*z*LENS.k)*q,r.top+(LENS.ty+(y-G.camY)*z*LENS.k)*q]}
   return[r.left+(x-G.cam)*z/VW*r.width,r.top+(y-G.camY)*z/VH*r.height]}
 /* hsOf: what a pointer event is about: the thing a pinned label names if the pointer is on a label, else whatever lies under it.
    Labels are moved apart and do not always sit on what they name, so pointing, a tap, a right-click and a double-click all ask here. */
@@ -2443,7 +2470,11 @@ function drawTags(ts){if(!G.tags)return;const act=G.room&&!G.scene&&!G.busy&&!G.
     el.onclick=e=>{e.stopPropagation();if(tagTap())clickView(x,ry,h)};
     const w=el.offsetWidth/s,hh=el.offsetHeight/s+3,lx=clamp((x-cam)*z,wx0+w/2+1,wx1-w/2-1);let ty=clamp(y,wy0+4,wy1-hh);
     for(let n=0;n<10;n++){const hit=put.find(p=>Math.abs(p.x-lx)<(p.w+w)/2+1&&Math.abs(p.y-ty)<hh);if(!hit)break;ty=hit.y+hh}
-    if(ty>wy1-hh)ty=wy1-hh;put.push({x:lx,y:ty,w});el.style.left=(ox+lx*s)+'px';el.style.top=(oy+ty*s)+'px'}}
+    if(ty>wy1-hh)ty=wy1-hh;put.push({x:lx,y:ty,w});el.style.left=(ox+lx*s)+'px';el.style.top=(oy+ty*s)+'px';el._b=[ox+lx*s,oy+ty*s];el._a=[x,y/z+cy]}}
+/* swayTags: in a room that sways the labels ride with what they name, every frame, without being made anew (a label is never replaced
+   under the finger tapping it); laid out as drawTags placed them, moved by as much as their place in the room is moved */
+function swayTags(){const S=G.sway;if(!S&&!tagEl._sw)return;tagEl._sw=S?1:0;const s=PH.on?LENS.k:vp.clientWidth/VW,z=zoomNow();
+  for(const el of tagEl.children){if(!el._a)continue;const[ax,ay]=el._a,[sx,sy]=swayPt(ax,ay);el.style.left=(el._b[0]+(sx-ax)*z*s)+'px';el.style.top=(el._b[1]+(sy-ay)*z*s)+'px'}}
 addEventListener('keyup',e=>{if(e.key==='Tab')tagsOn(false)});addEventListener('blur',()=>tagsOn(false));
 addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;const k=e.key.toLowerCase();
   if(k==='tab'){e.preventDefault();tagsOn(true)}
@@ -2646,20 +2677,28 @@ function drawActor(g,o,ts,id){const pl=planOf(id);if(pl)return pl.drawActor(g,o,
   const pz=poseOf(o),gs=o.grips?10:ges,ly=pz==='l'?LIFT:0,ps=o.pose&&POSE[o.pose]?o.pose+(o.pk|0):'';
   figure(g,o.x,o.y-ly,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+(o.fr===-1?'s':o.fr)+'t'+talk+bow+gs+bl+'m'+mv+pz+(ps?'p'+ps:''),s=>person(s,0,0,o.look,dir,o.fr,talk,bow,gs,bl,mv,pz,ps),ly?0:ps?poseSw(o.look,ps,o.fr):walkSw(o.look,o.fr),dir*kneelX(o.look,o.fr),ly?o.y:null)}
 function render(ts){G.t=ts;update(ts);LID=null;cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
+  G.sway=G.room&&!G.scene?swayOf(G.room,ts):null;
   if(G.scene)G.scene(cx,ts);
-  else if(G.room){const id=G.room,a=ART[id],z=zoomOf(id),cam=hp(G.cam),cy=hp(G.camY),f=fg(id);if(z!==1)cx.setTransform(HR*z,0,0,HR*z,0,0);backdrop(cx,id,cam,cy);cx.save();cx.translate(-cam,-cy);
-    const q=DQ=[],sq=SQ=LID?[]:null;if(ROOMS[id].birds&&SHARED.birds)SHARED.birds.draw(cx,ts,id);a.draw(cx,ts);
+  else if(G.room){const id=G.room,a=ART[id],z=zoomOf(id),cam=hp(G.cam),cy=hp(G.camY),f=fg(id),S=G.sway,P=S?bleedOf(a):0,birds=ROOMS[id].birds&&SHARED.birds;if(z!==1)cx.setTransform(HR*z,0,0,HR*z,0,0);
+    /* a room that sways (see swayOf): the world behind it first, and its birds in the open sky, which do not move with the ship; then the ship, turned */
+    if(a.behind||S&&birds){cx.save();cx.translate(-cam,-cy);if(a.behind)a.behind(cx,ts);if(S&&birds)SHARED.birds.draw(cx,ts,id);cx.restore()}
+    if(S){cx.save();cx.translate(-cam,-cy);cx.transform(...S.m);cx.translate(cam,cy)}
+    backdrop(cx,id,cam,cy,P);cx.save();cx.translate(-cam,-cy);
+    const q=DQ=[],sq=SQ=LID?[]:null;if(birds&&!S)SHARED.birds.draw(cx,ts,id);a.draw(cx,ts);
     for(const p of props(id))q.push([p.y,()=>cx.drawImage(p.c,p.x,p.t,p.w,p.h)]);
     for(const o of Object.values(ACT))if(o.room===id)drawActor(cx,o,ts,id);
     DQ=SQ=null;if(sq)for(const fn of sq)fn();
     q.sort((p,r)=>p[0]-r[0]).forEach(e=>e[1]());
-    cx.restore();if(f)cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH);
-    cx.save();cx.translate(-cam,-cy);a.front(cx,ts);cx.restore();if(z!==1)cx.setTransform(HR,0,0,HR,0,0)}
+    cx.restore();if(f){if(P){const pf=padded(f,P),e=(pf.width-f.width)/2/HR;cx.drawImage(pf,-hp(cam*(a.fp||1))-e,-e,f.width/HR+2*e,VH+2*e)}else cx.drawImage(f,-hp(cam*(a.fp||1)),0,f.width/HR,VH)}
+    cx.save();cx.translate(-cam,-cy);a.front(cx,ts);cx.restore();
+    if(S)cx.restore();
+    if(a.air){cx.save();cx.translate(-cam,-cy);a.air(cx,ts);cx.restore()}
+    if(z!==1)cx.setTransform(HR,0,0,HR,0,0)}
   if(G.xfade){cx.save();cx.setTransform(1,0,0,1,0,0);cx.globalAlpha=G.xfade.a;cx.drawImage(G.xfade.img,0,0);cx.restore()}
   {const S=SHARED.scroll;if(S&&S.state!=='down')S.draw(ts)}
   {const pl=!!(G.room&&!G.scene&&planOf(G.room));if(vp.plan!==pl){vp.plan=pl;vp.classList.toggle('plan',pl)}}
   {const d=Math.min(.1,Math.max(0,(ts-(PH.t||ts))/1000));PH.t=ts;PH.live=true;lensTick(d)}
-  posSpeech();tagsOn();drawTags(ts);requestAnimationFrame(render)}
+  posSpeech();tagsOn();drawTags(ts);swayTags();requestAnimationFrame(render)}
 /* ============ GAME: items, combinations, prayer hints ============ */
 Object.assign(ITEMS,{
   awl:{name:'awl',look:'stout_awl_for_piercing'},
