@@ -220,30 +220,21 @@ const marks20=()=>season20()-1+(G.end20?1:0);
 /* ==== ART window20: end ==== */
 
 /* ==== ART hall20: begin ==== */
-/* ART-TODO. An inner hall of the palace, where Felix hears Paul: plastered walls in a warm tone, two long low windows high in the back
-   wall (above every head, long and low so that none lies round behind a head), a doorway at the left where Paul is brought in, a floor
-   of stone flags; at the right, behind the walk strip, two chairs of dark wood standing on the floor, each with legs at its ends, a solid
-   back at its right end (the sitter faces left), no rail: Felix's (x 228..246, top 95, foot 104; Felix sits at 237,104) and, in the first
-   autumn, Drusilla's (x 254..272, top 95, foot 104; she sits at 263,104). Soft daylight from the high windows: no cast shadow (amb only).
+/* The inner hall of the palace, where Felix hears Paul (Acts 24:24-26), painted by SHARED.caesarea.innerHall: the same hall, in the same
+   geometry (SHARED.caesarea.IH), as Chapter Twenty-One's audience chamber, here private and nearly empty. A tall room in the court's pale
+   limestone, its plaster painted in panels of imitation stone, two long, low windows high in the back wall (above every head), the
+   doorway to the passage at the left, a floor of pale flags; at the right a dais of white stone, a deep upper step and a lower one, with
+   the governor's chair on it and, in the first autumn, a second chair beside it for Drusilla. Calm afternoon light from the high windows:
+   their patches of sun lie on the floor in the walk strip, and the figures' shadows fall the same way, to the right and toward us
+   (SHARED.caesarea.hallLight('afternoon')). Nothing stands in the walk strip.
    Variants: 'd' (Drusilla's chair, the first autumn) and '' (the first spring).
    Called from outside: ART.hall20, HALL20. Draws the chain while Paul is chained.
-   Hotspots: high windows 60,10,200,12 · doorway 4,40,32,64. Walk: 30..300 by 114..138; a single spot (190,124) while Paul is chained.
-   Actors: Felix and Drusilla seated as above; Paul 190,124 facing them, the soldier 172,123.5 chained to his near wrist. */
-const HALL20={felix:[237,104,-1],drusilla:[263,104,-1],chairs:[[228,246],[254,272]],top:95,foot:104};
-ART.hall20={w:320,q:12,variant:()=>F.s3?'':'d',paint(g,v){paintHall20(g,v)},light:{amb:'#ecdcca',wallY:104},
+   Hotspots: high windows 58,12,144,19 · doorway 4,46,22,50. Walk: 24..300 by 116..138; a single spot (190,124) while Paul is chained.
+   Actors: Felix seated at 222,102 and Drusilla at 248,102, facing left (seat tops 93); Paul 190,124 facing them, the soldier 172,123.5
+   chained to his near wrist. */
+const HALL20={felix:[CS.IH.chairs[0],CS.IH.chair.foot,-1],drusilla:[CS.IH.chairs[1],CS.IH.chair.foot,-1]};
+ART.hall20={w:320,q:12,variant:()=>F.s3?'':'d',paint(g,v){CS.innerHall(g,{hour:'afternoon',chairs:v==='d'?2:1})},light:CS.hallLight('afternoon'),
   draw(g){if(P.chained&&P.room==='hall20')SHARED.cast.custody.chains(g,P,SO,null)},front(){}};
-function paintHall20(g,v){const r=rng(2021);
-  plaster(g,0,0,320,104,'#d8bc98',r,{patch:0,cracks:0,t:.3});
-  for(const[x0,x1]of[[60,130],[190,260]]){R(g,x0,10,x1-x0,8,'#c8d4e0');R(g,x0,17.4,x1-x0,.8,'#f0e4cc');R(g,x0,10,x1-x0,1.2,'rgba(80,60,50,.4)')}
-  R(g,4,40,32,64,'#3a2c26');R(g,4,40,32,2,'#8a7058');R(g,4,40,2,64,'#8a7058');R(g,34,40,2,64,'#6a5442');
-  pave(g,0,104,320,144,'#c0aa86',r,{rows:5,step:30});ao(g,0,104,320,5,'t',.3,'#3a2c30');
-  HALL20.chairs.forEach(([x0,x1],i)=>{if(i&&v!=='d')return;chair20(g,x0,x1,HALL20.top,HALL20.foot)});
-  comp(g,'soft-light',.25,()=>{g.fillStyle=lg(g,0,0,0,144,['rgba(255,244,220,1)','rgba(180,170,190,.6)']);g.fillRect(0,0,320,144)})}
-/* chair20: legs at its two ends, a thick seat whose top is where a seated figure's hips rest, a solid back at the right end */
-function chair20(g,x0,x1,T,FL){M20.shadow(g,(x0+x1)/2,FL+.2,10,1,.45);
-  for(const x of[x0+.6,x1-2])R(g,x,T+2,1.4,FL-T-2,'#4a2e1a');
-  R(g,x1-3.6,T-14,3,14,'#5a3a22');R(g,x1-3.6,T-14,3,.6,'#8a6040');
-  R(g,x0,T,x1-x0,2.2,'#6a4428');R(g,x0,T,x1-x0,.6,'#a87a4a');R(g,x0,T+1.8,x1-x0,.5,'#3a2414')}
 /* ==== ART hall20: end ==== */
 
 /* ==== ART charges20: begin ==== */
@@ -489,9 +480,9 @@ ROOMS.window20={space:.8,walk:NOW,get mood(){return winter20()?'winter':'room'},
   {name:'sill',x:24,y:112,w:272,h:14,wx:160,wy:236,look:'sill_look',useWith:awlOn},
   {name:'marks_on_the_sill',x:40,y:113,w:52,h:10,wx:160,wy:236,vis:()=>marks20()>0,look:()=>say(P,marks20()===1?'one_mark_on_the_sill_look':T('marks_on_the_sill_look',{n:marks20()}),TH),useWith:awlOn},
   {name:'back_to_the_room',x:0,y:134,w:120,h:10,wx:160,wy:236,exit:()=>goto20('room20'),look:'back_to_the_room_look'}]};
-ROOMS.hall20={space:.7,get walk(){return P.chained?[190,190,124,124]:[30,300,114,138]},mood:'hall',amb:AMB.hall20,hs:[
-  {name:'high_windows',x:60,y:10,w:200,h:12,wx:190,wy:124,look:'high_windows_look'},
-  {name:'doorway',x:4,y:40,w:32,h:64,wx:40,wy:124,dir:-1,exit:()=>say(P,'paul_i_go_when_im_sent',TH),look:'hall_doorway_look'}]};
+ROOMS.hall20={space:.7,get walk(){return P.chained?[190,190,124,124]:[24,300,116,138]},mood:'hall',amb:AMB.hall20,hs:[
+  {name:'high_windows',x:58,y:12,w:144,h:19,wx:190,wy:124,look:'high_windows_look'},
+  {name:'doorway',x:4,y:46,w:22,h:50,wx:40,wy:124,dir:-1,exit:()=>say(P,'paul_i_go_when_im_sent',TH),look:'hall_doorway_look'}]};
 ROOMS.charges20={space:.8,walk:NOW,mood:'court',amb:AMB.charges20,hs:[
   ...CHARGES20.map((c,i)=>({name:'charge_on_my_tablet',c20:c.k,x:30,y:LB20[i][1]-2,w:264,h:30,wx:160,wy:236,def:'use',look:()=>say(P,c.k,TH),use:()=>markCharge20(c)})),
   {name:'back_to_the_court',x:0,y:134,w:120,h:10,wx:160,wy:236,exit:()=>goto20('court20'),look:'back_to_the_court_look'}]};
