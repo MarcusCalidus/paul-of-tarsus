@@ -1139,6 +1139,9 @@ function gaitOf(o){if(o.gt)return o.gt;const grey=c=>{if(!c)return false;const[r
   let S=o.long?22:30,T=.58,arm=o.long?.85:1;
   if(kid){S=24;T=.5;arm=1.15}else if(old){S=o.long?18:24;T=.54;arm=.72}else if(youth){S=32;T=.6;arm=1.18}
   if(spear){S=Math.min(S,16);T=.54;arm=.65}
+  /* weary (weary:1, Paul on the road to Rome, Acts 28:15): a shorter step, taken more often so that he keeps the same pace, and the arms
+     hang more; the figure painter carries the head a pixel lower and forward */
+  if(o.weary){S=Math.round(S*.9);T=.43;arm*=.6}
   return o.gt={S,T,arm,stance:.56,spear}}
 /* strideOf: how far two steps carry a person at v room pixels a second, in room pixels. A foot that moves S drawing units (S/2 room pixels) during
    stance of the cycle carries the body S / (2 * stance) room pixels with zero slip. Faster than that stretches the stride by a fraction so the
@@ -1203,15 +1206,32 @@ const SEATG={man:{xh:-4,xk:20,t0:-26,t1:-26,b0:-18,b1:-19,kc:17,ka:17,fa:4},kid:
    holds his arm is a.grips (ges 10). Neither turns. The chains themselves, the fingers over the arm, the knot of soldiers who carry him
    and where everyone stands for it are drawn and set by shared/cast.js (SHARED.cast.custody). cuffAt(o, pz, ges, fr): where a figure's cuffs
    hang, in drawing units from its feet as it faces right ({far:[x,y], near:[x,y]}, either null): the point at the outer, lower corner of
-   the cuff, where a chain is fastened. */
-const CUFF=ramp('#767a82'),LIFT=13;
-function cuffAt(o,pz,ges,fr){const ARM=!!(o.spear||o.pilum),CH=pz==='c'||pz==='l',ON=pz==='n',OF=pz==='f',KP=pz==='k'||pz==='K',KN=pz==='K'||KP&&ARM,fem=!!(o.veil||o.fem),kid=o.h?1:0,nw=(o.slim?1:0)+(fem?1:0),aw=fem?4:5,
-    W=fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):null,yS=-4-(kid?19:23)+(W?W.bob:0)-(kid?13:16)-3-(kid?22:fem?24:26);
+   the cuff, where a chain is fastened.
+   Seated (fr -1) and chained by one wrist (pz 'k', 'K', 'n', 'f'; Acts 28:16, 30), the cuffed hand rests on the thigh: the far hand on the
+   far thigh near the knee (the forearm bent forward, BEND_T), or the near forearm slanting forward over the hip to the near thigh (BEND_N);
+   a chain from it runs forward over the lap and the knee (the point that cuffAt gives is the cuff's front lower corner then). A working
+   pose that keeps the cuff (POSE[..].cuff) wears it on the wrist of the hand it uses (cuffOn), and cuffAt gives that wrist (ps: the pose). */
+const CUFF=ramp('#767a82'),LIFT=13,BEND_T=6,BEND_N=8,b78=b=>Math.round(b*7/8);
+function cuffAt(o,pz,ges,fr,ps){const ARM=!!(o.spear||o.pilum),CH=pz==='c'||pz==='l',ON=pz==='n',OF=pz==='f',KP=pz==='k'||pz==='K',KN=pz==='K'||KP&&ARM,fem=!!(o.veil||o.fem),kid=o.h?1:0,nw=(o.slim?1:0)+(fem?1:0),aw=fem?4:5,
+    PO=ps?poseOn(o,ps):null,ST=fr===-1&&!PO&&(ON||OF||KP),
+    W=fr>3?gaitPose(o,(fr-4&15)/16,[1,.75,.5][fr-4>>4]||1):null,yS=ST?SEATG[kid?'kid':'man'].b0-10-3-(kid?22:fem?24:26):-4-(kid?19:23)+(W?W.bob:0)-(kid?13:16)-3-(kid?22:fem?24:26);
+  if(PO&&PO.Q.cuff){const F=(OF||KP&&!KN)&&PO.Q.far,N=(ON||KN)&&PO.Q.near,c=F?cuffPose(o,PO,'far'):N?cuffPose(o,PO,'near'):null;
+    return{far:F?c:null,near:N&&!F?c:null}}
+  if(ST){const far=(OF&&ges!==1||KP&&!KN)&&!ARM?[17-nw+b78(BEND_T)-b78(2),yS+25]:null,near=ON||KN?[-10+nw-aw+b78(BEND_N)+aw,yS+25]:null;return{far,near}}
   const far=ARM?null:(CH||OF)&&ges===1?[20-nw,yS+7]:CH||OF||KP&&!KN?[17-nw,yS+25]:null,near=CH||KN||ON?[-10+nw-aw+2,yS+25]:null;return{far,near}}
+/* cuffPose: where the cuff on a working pose's hand lies (which: 'far' or 'near'), in drawing units from the feet facing right: the band
+   round the wrist just behind the fist, across the forearm (see cuffOn); its lower corner on the side away from the hand */
+function cuffPose(o,PO,which){const{Q,k,yS,nw}=PO,h=Q[which](k),X=h[0]-nw,Y=yS+h[1],e=which==='far'?[12-nw,yS+12]:Q.elb?[Q.elb(k)[0]-nw,yS+Q.elb(k)[1]]:[-10+nw-(o.veil||o.fem?4:5)+3,yS+12];
+  return Math.abs(Y-e[1])>Math.abs(X-e[0])?[X,Y-1]:[X-(X>e[0]?2:-6),Y+4]}
 /* poseOf: an actor's pose of custody, as person's pz: 'l' lifted, 'c' chained or held, 'k' or 'K' a keeper (a.keeper 'near': by his near wrist);
    'n' or 'f' chained by one wrist to the one keeper a.chainTo (an actor): the wrist on the keeper's side, the near one when the keeper
-   stands behind him and the far one when the keeper stands ahead, so that it is the same hand whichever way he turns */
-const poseOf=o=>o.lifted?'l':o.chained&&o.chainTo&&!o.held?((o.chainTo.x-o.x)*facing(o)>0?'f':'n'):o.chained||o.held?'c':o.keeper?(o.keeper==='near'?'K':'k'):'';
+   stands behind him and the far one when the keeper stands ahead, so that it is the same hand whichever way he turns.
+   On a long chain (Acts 28:16, Chapter Twenty-Five) the prisoner keeps the same hand whatever he does and whichever way he turns, a.wrist
+   'right' (or 'left'): a figure's right hand is its near one when it faces right, its far one when it faces left. The soldier who keeps
+   him, a.keeper 'long', holds it in his far hand, the one that rests on his knee when he sits: his left as he faces right, and mirrored,
+   as every figure is, when he faces left. */
+const poseOf=o=>o.lifted?'l':o.chained&&o.chainTo&&!o.held?(o.wrist?((facing(o)>0)===(o.wrist==='right')?'n':'f'):(o.chainTo.x-o.x)*facing(o)>0?'f':'n'):o.chained||o.held?'c':
+  o.keeper?(o.keeper==='near'?'K':'k'):'';
 const KNEEL={both:1,bothFolded:2,one:3,oneFolded:4},kneelX=(o,fr)=>fr<=-2&&fr>=-5?(fr>=-3?(o.h?-2.6:-3.2):(o.h?.2:.5)):0;
 /* Working poses (Acts 27 and 28: the ship, the wreck and Malta). An actor takes one while a script sets a.pose to its name and a.pk to its
    frame (person's ps is the two together, as 'haul2'); he does not turn meanwhile, and the pose ends when a.pose is cleared. Every frame is
@@ -1237,6 +1257,11 @@ const KNEEL={both:1,bothFolded:2,one:3,oneFolded:4},kneelX=(o,fr)=>fr<=-2&&fr>=-
      shake 0-1   shaking something off the far hand: the hand lifted a little, then flicked down and open
      heave 0-1   heaving the sounding lead: the far fist low with the line, then forward and low as it goes; the near fist holds the coil
      payout 0-1  paying out the line over a rail: the far fist forward and low, the line running through it; the near fist holds the coil
+     write 0-1   seated at a table, writing (Acts 28, the letters from Rome): the near forearm comes forward to the table top with the pen in its
+                 fist, the far hand lies flat on the table beside it; 0 the pen on the sheet, 1 lifted a pixel. A one-wrist chain stays on
+                 (cuff): the near wrist when he faces right, as a prisoner chained by the right wrist does (poseOf, a.wrist)
+     stool       carrying a stool at the side, the far fist round the edge of its seat and the stool hanging from it, its two legs at its ends
+                 (Acts 28:30: the soldier of the last watch moves his seat): walks. A one-wrist chain stays on (cuff)
    far, near: where that fist or hand lies (its top left), [x, y from yS]; water: the line where the water stands, in drawing units below
    the shoulder line (the figure is drawn with that line at its feet, and nothing under it); ground: sits on the ground; fr: the frame of the
    body under the pose (-4 one knee, -1 seated). */
@@ -1258,7 +1283,9 @@ const POSE={
   lay:{n:2,fr:k=>k?-4:0,lean:k=>k?0:3,far:k=>[[21,27],[20,21]][k]},
   shake:{n:2,far:k=>[[19,5],[20,21]][k]},
   heave:{n:2,far:k=>[[16,26],[23,19]][k],near:()=>[-5,19],coil:1},
-  payout:{n:2,far:k=>[[22,21],[21,24]][k],near:()=>[-5,19],coil:1}};
+  payout:{n:2,far:k=>[[22,21],[21,24]][k],near:()=>[-5,19],coil:1},
+  write:{n:2,fr:()=>-1,cuff:1,far:()=>[24,11],near:k=>[[18,13],[18,12]][k],elb:()=>[-2,19],pen:1},
+  stool:{n:1,walk:1,cuff:1,stool:1,far:()=>[15,19]}};
 /* poseOn: a pose worked out for a look: its entry and frame, the frame of the body (fr), the legs (W), the belt and shoulder lines, the
    bands of a lean (off: how far a row is carried forward), and how far the figure is let down into the water (sink) */
 function poseOn(o,ps){const N=ps.replace(/\d+$/,''),Q=POSE[N];if(!Q)return null;const k=Math.min(Q.n-1,+(ps.slice(N.length)||0)),fr=Q.fr?Q.fr(k):0,W=Q.legs?Q.legs(k):null,
@@ -1287,7 +1314,7 @@ function poseSw(o,ps,fr){const p=poseOn(o,ps);if(!p)return walkSw(o,fr);const Q=
    bow lowers the head; blink closes the eyes; mv is a sum of MV.
    talk is the mouth: 0 shut, 1 parted, 2 open, 3 wide, 4 round; the last two with the chin a pixel down, and a beard goes down with it.
    ges is the far hand: 0 down, 1 raised, 2 half raised and open, 3 laid on the chest; 4 and 5 lead and are led by the hand; 6, 7 and 8
-   swing a hammer (down, midway and raised); 9 holds out both hands low, open, the palms up. A forearm is always bent and slanting: no arm is
+   swing a hammer (down, midway and raised); 9 holds out both hands low, open, the palms up; 11 clasps another's forearm in greeting. A forearm is always bent and slanting: no arm is
    stretched out, and never are both raised (CONTRIBUTING section 3). A figure that bows keeps its head still, and a statue (stone:1)
    never moves: its mouth stays shut and its head where it is.
    pz is a pose of custody (Acts 21:33-22:29), hand-placed like the rest (see CUFF): 'c' chained, standing with both arms down along the
@@ -1303,9 +1330,9 @@ function poseSw(o,ps,fr){const p=poseOn(o,ps);if(!p)return walkSw(o,fr);const Q=
 function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz,ps){
   /* a working pose (POSE): it takes both hands and the body, and leaves the mouth and the eyes; lying in bed is a picture of its own */
   const PO=ps&&!o.stone?poseOn(o,ps):null,PQ=PO&&PO.Q,PK=PO?PO.k:0;if(PQ&&PQ.lie){lying(g,x,y,o,dir,talk,blink);return}
-  if(PO){if(!PQ.walk)fr=PO.fr;ges=0;pz='';if(PQ.ground||PQ.water)bow=0}
+  if(PO){if(!PQ.walk)fr=PO.fr;ges=0;if(!PQ.cuff)pz='';if(PQ.ground||PQ.water)bow=0}
   const GS=!!(PQ&&PQ.ground),BU=!!(PQ&&PQ.bed);
-  const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!((o.himation||o.toga)&&C),TOGA=!!(o.toga&&C),WET=!!o.wet,TORN=o.torn|0,ARM=(o.spear||o.pilum)&&!(o.spear==='slant'&&fr<0)&&!PO;g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
+  const c=pal(o),S=c.sk,T=c.tu,C=c.cl,LE=o.stone?c.sk:c.le,fem=!!(o.veil||o.fem),HIM=!!((o.himation||o.toga)&&C),TOGA=!!(o.toga&&C),WET=!!o.wet,TORN=o.torn|0,ARM=(o.spear||o.pilum)&&!((o.spear==='slant'||o.spear==='pole')&&fr<0)&&!PO;g.save();g.translate(x,y);g.scale(dir*FIG.K,FIG.K);
   /* sitting up in bed: the hips rest on the mattress at the feet line. In the water: nothing below the water line, and the figure let down to it */
   if(BU)g.translate(0,-SEATG[o.h?'kid':'man'].b0);if(PO&&PQ.water){g.beginPath();g.rect(-90,-220,180,220);g.clip();g.translate(0,PO.sink)}
   /* kneeling (fr -2 to -5, see KNEEL): the head is bowed, and the figure moves nothing but its mouth */
@@ -1340,17 +1367,32 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz,ps){
     for(let i=0;i<n;i++){const e=i===0||i===n-1?1:0;for(let k=e;k<w-e;k++){const t=(k+.5)/w,q=(i+(t<.5?1:0))%turn;
       let v=t<.12?4:t<.3?3:t<.66?2:t<.9?1:2;if(q===0)v=Math.max(0,v-1);else if(q===turn-1)v=Math.min(4,v+1);px(x0+k,y0+i,B[v])}}};
   const kid=o.h?1:0,slim=o.slim?1:0,LEG=kid?19:23,SK=kid?13:16,TOR=kid?22:fem?24:26,AL=26;
-  const SQ=seat?SEATG[kid?'kid':'man']:null,KD=kid?15:19,yA=-4,yH=yA-LEG+bob,yB=seat?SQ.b0-10:GS?PO.yB:yH-SK+(kn?KD:0),yS=yB-3-TOR,SL=o.longSleeve?AL-2:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
+  const SQ=seat?SEATG[kid?'kid':'man']:null,KD=kid?15:19,yA=-4,yH=yA-LEG+bob,yB=seat?SQ.b0-10:GS?PO.yB:yH-SK+(kn?KD:0),yS=yB-3-TOR,SL=o.longSleeve?AL-2:o.bareArm?9:12;   /* ankle, hem, top of the skirt, shoulder line; AL: rows of an arm down to the wrist */
   /* the sleeves are one garment with the body: PIT rows of shoulder yoke, then the arms part from the trunk */
   const PIT=8,nw=slim+(fem?1:0),aw=fem?4:5,ax=-10+nw-aw,fx=11-nw,fw=5,waist=Math.round(TOR*.6),tw=W&&!c.ar&&!ARM&&!ges&&!bow&&!pz&&!PO?W.twist:0;
   /* custody: which arm hangs still (FA the far one, NA the near one), its hand a little forward (bend 2), and a cuff round its wrist */
-  const FA=((CH||OF)&&ges!==1||KP&&!KN||BD&&!seat)&&!ARM,NA=CH||KN||ON;
+  const FA=((CH||OF)&&ges!==1||KP&&!KN||BD&&!seat)&&!ARM&&!(PQ&&PQ.cuff&&PQ.far),NA=(CH||KN||ON)&&!(PQ&&PQ.cuff&&PQ.near),
+    /* seated on one chain (see cuffAt): the cuffed hand rests on the thigh, the far one near the knee (FT), the near one over the hip (NT) */
+    ST=fr===-1&&!PO&&(ON||OF||KP),FT=ST&&FA,NT=ST&&NA;
   /* a spear held slanting (spear:'slant', the light infantry of Acts 23:23): the far hand holds it at the side, the shaft leaning forward and
      up to its leaf-shaped iron head well ahead of the face, and running down and back behind the body, where the torso and the skirt hide
      its foot. It is painted first, before the cape, so that the body and a cape cover it: one slanting line and nothing laid across it (CONTRIBUTING section 3) */
-  if(o.spear==='slant'&&!seat&&!kn&&!PO){const sl=.55,hy0=yS+11,X=y=>18+(hy0-y)*sl;
-    for(let y=yS-32;y<=yS+43;y++){const x=Math.round(X(y));px(x,y,'#8a6238');px(x+1,y,'#5a3c20')}
-    [1,1,3,3,5,5,5,5,3,3,1,1].forEach((w,i)=>{const y=yS-44+i,x0=Math.round(X(y))-(w>>1)+(w>1?1:0);px(x0,y,'#c4c4d0',w);px(x0+(w>1?1:0),y,'#f4f4fc');if(w>2)px(x0+w-1,y,'#8a8a98')})}
+  /* a boatman's pole (spear:'pole', the canal of the Pontine Marshes): held the same way, slanting, a long plain shaft of weathered wood with
+     no head, its upper end rounded off ahead of the face; one slanting line and nothing laid across it */
+  if((o.spear==='slant'||o.spear==='pole')&&!seat&&!kn&&!PO){const sl=.55,hy0=yS+11,X=y=>18+(hy0-y)*sl,pole=o.spear==='pole',top=pole?yS-40:yS-32;
+    for(let y=top;y<=yS+43;y++){const x=Math.round(X(y));px(x,y,pole?(y<top+2?'#a8946a':'#8a7a56'):'#8a6238');px(x+1,y,pole?'#5a4c34':'#5a3c20')}
+    if(!pole)[1,1,3,3,5,5,5,5,3,3,1,1].forEach((w,i)=>{const y=yS-44+i,x0=Math.round(X(y))-(w>>1)+(w>1?1:0);px(x0,y,'#c4c4d0',w);px(x0+(w>1?1:0),y,'#f4f4fc');if(w>2)px(x0+w-1,y,'#8a8a98')})}
+  /* a stool carried at the side (POSE stool): behind the body and the legs, hanging from the far fist by the edge of its seat; the seat seen
+     from the side, lit along its top, and a leg at each end of it, never one under its middle (CONTRIBUTING section 3) */
+  if(PQ&&PQ.stool){const h=PQ.far(PK),X=h[0]-nw,Y=yS+h[1],Wd=c.wd||(c.wd=ramp('#8a6a44'));
+    for(let xx=X-3;xx<=X+16;xx++){px(xx,Y+3,Wd[xx>X+12?0:1]);px(xx,Y+4,Wd[2]);px(xx,Y+5,Wd[xx<X?4:3])}
+    for(const[x0,dk]of[[X-2,1],[X+13,0]])for(let yy=Y+6;yy<=Y+20;yy++){px(x0,yy,Wd[dk?4:3]);px(x0+1,yy,Wd[dk?3:2]);px(x0+2,yy,Wd[dk?3:1])}}
+  /* a traveler's broad hat hanging on his back (hatBack: its color): only its brim shows behind the shoulders, long and low, well under the
+     head, its crown a low hump on it; nothing round stands behind the head */
+  if(o.hatBack&&!seat&&!kn&&!PO){const H=c.hk||(c.hk=ramp(o.hatBack));
+    /* the brim seen aslant against his back, from the shoulder blade down: wider in the middle, its rim darker, the crown a shade in it */
+    [[3,-18],[4,-20],[5,-21],[6,-22],[7,-22],[8,-22],[9,-22],[10,-21],[11,-20],[12,-19]].forEach(([dy,a],j)=>{for(let xx=a;xx<=-12;xx++){const e=xx===a||j===9;
+      px(xx+tw,yS+dy,H[e?4:j===0?1:xx<a+2?3:j>=3&&j<=6&&xx>a+2&&xx<a+6?1:2])}})}
   /* cape, behind everything (naturally flaring military cloak with deep vertical folds; column-notched when torn) */
   if(o.cape)for(let yy=yS;yy<=yH+15;yy++){const i=yy-yS,hC=yH+15-yS,t=i/Math.max(1,hC),fl=Math.round(t*3.2),e=yy>yH+12?1:0,sw=W&&!TORN?Math.round(W.mt*t*t*.65):0,wl=WET?((k,w)=>yy>yH+3+(k*3+TORN)%4):null;
     const xL0=-15-fl+e+sw,xL1=-9+sw,xR0=9+sw,xR1=14+fl-e+sw;
@@ -1374,7 +1416,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz,ps){
       for(let k=0;k<n;k++)px(x0+k,yS+len+j,S[Math.min(4,(j===4?3:k===0?3:k===n-1?1:j===3&&k===2?3:2)+(near?1:0))])});
     /* a gold ring (ring: 1) on a finger of the far hand: two pixels side by side, never a round shape */
     if(o.ring&&!near){px(hx+1,yS+len+3,'#f0d27a');px(hx+2,yS+len+3,'#b8902e')}};
-  arm(false,FA?0:W?W.fa:0,ARM||o.stub||fold||tied||(ges&&ges!==4&&!bow)||!!(PQ&&PQ.far),FA?2:W?W.fb:0,FA?0:W?W.armLiftF:0);
+  arm(false,FA?0:W?W.fa:0,ARM||o.stub||fold||tied||(ges&&ges!==4&&!bow)||!!(PQ&&PQ.far),FA?(FT?BEND_T:2):W?W.fb:0,FA?0:W?W.armLiftF:0);
   /* legs and sandals (or barefoot, Roman military caligae, officer laced boots, shin greaves, or closed patrician shoes) */
   const boot=o.caligae?ramp(o.highBoot?'#56321c':'#4b2b18'):null,GRV=o.greaves?ramp(typeof o.greaves==='string'?o.greaves:'#a8b0bc'):null;
   const foot=(fx0,fy,R)=>{if(o.barefoot){px(fx0,fy,R[3]);px(fx0+1,fy,R[2],5);px(fx0,fy+1,R[2],7);px(fx0,fy+2,R[2],9);px(fx0+7,fy+2,R[1],2);px(fx0,fy+1,R[3]);px(fx0,fy+2,R[3],2);px(fx0,fy+3,R[3],9);px(fx0+1,fy+3,R[4],6);return}
@@ -1577,6 +1619,11 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz,ps){
     if(!c.ar||o.armorStyle==='seg'){[-3,-1,1,3].forEach((sx,si)=>{const len=si===0||si===3?8:9;for(let j=0;j<len;j++){px(sx,yB+j,B[j===len-1?4:3]);px(sx+1,yB+j,(j===len-1||j%2===1)?St:B[2])}})}}
   else if(c.bt&&!HIM){const B=c.bt;for(let xx=-9+nw;xx<=10-nw;xx++){const dk=xx<-6?1:0;px(xx,yB-3,B[1+dk]);px(xx,yB-2,B[2+dk]);px(xx,yB-1,B[4])}
     if(!c.ar){px(2,yB-3,B[0],2,2);if(o.buckle){const K=c.bk||(c.bk=ramp(o.buckle));px(1,yB-3,K[1],3);px(1,yB-2,K[2],3);px(1,yB-1,K[3],3);px(3,yB-3,K[0])}px(3,yB,B[2],2,fem?12:8);px(4,yB,B[3],1,fem?12:8);px(3,yB+(fem?12:8),B[3],2);if(fem){px(1,yB,B[2],1,9);px(1,yB+9,B[3])}}}
+  /* a carter's whip (whip: its color), its lash coiled and hung from the belt at the far hip, the short end of its handle tucked under the
+     belt: a lump of coils with their turns slanting one way, never a ring, and nothing laid across the belt */
+  if(o.whip&&!HIM&&!kn){const K=c.wh||(c.wh=ramp(o.whip));px(7,yB,K[2],2,2);for(let j=0;j<7;j++){const w=j<1||j>5?3:5,x0=j<1||j>5?6:5;for(let i=0;i<w;i++)px(x0+i,yB+2+j,K[(x0+i+j)%3===0?3:i===w-1?1:j===6?4:2])}}
+  /* a writing case (penCase: its color), a narrow box of leather for the pens and the ink, hung from the belt at the far hip, its lid on top */
+  if(o.penCase&&!HIM&&!kn){const K=c.pc||(c.pc=ramp(o.penCase));for(let j=0;j<8;j++)for(let i=0;i<3;i++)px(7+i,yB+j,K[j<2?(i===2?0:1):j===7?4:i===0?3:i===2?1:2])}
   if(o.pouch&&!HIM){px(-9,yB-2,LE[2],6,8);px(-9,yB-2,LE[3],6,2);px(-9,yB,LE[4],1,6);px(-5,yB,LE[1],1,4);px(-8,yB+6,LE[4],4);px(-7,yB-1,'#d8b860')}
   /* sheathed Roman gladius (rounded pommel, ribbed ivory grip, flush bronze throat, scabbard bands & pointed chape; no protruding crossguard) */
   if(o.gladius&&!TOGA){const left=o.gladius==='left',gx=left?-10:7;
@@ -1634,6 +1681,9 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz,ps){
     for(let xx=-15;xx<=14;xx++){if(xx>=-1&&xx<=4)continue;const u=(xx+15)/29,e=Math.abs(xx+.5)>13?1:0,sag=Math.round(Math.sin(u*Math.PI)*1.2);
       px(xx,yS-1+e+sag,C[1]);px(xx,yS+e+sag,C[xx<-7?3:2]);px(xx,yS+1+e+sag,C[xx<-7?4:3]);if(xx<-4||xx>6)px(xx,yS+2+e+sag,C[4])}
     px(7,yS+1,clCol,3,2);px(8,yS+2,clDk,2,1)}
+  /* a carrier's pad on the near shoulder (pad: its color), folded cloth to carry loads on: a low rounded lump lying along the shoulder, lit
+     along its top, with one fold along it */
+  if(o.pad&&!PO){const K=c.pa||(c.pa=ramp(o.pad));[[-3,-12,-6],[-2,-14,-5],[-1,-15,-4],[0,-15,-4],[1,-14,-5]].forEach(([dy,a,b],j)=>{for(let xx=a;xx<=b;xx++)px(xx+tw,yS+dy,K[j===0?0:j===1?(xx>-8?1:2):j===4?4:xx<a+2?3:j===2&&xx>a+3&&xx<b-1?3:2])})}
   /* ---- the working poses (POSE): poseBack paints what lies behind the near arm (the legs of one sitting on the ground, the cover over a lap
      in bed, a sack on the shoulder), poseFront what lies before everything (the forearms and hands, the rope, the bundle, the coil, the plank,
      the water). The near forearm of a figure in a mantle is the mantle's: it comes out of it in the mantle's cloth. ---- */
@@ -1712,18 +1762,26 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz,ps){
     else if(n==='warmSit'){toFar(FH);flat(FH[0],FH[1]);toNear(NH);fist(NH[0],NH[1],1)}
     else if(n==='shake'){toFar(FH);if(PK)drop(FH[0],FH[1]);else fist(FH[0],FH[1])}
     else if(n==='heave'||n==='payout'){toFar(FH);fist(FH[0],FH[1]);toNear(NH);coil(NH);fist(NH[0],NH[1],1)}
-    else if(n==='huddle'){toNear(NH);fist(NH[0],NH[1],1)}};
+    else if(n==='huddle'){toNear(NH);fist(NH[0],NH[1],1)}
+    else if(n==='write'){toFar(FH);flat(FH[0],FH[1]);toNear(NH,PQ.elb(PK));fist(NH[0],NH[1],1);
+      /* the reed pen in the fist: its upper end slanting back out of the top of the fist, its cut point a dark pixel at the front */
+      const[X,Y]=NH;px(X+1,Y-1,'#c4a86a');px(X,Y-2,'#b49a5a');px(X-1,Y-3,'#8a7240');px(X+5,Y+3,'#2a1e14')}
+    else if(n==='stool'){toFar(FH);fist(FH[0],FH[1])}};
   if(PO)poseBack();
   /* near arm (hidden when a mantle hangs over it, unless officer cloak, cape, or reaching back to lead by the hand) */
-  if(!C||o.cape||o.offCloak||ges===4||NA)arm(true,NA?0:W?W.na:0,!NA&&(ges===4||fold||tied||(ges===9&&!bow&&!o.stub)||!!(PQ&&PQ.near)),NA?2:W?W.nb:0,NA?0:W?W.armLiftN:0);
+  if(!C||o.cape||o.offCloak||ges===4||NA)arm(true,NA?0:W?W.na:0,!NA&&(ges===4||fold||tied||(ges===9&&!bow&&!o.stub)||!!(PQ&&PQ.near)),NA?(NT?BEND_N:2):W?W.nb:0,NA?0:W?W.armLiftN:0);
   /* a cuff: an iron band round a wrist, two rows, a pixel wider than the wrist on each side, lit along its top and dark at its ends */
   const cuff=(x0,y0,w)=>{const I=CUFF;for(let k=0;k<w;k++){const e=k===0||k===w-1;px(x0+k,y0,I[e?3:k===w-2?0:1]);px(x0+k,y0+1,I[e?4:k===w-2?2:3])}};
-  if(NA)cuff(ax+2+(fem?0:0),yS+AL-2,aw+1);if(FA&&!BD)cuff(fx+1,yS+AL-2,fw+1);
+  if(NA)cuff(ax+(NT?b78(BEND_N):2),yS+AL-2,aw+1);if(FA&&!BD)cuff(fx+(FT?b78(BEND_T)-1:1),yS+AL-2,fw+1);
+  /* a cuff on the hand a working pose uses (POSE[..].cuff): across the forearm just behind the fist, a band of two rows over a forearm that
+     comes down to it, of two columns behind one that comes forward to it (see cuffPose) */
+  const cuffOn=(h,which)=>{const X=h[0],Y=h[1],e=which==='far'?[12-nw,yS+12]:PQ.elb?[PQ.elb(PK)[0]-nw,yS+PQ.elb(PK)[1]]:[ax+3,yS+12];
+    if(Math.abs(Y-e[1])>Math.abs(X-e[0]))cuff(X,Y-2,6);else{const x0=X>e[0]?X-2:X+5;for(let j=0;j<6;j++){const ed=j===0||j===5;px(x0,Y-1+j,CUFF[ed?3:1]);px(x0+1,Y-1+j,CUFF[ed?4:3])}}};
   if(ges===4&&!bow&&!o.stub){const R=o.longSleeve?T:S;
     for(let k=0;k<6;k++){const gx=ax+1-k,gy=yS+12+Math.round(k*.6);px(gx,gy,R[2]);px(gx,gy+1,R[3],1,2);px(gx,gy+3,R[4])}
     px(ax-8,yS+15,S[2],5);px(ax-8,yS+16,S[3],5);px(ax-7,yS+17,S[4],4)}
   /* head (with 1-frame follow-through lag while walking; neck always bridges cleanly to shoulders) */
-  const hb=W&&!bow&&!o.stone?W.headBob:0,hx=-6+tw+(bow?1:0)+(mv&MV.fwd?1:0)-(mv&MV.back?1:0),hy=yS-20+hb+(bow?2:0)+(mv&MV.dip?1:mv&MV.lift?-1:0),jaw=talk>2,H=c.ha,Bd=c.be,Hd=c.hd,Gr=c.gr,brow=fem?mix(o.brow||'#3a2414',o.skin,.3):o.brow||o.hair||o.beard||'#2a1a12';
+  const wy=o.weary&&!bow&&!kn?1:0,hb=W&&!bow&&!o.stone?W.headBob:0,hx=-6+tw+(bow?1:0)+wy+(mv&MV.fwd?1:0)-(mv&MV.back?1:0),hy=yS-20+hb+wy+(bow?2:0)+(mv&MV.dip?1:mv&MV.lift?-1:0),jaw=talk>2,H=c.ha,Bd=c.be,Hd=c.hd,Gr=c.gr,brow=fem?mix(o.brow||'#3a2414',o.skin,.3):o.brow||o.hair||o.beard||'#2a1a12';
   const neckTop=yS-3+Math.min(0,hb),neckH=4-Math.min(0,hb);
   px(-1+tw,neckTop,S[3],7,neckH);px(tw,neckTop,S[2],5,neckH-1);
   /* a small pendant at the neck (pendant: its color), in the opening of the tunic: a solid 3x3 square lit at top-right, never round, with a V-cord */
@@ -1779,7 +1837,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz,ps){
     if(HS==='crest'||HS==='plume'){if(!c.cr){L.r='#a62620';L.R='#cc4036';L.Y='#e86e5a';L.D='#641412';L.g='#c8a448'}
       sh(HS==='crest'?HEADS.crest:HEADS.plume,HS==='crest'?hx-3:hx-3,HS==='crest'?hy-10:hy-8);sh(HEADS.galea,hx-1,hy-2)}
     else sh(HS==='galea'?HEADS.galea:HEADS.helm,hx-1,hy-2)}
-  if(PO)poseFront();
+  if(PO){poseFront();if(PQ.cuff&&pz){if((OF||KP&&!KN)&&PQ.far)cuffOn(FH,'far');else if((ON||KN)&&PQ.near)cuffOn(NH,'near')}}
   /* the far hand: holding a spear or Roman pilum, or raised in speech */
   if(ARM){const sx=18;
     if(o.pilum){px(sx,yS-7,'#7a5430',1,7-yS);px(sx+1,yS-7,'#4e341c',1,7-yS);
@@ -1787,7 +1845,7 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz,ps){
       px(sx-1,yS-13,'#9e7a34',3,6);px(sx,yS-13,'#d8b45c',1,6);px(sx-1,yS-11,'#5e401c',3,1);
       px(sx,yS-39,'#c2c8d4',1,26);px(sx+1,yS-39,'#6a7280',1,26);
       [1,1,3,3,3,1,1].forEach((w,i)=>{const x0=sx-(w>>1);px(x0,yS-46+i,'#c8ced8',w);px(x0+(w>1?1:0),yS-46+i,'#f4f6fc')})}
-    else if(o.spear==='slant'){}
+    else if(o.spear==='slant'||o.spear==='pole'){}
     else{px(sx,yS-34,'#8a6238',1,34-yS);px(sx+1,yS-34,'#5a3c20',1,34-yS);
       [1,1,3,3,5,5,5,5,3,3,1,1].forEach((w,i)=>{const x0=sx-(w>>1);px(x0,yS-47+i,'#c4c4d0',w);px(x0+(w>1?1:0),yS-47+i,'#f4f4fc');if(w>2)px(x0+w-1,yS-47+i,'#8a8a98')});px(sx-1,yS-35,'#b08a3c',4,2)}
     for(let i=0;i<5;i++)px(13+i,yS+12+(i>2?-1:0),S[i<1?3:2],1,4);px(16,yS+9,S[2],5,5);px(16,yS+9,S[1],5);px(16,yS+13,S[3],5);px(20,yS+10,S[3],1,3);px(16,yS+11,S[3],4)}
@@ -1817,6 +1875,11 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz,ps){
     px(q,yS+15,S[1],5);px(q+5,yS+14,S[1]);px(q,yS+16,S[0],5);px(q+5,yS+15,S[2],1,2);px(q-1,yS+17,S[2],6);px(q,yS+18,S[3],5);
     if(open)for(let k=0;k<4;k++){const gx=ax+3+k,gy=yS+13+Math.round(k*.7);px(gx,gy,R[2]);px(gx,gy+1,R[3],1,2);px(gx,gy+3,R[4])}
     const nx=open?ax+7:4-nw;px(nx+1,yS+16,S[1],4);px(nx+5,yS+15,S[1]);px(nx,yS+17,S[1],5);px(nx+5,yS+16,S[2],1,2);px(nx,yS+18,S[3],6);px(nx+1,yS+19,S[4],4)}
+  else if(ges===11&&!bow&&!o.stub){const R=o.longSleeve?T:S,q=18-nw;   /* clasping another's forearm in greeting (Acts 28:15): the far forearm comes
+       forward from the elbow, level and a little up, to a closed hand round the other's forearm; the upper arm hangs, nothing is raised or
+       stretched out to the side. Two who greet so stand twenty pixels apart, facing each other, the one a pixel in front of the other */
+    for(let k=0;k<7;k++){const gx=12-nw+k,gy=yS+13-(k>4?1:0);px(gx,gy,k<2?R[2]:R[1]);px(gx,gy+1,R[2],1,2);px(gx,gy+3,R[3])}
+    px(q,yS+11,S[1],5);px(q,yS+12,S[2],5,2);px(q+4,yS+12,S[1],1,2);px(q,yS+14,S[3],5);px(q,yS+12,S[3],1,2);px(q+1,yS+13,S[3],2)}
   else if(ges===10&&!bow&&!o.stub){const R=o.longSleeve?T:S,q=18-nw;   /* gripping another's arm above the elbow: the forearm slants forward and a
        little up from the elbow to a closed hand at the height of the other's upper arm; the fingers that lie over that arm are his (shared/cast.js, custody.grips) */
     for(let k=0;k<7;k++){const gx=12-nw+k,gy=yS+13-(k>>1);px(gx,gy,k<2?R[2]:R[1]);px(gx,gy+1,R[2],1,2);px(gx,gy+3,R[3])}
@@ -2320,9 +2383,14 @@ async function clickView(x,y,at,t){
   /* at a thing, a door or a spot that the room names: beside whoever stands there already, a companion left there perhaps, and not on him.
      On a plan, the way to a person or a thing ends on the lane nearest to it (see route). */
   else if(!pl)tx=spot(me,tx,ty)[0];
+  /* a room may hold a click back where the place cannot be reached (ROOMS[id].reach(x, y, verb, hotspot) false: a prisoner on a long chain,
+     Chapter Twenty-Five): he walks as near as the room's walk lets him, faces it, and the room says why (ROOMS[id].unreached(hotspot, verb,
+     item)) instead of acting on it. A verb that needs no reach (to look) is the room's to let through. */
+  const RM=!pl&&ROOMS[G.room],far=!!(RM&&RM.reach&&RM.reach(tx,ty,v,h)===false);
   if(!(await walk(me,tx,ty,{click:1})))return;
   if(G.busy||me!==PC())return;
   me.dir=A?(A.x>me.x?1:-1):h.dir||((h.x+h.w/2)>=me.x?1:-1);if(pl)pl.face(me,A?A.x:h.x+h.w/2,A?A.y:h.y+h.h/2);
+  if(far){if(RM.unreached)await cut(()=>RM.unreached(h,v,item));return}
   await cut(()=>act(v,h,item))}
 const vp=$('#view');
 /* evPos: where a pointer event is, in the room; framePos: in the picture (VW by VH); toClient: where a place in the room is on the screen.
@@ -3012,7 +3080,7 @@ function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];
   {const c=G.carry;G.carry=null;if(c&&c.ch===ch)CHAP[ch].flags.slice(0,CHAP[ch].carry).forEach((k,i)=>{if(c.b>>i&1)F[k]=1})}
   if(SHARED.beat)SHARED.beat.stop();G.pc=P;G.invs={};P.hs=null;P.called=null;
   LOOK.paul=paulLook(ch);if(LOOK.barnabas)LOOK.barnabas=Object.assign({skin:'#b8844f',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},ch>2?{hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1}:{hair:'#3a2a1a',beard:'#3a2a1a'});
-  SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.kneel=0;a.pose=0;a.pk=0;a.bound=0;a.chained=a.held=a.lifted=a.keeper=a.grips=a.chainTo=0;a.wear='';a.look=LOOK[a.id]});
+  SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.kneel=0;a.pose=0;a.pk=0;a.bound=0;a.chained=a.held=a.lifted=a.keeper=a.grips=a.chainTo=a.wrist=a.tether=0;a.wear='';a.look=LOOK[a.id]});
   (CHAP[ch].party||[]).forEach(id=>ACT[id].party=1);
   $('#chname').textContent=T(CHAP[ch].name);G.ship=null;setScore(CHAP[ch].music);CHAP[ch].setup();swapBtn()}
 /* dealInv: rebuild the inventories from the story's flags (the level's inv). Each item goes to the member who carries it (own,

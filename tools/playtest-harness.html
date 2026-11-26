@@ -569,6 +569,70 @@
     SH.forEach(([nm,k,x,y,sx],i)=>{const W=26,H=24,cx=(x+sx)/2,X=(i%3)*(W*10+20),Y=36+chh+(64*4+30)+Math.floor(i/3)*(H*10+30);g.drawImage(k,(cx-W/2)*HR,(y-34)*HR,W*HR,H*HR,X,Y,W*10,H*10);text(nm+', ten times',X+5,Y+H*10+18,12,'#f4f0e6')});
     for(const[a,r,x,y,d]of keep){a.room=r;a.x=x;a.y=y;a.dir=d}P.chained=0;P.chainTo=0;SO.keeper=0;
     halt('chained20',()=>{window.SHEETS=Object.assign(window.SHEETS||{},{'cast-chained20':c.toDataURL()})})}
+  /* The long chain of the lodging in Rome (Acts 28:16, 30; Chapter Twenty-Five): Paul's right wrist to the soldier's, who sits by the door,
+     at the table or by the window (SHARED.lodging.AT.seats) with the cuffed hand on his knee; the chain over his knee, along the floor in a
+     loose curve or two round whatever stands there, and up to Paul, standing, walking, seated on a bench or writing at the table. For each
+     seat: the room's walk while Paul is chained is the reach of the chain (custody.reach), and everywhere in it some chain is to spare; the
+     chain is one piece, lies on the floor between them and never inside a footprint, and so never over the edge of a bench or the table;
+     a click on something out of reach walks him as near as he may and lets the room say why, and acts on nothing (ROOMS[id].reach and
+     unreached, clickView). The soldier carries his stool and sets it down (the pose 'stool'), and the cat sleeps on the chain.
+     cast-chained25.png shows the room at midday four times and the chain, the cuffs and the seated soldier's hand ten times: look there for a
+     chain that crosses an edge as a T, a loop that closes into a ring, and a link that floats (CONTRIBUTING section 3). */
+  if(stop==='chained25'){clearInterval(sk);sk=0;await loadLevel(20);setChapter(20);for(const n of['materials','coast','temple','cast','weather','lodging'])await need(n);
+    const LG=SHARED.lodging,C=SHARED.cast,CU=C.custody,P=ACT.paul,keep=Object.values(ACT).map(a=>[a,a.room,a.x,a.y,a.dir,a.look]);
+    LOOK.c25_s=C.ROMAN.praetorian_watch;const S=window.actor('c25_s','c25_s','#fff',100);S.look=LOOK.c25_s;P.look=C.ROME.paul_home;
+    let CUR={kind:'flat',hour:'noon'},said=[],acted=[];
+    ART.c25room={w:320,q:12,variant:()=>CUR.kind+'_'+CUR.hour,paint(g,v){const[k,h]=v.split('_');LG.room(g,{kind:k,hour:h})},get light(){return LG.light(CUR.kind,CUR.hour)},
+      props:LG.props().map(p=>({y:p.y,shape:p.shape,foot:p.foot})),draw(g,t){CU.chains(g,P,S,null);if(CUR.stool)CU.stool(g,CUR.stool[0],CUR.stool[1],{room:'c25room'});
+        if(CUR.cat){const f=CU.path(P,S).floor,q=f[Math.floor(f.length*.45)];C.cat(g,q[0],q[1]+.4,{room:'c25room'})}},front(){}};
+    let SEAT=LG.AT.seats.door,SDIR=-1;
+    ROOMS.c25room={get walk(){return P.chained?CU.reach('c25room',SEAT,{dir:SDIR}):LG.WALK},hs:[],block:LG.foot(),
+      reach:(x,y,v)=>v==='look'||!P.chained||(()=>{const b=CU.reach('c25room',SEAT,{dir:SDIR});return x>=b[0]&&x<=b[1]&&y>=b[2]-2&&y<=b[3]+2})(),
+      unreached:async(h,v)=>{said.push(h.id+':'+v)}};
+    for(const a of Object.values(ACT))a.room=null;G.room='c25room';G.scene=null;P.room='c25room';
+    const seat=(at,dir,px,py,pd,o)=>{SEAT=at;SDIR=dir;P.seat=0;P.pose=0;P.walk=null;P.room='c25room';CU.sit(P,S,at,{dir});S.fr=-1;P.x=px;P.y=py;P.dir=pd;P.fr=0;Object.assign(P,o||{});if(P.seat||P.pose)P.fr=-1};
+    /* the chain alone, drawn on a clear canvas: its links, in how many pieces, and its floor points against the footprints */
+    const alone=()=>{const k=document.createElement('canvas');k.width=640;k.height=288;const q=k.getContext('2d');q.setTransform(2,0,0,2,0,0);const Q=DQ=[];CU.tether(q,P,S);DQ=null;Q.forEach(e=>e[1]());return k};
+    const feet=roomFeet('c25room').map(f=>f.b),inFoot=([x,y])=>feet.some(b=>x>b[0]+.5&&x<b[2]-.5&&y>b[1]+.3&&y<b[3]-.3&&!(Math.abs(x-S.x)<7&&Math.abs(y-S.y)<4)&&!((P.seat||P.pose)&&Math.abs(x-P.x)<7&&Math.abs(y-P.y)<4));
+    const bad=[],box={},nPts=[];
+    for(const[k,at]of Object.entries(LG.AT.seats))for(const dir of[1,-1]){SEAT=at;SDIR=dir;const b=CU.reach('c25room',at,{dir});box[k+dir]=b;
+      for(let i=0;i<=6;i++)for(let j=0;j<=3;j++){const x=b[0]+(b[1]-b[0])*i/6,y=b[2]+(b[3]-b[2])*j/3;if(floorHit('c25room',x,y))continue;seat(at,dir,x,y,x<at[0]?1:-1);
+        const pa=CU.path(P,S);nPts.push(pa.pts.length);if(!(pa.slack>0))bad.push(k+dir+' slack '+pa.slack.toFixed(1)+' at '+x.toFixed(0)+','+y.toFixed(0));
+        if(pa.floor.some(inFoot))bad.push(k+dir+' floor in a footprint at '+x.toFixed(0)+','+y.toFixed(0));
+        if(i===0||i===6){const n=parts(alone());if(n!==1)bad.push(k+dir+' in '+n+' pieces at '+x.toFixed(0)+','+y.toFixed(0))}}}
+    ok(!bad.length,'at each of the three seats, facing either way, Paul can go anywhere in the reach of the chain and some is always to spare; the chain is one piece and lies on the floor outside every footprint'+(bad.length?'. BAD: '+bad.slice(0,6).join('; '):''));
+    seat(LG.AT.seats.table,-1,...LG.AT.desk,{pose:'write',pk:0});const desk=CU.path(P,S).slack;
+    ok(desk>0&&box.door1[1]>=LG.AT.door[0]-14&&Object.values(box).every(b=>b[1]-b[0]<LG.WALK[1]-LG.WALK[0]),'the chain reaches the desk from the table (to spare: '+desk.toFixed(0)+' px) and the door from the seat by the door, and from no seat the whole room: '+Object.entries(box).map(([k,b])=>k+' '+b.slice(0,2).join('-')).join(', '));
+    /* poses: the soldier keeps it in the hand on his knee, Paul by the right wrist whichever way he turns */
+    seat(LG.AT.seats.table,-1,140,128,1);const p1=[poseOf(P),poseOf(S)];P.dir=-1;const p2=[poseOf(P),poseOf(S)];
+    ok(p1.join()==='n,k'&&p2.join()==='f,k'&&still(S)&&!still(P),'on the long chain Paul keeps his right wrist whichever way he turns (near, then far), and the soldier the hand on his knee, and does not turn: '+p1+' '+p2);
+    {const k=cuffAt(LOOK.c25_s,'k',0,-1),f=cuffAt(C.ROME.paul_home,'f',0,-1),n=cuffAt(C.ROME.paul_home,'n',0,-1),w=cuffAt(C.ROME.paul_home,'n',0,-1,'write0');
+      const sp=[['k',LOOK.c25_s,'k',''],['f',C.ROME.paul_home,'f',''],['n',C.ROME.paul_home,'n',''],['w',C.ROME.paul_home,'n','write0']].map(([nm,o,pz,ps])=>{const c=sprite('c25|'+nm,q=>person(q,0,0,o,1,-1,0,0,0,0,0,pz,ps),1);
+        const p=cuffAt(o,pz,0,-1,ps),pt=p.far||p.near,D=c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data,i=((FIG.OY+pt[1])*FIG.W+FIG.OX+pt[0])*4;return[nm,parts(c),D[i+3]&&Math.max(D[i],D[i+1],D[i+2])-Math.min(D[i],D[i+1],D[i+2])<=30]});
+      ok(k.far&&!k.near&&f.far&&!f.near&&n.near&&!n.far&&w.near&&sp.every(([,n,i])=>n===1&&i),'seated, each cuffed hand rests on the thigh, and writing the cuff stays on the hand with the pen; each pose one piece, each cuff of iron where cuffAt says: '+sp.map(([a,b,c])=>a+b+(c?'':'!')).join(' '))}
+    /* a click out of reach: he walks as near as the chain lets him, and the room says why */
+    {seat(LG.AT.seats.door,-1,230,126,-1);G.busy=false;G.verb='use';G.item=null;const h={id:'c25far',x:20,y:80,w:30,h:20,wx:40,wy:110,use:()=>{acted.push('use')},look:()=>{acted.push('look')}};
+      await clickView(40,100,h);for(let i=0;i<200&&P.walk;i++)await wait(20);await wait(80);const b=box['door-1'],nearOk=P.x>=b[0]-1&&P.x<=b[1]+1;
+      G.verb='look';await clickView(40,100,h);for(let i=0;i<200&&P.walk;i++)await wait(20);await wait(80);
+      ok(said.join()==='c25far:use'&&acted.join()==='look'&&nearOk,'a click on something out of reach walks him as near as the chain allows ('+P.x.toFixed(0)+') and lets the room say so; looking needs no reach: '+said.join()+' / '+acted.join())}
+    /* the sheet: four scenes four times, the cuffs and the hand ten times */
+    const shot=(nm,o)=>{const k=document.createElement('canvas');k.width=640;k.height=288;const q=k.getContext('2d');q.setTransform(2,0,0,2,0,0);q.imageSmoothingEnabled=false;
+      backdrop(q,'c25room',0,0);const Q=DQ=[],sq=SQ=LID?[]:null;ART.c25room.draw(q,G.t);for(const p of props('c25room'))Q.push([p.y,()=>q.drawImage(p.c,p.x,p.t,p.w,p.h)]);
+      for(const a of Object.values(ACT))if(a.room==='c25room')drawActor(q,a,G.t,'c25room');DQ=SQ=null;if(sq)for(const fn of sq)fn();Q.sort((a,b)=>a[0]-b[0]).forEach(e=>e[1]());return[nm,k,o]};
+    const T=LG.AT.seats,SH=[];
+    seat(T.door,-1,150,130,1);SH.push(shot('by the door; Paul at the far end of the chain',[204,88,52,26]));
+    seat(T.table,-1,...LG.AT.desk,{pose:'write',pk:0});SH.push(shot('at the table; Paul writing at the desk',[84,90,52,26]));
+    seat(T.window,1,190,128,-1);CUR.cat=1;SH.push(shot('by the window; the cat asleep on the chain',[150,104,52,26]));CUR.cat=0;
+    seat(T.door,-1,LG.AT.door[0]-4,LG.AT.door[1]+4,1);SH.push(shot('the door: Paul standing at it, the soldier by it',[230,84,52,26]));
+    seat(T.table,1,200,102,-1,{seat:1});SH.push(shot('Paul seated on the bench, the soldier at the table',[164,78,52,26]));
+    {seat(T.table,-1,140,124,1);S.seat=0;S.fr=12;S.pose='stool';S.x=200;S.y=118;S.dir=1;CUR.stool=[150,124];SH.push(shot('the last watch: the soldier carries his stool, the chain follows',[188,86,52,26]));S.pose=0;CUR.stool=null}
+    const Z=4,cw=320,[c,g]=(()=>{const c=document.createElement('canvas');c.width=1640;c.height=36+3*(144*Z/2+30)+2*(260+30);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,c.width,c.height);return[c,g]})(),
+      text=(t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)};
+    text('The long chain in the lodging (Acts 28:16, 30): flat, midday; twice enlarged, and the chain, the cuffs and the seated soldier\'s hand ten times',10,24,15,'#f4f0e6');
+    SH.forEach(([nm,k],i)=>{const x=(i%2)*(cw*2+10),y=36+Math.floor(i/2)*(144*2+30);g.drawImage(k,0,0,640,288,x,y,640,288);text(nm,x+5,y+288+18,12,'#f4f0e6')});
+    const y3=36+3*(144*2+30);SH.forEach(([nm,k,[x,y,w,h]],i)=>{const X=(i%3)*(w*10+20),Y=y3+Math.floor(i/3)*(h*10+30);g.drawImage(k,x*2,y*2,w*2,h*2,X,Y,w*10,h*10);text(nm+', ten times',X+5,Y+h*10+18,11,'#f4f0e6')});
+    for(const[a,r,x,y,d,l]of keep){a.room=r;a.x=x;a.y=y;a.dir=d;a.look=l}P.chained=0;P.chainTo=0;P.wrist=0;P.tether=0;S.keeper=0;
+    halt('chained25',()=>{window.SHEETS=Object.assign(window.SHEETS||{},{'cast-chained25':c.toDataURL()})})}
   if(stop==='scroll'||stop==='scrolllong'){clearInterval(sk);sk=0;let rustles=0;{const u0=SFX.unroll;SFX.unroll=function(){rustles++;return u0.apply(this,arguments)}}
    await loadLevel(5);await loadLevel(7);ov.className='';ov.onclick=null;setChapter(5);G.busy=true;lock(true);status();
     /* AT: the text of A, taken while Chapter Five (whose line it is) is loaded; the probes below run in Chapter Seven */
@@ -793,7 +857,7 @@
     window.SHEETS=SHEETS;halt('poses')}
   /* Shipwreck survivor clothing & reusable Roman military cast (shared/cast.js): standing, facing left, mid-stride, and enlarged close-ups.
      Both stops also verify that every look stays one connected piece across standing, talking, seated and all walking frames. */
-  if(stop==='shipwreck'||stop==='romans'||stop==='sanhedrin'||stop==='caesarea'||stop==='sea'){await need('cast');const SHEETS={},C=SHARED.cast,
+  if(stop==='shipwreck'||stop==='romans'||stop==='sanhedrin'||stop==='caesarea'||stop==='sea'||stop==='rome'){await need('cast');const SHEETS={},C=SHARED.cast,
       sheet=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.fillStyle='#8a94a4';g.fillRect(0,0,w,h);return[c,g]},
       text=(g,t,x,y,sz,col)=>{g.fillStyle=col||'#14100c';g.font=`bold ${sz||12}px Menlo,Consolas,monospace`;g.fillText(t,x,y)},
       cut=(g,sp,x0,y0,w,h,dx,dy,z)=>g.drawImage(sp,FIG.OX+x0,FIG.OY+y0,w,h,dx,dy,w*z,h*z),
@@ -1025,7 +1089,77 @@
       HM.forEach(([nm,o,dir,fr],i)=>{const x=(i%5)*cw2,y=y2+Math.floor(i/5)*dh;field(gd,i+1,x,y,cw2,dh);
         cut(gd,sprite(['seam',i].join('|'),q=>person(q,0,0,o,dir,fr,0,0,0,0,0),dir),-26,-46,52,48,x+Math.floor((cw2-52*6)/2),y,6);text(gd,nm,x+6,y+dh-8,11)});
       SHEETS['cast-sea-detail']=cd.toDataURL();
-      window.SHEETS=SHEETS;halt('sea')}}
+      window.SHEETS=SHEETS;halt('sea')}
+    /* Rome (Acts 28:11-31; Chapters Twenty-Four and Twenty-Five), shared/cast.js ROME: every look one piece standing, speaking, seated and
+       walking, each with a voice (ph) of its own and no two alike; Timothy, Tychicus and Mikon as their chapters paint them, Mark the same man
+       older; the leading men of the Jews of Rome in the dress of the Dispersion, two with the mantle over the head; five soldiers of the watch
+       in a tunic, belt, sandals and a sword, with no armor, helmet, shield, standard or spear; Paul's oldest look in both chapters, at home
+       without his mantle, and weary on the road at everyone's pace; the cat asleep and awake; two who greet each other by the forearm.
+       cast-rome.png (docs/screenshots/rome-cast.png) shows them three times enlarged; cast-rome-detail.png every head eight times, the clasp,
+       the weary stride and the cat. Look there for a head cloth that reads as a ring, a hat behind a head, a pole or a whip laid across
+       something, and an arm stretched out to the side. */
+    if(stop==='rome'){const K=C.ROME,R=C.ROMAN,ids=Object.keys(K);checkSet(K,'rome');
+      const want=['timothy','tychicus','mikon','mark','onesimus','epaphroditus','epaphras','demas','justus','carrier','rome_old','rome_baker','rome_slave','rome_brother_a','rome_brother_b',
+        'rome_lady','rome_sister_a','rome_sister_b','puteoli_host','puteoli_dock','puteoli_young','puteoli_sister','carter','trader','boatman','sailor','innkeeper','landlady','landlord','freedman',
+        'jew_rome_1','jew_rome_2','jew_rome_3','jew_rome_4','jew_rome_5','jew_rome_6','traveler_1','traveler_2','paul_home','paul_weary'];
+      ok(want.every(k=>K[k]),'Rome: '+ids.length+' looks, every one the chapters ask for'+(want.filter(k=>!K[k]).length?'. MISSING: '+want.filter(k=>!K[k]).join(', '):''));
+      {const own=ids.filter(k=>!['timothy','tychicus','mikon','mark','sailor','paul_home','paul_weary'].includes(k)),ph=own.map(k=>K[k].ph),
+          other=new Set([...Object.values(R),...Object.values(C.SANHEDRIN),...Object.values(C.FAMILY),...Object.values(C.CAESAREA),...Object.values(C.SEA)].map(o=>o.ph)),
+          key=o=>JSON.stringify(Object.keys(o).filter(k=>!/^(p|gt|ph)$/.test(k)).sort().map(k=>[k,o[k]])),keys=ids.map(k=>key(K[k]));
+        ok(new Set(ph).size===ph.length&&ph.every(v=>!other.has(v))&&new Set(keys).size===keys.length,'every invented look of Rome has a voice of its own, and no two looks are alike')}
+      {const was=new Set(Object.keys(LOOK));for(const n of[4,7,15,18])if(CHAP[n])await loadLevel(n);
+        const same=(a,b)=>a&&b&&JSON.stringify(Object.keys(a).filter(k=>k!=='p'&&k!=='gt').sort().map(k=>[k,a[k]]))===JSON.stringify(Object.keys(b).filter(k=>k!=='p'&&k!=='gt').sort().map(k=>[k,b[k]]));
+        ok(same(K.timothy,LOOK.tim18)&&same(K.tychicus,LOOK.tych15)&&same(K.mikon,LOOK.mikon15),'Timothy, Tychicus and Mikon look as Chapters Eighteen and Fifteen paint them');
+        const m7=LOOK.mark7;ok(m7&&['skin','hair','tunic','trim','belt','brow','ph'].every(k=>K.mark[k]===m7[k])&&K.mark.fullBeard&&K.mark.cloak&&!K.mark.slim&&m7.slim&&!m7.fullBeard,
+          'Mark is the same man as in Chapter Seven, older: his coloring and his green tunic, a full short beard, a little heavier, a mantle');
+        for(const k of Object.keys(LOOK))if(!was.has(k))delete LOOK[k]}
+      const JW=ids.filter(k=>/^jew_rome_/.test(k));
+      ok(JW.length===6&&JW.every(k=>K[k].long&&K[k].cloak&&K[k].fringe&&!K[k].phyl&&!K[k].edge&&!K[k].ring&&!K[k].trim)&&JW.filter(k=>K[k].wrap===K[k].cloak).length===2&&JW.filter(k=>K[k].wrap).length===2,
+        'six leading men of the Jews of Rome in long tunics and mantles with fringes, two with the mantle over the head, none in the scripture case or the gold of the Sanhedrin');
+      const W5=['praetorian_watch','praetorian_watch_young','praetorian_watch_old','praetorian_watch_bald','praetorian_watch_ruddy'].map(k=>R[k]),
+        head=o=>[o.hair,o.bald,o.crop,o.thin,o.receding,o.beard].join();
+      ok(W5.every(o=>o&&!o.armor&&!o.helm&&!o.spear&&!o.pilum&&!o.shield&&!o.standard&&o.gladius&&o.milBelt&&o.caligae&&o.belt)&&new Set(W5.map(head)).size===5&&new Set(W5.map(o=>o.tunic+o.cloak)).size===5,
+        'five soldiers of the watch, each with a head and colors of his own, in a tunic, belt, sandals and a sword: no armor, helmet, shield, standard or spear');
+      {const P19=paulLook(19);ok(['hair','beard','bald','fullBeard','grey'].every(k=>paulLook(24)[k]===P19[k]&&paulLook(25)[k]===P19[k])&&!K.paul_home.cloak&&K.paul_home.bald&&K.paul_weary.weary&&K.paul_weary.cloak,
+        'Paul has his oldest look in both chapters; at home his mantle is laid aside, and on the road he is weary')}
+      {const a=gaitOf(Object.assign({},paulLook(24),{gt:null})),w=gaitOf(Object.assign({},K.paul_weary,{gt:null})),slip=q=>1-q.S/(2*q.stance)/Math.max(q.S/(2*q.stance),WALK_V*q.T);
+        ok(w.S<a.S&&slip(w)<.06&&WALK_V===48,'weary, Paul steps shorter and more often, at the pace everyone walks (stride '+strideOf(K.paul_weary).toFixed(1)+' px, the foot slips '+(slip(w)*100).toFixed(1)+' %)')}
+      ok(K.boatman.spear==='pole'&&K.boatman.bareArm&&K.carter.whip&&K.trader.hatBack&&K.carrier.pad&&K.freedman.penCase&&!K.freedman.ring&&!K.freedman.clavus&&K.epaphras.edge&&K.justus.fringe&&K.onesimus.crop&&!K.onesimus.long,
+        'the carrier\'s pad, the carter\'s whip, the trader\'s hat, the boatman\'s pole and bare arms, the freedman\'s writing case and nothing of rank, the border of Colossae, Justus\'s fringes, Onesimus\'s cropped hair');
+      {const pcs=[];for(const awake of[0,1])for(const dir of[1,-1]){const c=document.createElement('canvas');c.width=40;c.height=30;const g=c.getContext('2d');g.setTransform(2,0,0,2,0,0);C.cat(g,10,12,{awake,dir});pcs.push(parts(c))}
+        ok(pcs.every(n=>n===1),'the cat, asleep and awake, facing both ways, is one piece ('+pcs.join(',')+')')}
+      {const a=sprite('clasp|a',q=>person(q,0,0,K.paul_weary,1,0,0,0,11,0,0),1),b=sprite('clasp|b',q=>person(q,0,0,K.mikon,-1,0,0,0,11,0,0),-1);
+        ok(parts(a)===1&&parts(b)===1,'two who greet clasp each other\'s forearm: the forearm bent forward, nothing raised or stretched out, each one piece')}
+      const both=k=>[[k,K[k],1,0],[k+' (L)',K[k],-1,0]],RW=k=>[[k.replace('praetorian_',''),R[k],1,0],[k.replace('praetorian_','')+' (L)',R[k],-1,0]],
+        ROWS=[
+        ['Named in the letters: Timothy and Tychicus (as their chapters paint them), Mark older, Onesimus, Epaphroditus',[...both('timothy'),...both('tychicus'),...both('mark'),['onesimus',K.onesimus],['epaphroditus',K.epaphroditus,-1,0]]],
+        ['Epaphras of Colossae (the border of its wool), Demas, Jesus called Justus; Luke and Aristarchus are CAESAREA\'s',[...both('epaphras'),...both('demas'),...both('justus'),['luke',C.CAESAREA.luke],['aristarchus',C.CAESAREA.aristarchus,-1,0]]],
+        ['The congregation in Rome: the young carrier, Mikon of Cenchreae, the old brother, the baker, a slave, two more brothers',[...both('carrier'),['mikon',K.mikon],['rome_old',K.rome_old,-1,0],['rome_baker',K.rome_baker],['rome_slave',K.rome_slave,-1,0],['rome_brother_a',K.rome_brother_a],['rome_brother_b',K.rome_brother_b,-1,0]]],
+        ['Sisters of Rome, and the brothers and the sister of Puteoli',[['rome_lady',K.rome_lady],['rome_lady (L)',K.rome_lady,-1,0],['rome_sister_a',K.rome_sister_a],['rome_sister_b',K.rome_sister_b,-1,0],['puteoli_host',K.puteoli_host],['puteoli_dock',K.puteoli_dock,-1,0],['puteoli_young',K.puteoli_young],['puteoli_sister',K.puteoli_sister,-1,0]]],
+        ['The three who carry the news: the carter, the trader, the boatman of the canal, standing and walking',[...both('carter'),...both('trader'),...both('boatman'),['trader walking',K.trader,1,10],['boatman walking',K.boatman,-1,10]]],
+        ['The sailor, the innkeeper, the landlady and the landlord, the freedman of Caesar\'s household',[['sailor',K.sailor],['innkeeper',K.innkeeper,-1,0],...both('landlady'),['landlord',K.landlord],['landlord (L)',K.landlord,-1,0],...both('freedman')]],
+        ['The leading men of the Jews of Rome (28:17), two with the mantle over the head',[['jew_rome_1',K.jew_rome_1],['jew_rome_2',K.jew_rome_2,-1,0],['jew_rome_3',K.jew_rome_3],['jew_rome_4',K.jew_rome_4,-1,0],['jew_rome_5',K.jew_rome_5],['jew_rome_6',K.jew_rome_6,-1,0],['jew_rome_1 seated',K.jew_rome_1,1,-1],['jew_rome_4 seated',K.jew_rome_4,-1,-1]]],
+        ['Five soldiers of the watch: a tunic, a belt, sandals and a sword; seated, the chain\'s hand on his knee',[...RW('praetorian_watch_bald'),...RW('praetorian_watch_ruddy'),['watch',R.praetorian_watch],['watch_young',R.praetorian_watch_young,-1,0],['watch_old',R.praetorian_watch_old],['bald seated',R.praetorian_watch_bald,-1,-1,0,0,'k']]],
+        ['Travelers; Paul at home without his mantle and weary on the road, standing and walking',[['traveler_1',K.traveler_1],['traveler_2',K.traveler_2,-1,0],...both('paul_home'),['paul_weary',K.paul_weary],['weary walking',K.paul_weary,1,10],['weary walking on',K.paul_weary,1,16],['weary (L)',K.paul_weary,-1,12]]]
+      ];
+      const Z=3,cw=156,chh=408,cols=8,hdr=30,[c,g]=sheet(cols*cw,36+ROWS.length*(hdr+chh));
+      text(g,'Rome (Acts 28:11-31): the people of Chapters Twenty-Four and Twenty-Five, three times enlarged',12,24,14,'#f4f0e6');
+      ROWS.forEach(([title,items],r)=>{const ry=36+r*(hdr+chh);g.fillStyle='#4a5464';g.fillRect(0,ry,cols*cw,hdr);text(g,title,12,ry+20,12,'#f4f0e6');
+        items.forEach(([nm,o,dir,fr,talk,ge,pz],i)=>{const x=i*cw,y=ry+hdr;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+cw/2-17*Z,y+chh-22,34*Z,3);
+          const sp=sprite(['rome',r,i].join('|'),q=>person(q,0,0,o,dir||1,fr||0,talk||0,0,ge||0,0,0,pz||''),dir||1);
+          cut(g,sp,-24,-126,48,127,x+Math.floor((cw-48*Z)/2),y+chh-22-126*Z,Z);text(g,nm,x+6,y+chh-6,11)})});
+      SHEETS['cast-rome']=c.toDataURL();
+      /* eight times: every head; then the clasp, the weary stride and the cat */
+      const HD=ids.filter(k=>!/^paul_/.test(k)),ZD=8,dw=208,dh=300,cols2=8,[cd,gd]=sheet(cols2*dw,36+Math.ceil(HD.length/cols2)*dh+120*3.4+40);
+      text(gd,'Eight times: every head of Rome (above); the clasp of greeting, the weary stride and the cat (below)',12,24,14,'#f4f0e6');
+      HD.forEach((k,i)=>{const o=K[k],x=(i%cols2)*dw,y=36+Math.floor(i/cols2)*dh,f=o.veil||o.fem,top=4+23+16+3+(f?24:26)+20;field(gd,i,x,y,dw,dh);
+        cut(gd,sprite(['romeh',k].join('|'),q=>person(q,0,0,o,1,0,2,0,0,0,0),1),-13,-top-6,26,36,x,y,ZD);text(gd,k,x+6,y+dh-8,11)});
+      {const y2=36+Math.ceil(HD.length/cols2)*dh,k=document.createElement('canvas');k.width=240;k.height=120;const q=k.getContext('2d');q.imageSmoothingEnabled=false;q.fillStyle='#b9c2cc';q.fillRect(0,0,240,120);q.scale(2,2);
+        q.save();q.translate(40,56);person(q,0,0,K.paul_weary,1,0,0,0,11,0,0);q.restore();q.save();q.translate(60,56.5);q.scale(-1,1);person(q,0,0,K.mikon,1,0,0,0,11,0,0);q.restore();
+        q.save();q.translate(92,56);person(q,0,0,K.paul_weary,1,20,0,0,0,0,0);q.restore();C.cat(q,10,56,{});C.cat(q,112,56,{awake:1,dir:-1});
+        gd.drawImage(k,0,0,240,120,0,y2,240*3.4,120*3.4);text(gd,'the clasp (Paul, weary, and Mikon, 20 pixels apart), a weary step, the cat asleep and awake: seven times',8,y2+120*3.4+16,12,'#f4f0e6')}
+      SHEETS['cast-rome-detail']=cd.toDataURL();
+      window.SHEETS=SHEETS;halt('rome')}}
   /* Dynamic cast & contact shadows in figure() (issue #81): floor skew, foreground-lamp back-wall bend, prop/actor ordering, pitch-dark
      zero shadow, multi-lamp steadiness across 110ms flame ticks, solid-wall clipping, and enlarged/gallery sheets across all 22 rooms. */
   /* deck (shared/ship.js, view 'deckAft'): the deck of a coaster seen from aboard, looking aft, in its three lights. It checks the one
