@@ -164,7 +164,7 @@ TEXTS('de',21,{
   "say_do_you_believe_the_prophets":["Glaubst du den Propheten?","1rpqli0"],
   "say_im_not_saying_this_to_save_myself":["Ich sage das nicht, um mich zu retten.","0fr3hcq"],
   "say_nothing_for_now":["Vorerst nichts sagen","1hv3gfc"],
-  "paul_ive_said_that_already":["Das habe ich ihm schon gesagt.","0ugykxx"],
+  "paul_ive_said_that_to_him_already":["Das habe ich ihm schon gesagt.","0ugykxx"],
   "agrippa_the_governor_said_it":["Das hat der Statthalter gesagt, Paulus, nicht ich.","0ej6rgq"],
   "festus_answer_what_i_said":["Lass den König aus dem Spiel. Antworte auf das, was ich gesagt habe.","0xafwnw"],
   "agrippa_tell_that_to_the_governor":["Sag das dem Statthalter. Ihm ist das fremd.","1ko39sf"],

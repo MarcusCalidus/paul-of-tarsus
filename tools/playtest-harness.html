@@ -4947,7 +4947,7 @@
   heard.length=0;talkTo(FS);await line(S('paul_not_done_in_a_corner'));ok(said('festus_answer_what_i_said')&&!F.corner,'the king knows, to the governor before the answer: answer what I said');
   heard.length=0;talkTo(AG);await line(S('paul_im_not_saying_this_to_save_myself'));ok(said('agrippa_so_i_have_heard')&&!F.sound,'a true sentence of his own, answered, and nothing changes');
   heard.length=0;talkTo(FS);await line(S('paul_true_and_of_a_sound_mind'));ok(F.sound&&!said('agrippa_the_governor_said_it'),'to Festus: what I say is true, and a sound mind says it (Acts 26:25)');
-  heard.length=0;talkTo(FS);await line(S('paul_true_and_of_a_sound_mind'));ok(said('paul_ive_said_that_already'),'said already');
+  heard.length=0;talkTo(FS);await line(S('paul_true_and_of_a_sound_mind'));ok(said('paul_ive_said_that_to_him_already'),'said already');
   await hints('hint_the_king_knows_1','hint_the_king_knows_2','with the first answer given');
   heard.length=0;talkTo(AG);await line(S('paul_do_you_believe_the_prophets'));ok(said('agrippa_the_governor_spoke_to_you_first')&&!F.prophets,'to the king too soon: the governor spoke to you first');
   heard.length=0;talkTo(AG);await line(S('paul_not_done_in_a_corner'));ok(said('agrippa_tell_that_to_the_governor')&&!F.corner,'the king knows, said to the king: tell that to the governor');

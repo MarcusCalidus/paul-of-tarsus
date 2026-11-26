@@ -160,7 +160,7 @@ TEXTS('en',21,{
   "say_do_you_believe_the_prophets":"Do you believe the Prophets?",
   "say_im_not_saying_this_to_save_myself":"I'm not saying this to save myself.",
   "say_nothing_for_now":"Say nothing for now.",
-  "paul_ive_said_that_already":"I've said that to him already.",
+  "paul_ive_said_that_to_him_already":"I've said that to him already.",
   "agrippa_the_governor_said_it":"It was the governor who said that, Paul. Not I.",
   "festus_answer_what_i_said":"Leave the king out of it. Answer what I said.",
   "agrippa_tell_that_to_the_governor":"Tell that to the governor. He's the one it's strange to.",

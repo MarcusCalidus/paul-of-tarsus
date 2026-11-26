@@ -441,7 +441,7 @@ async function speakTo21(L){const lis=L===FS?'festus':'agrippa';if(PC()===CL)ret
   if(phase21()!=='listen')return;
   const opts=LISTEN21.map(s=>s.c).concat(['say_nothing_for_now']),i=await choose(opts,{keep:1});
   if(i===LISTEN21.length)return;const s=LISTEN21[i];
-  if(s.to===lis&&F[s.flag])return say(P,'paul_ive_said_that_already',THP);
+  if(s.to===lis&&F[s.flag])return say(P,'paul_ive_said_that_to_him_already',THP);
   await say(P,s.k,{to:L});
   if(!s.to){const[r,a]=s[lis];return say(a,r,{to:P})}
   if(s.to!==lis){const[r,a]=s.other;return say(a,r,{to:P})}
