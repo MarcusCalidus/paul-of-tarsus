@@ -490,7 +490,7 @@ function capena(g,o){o=o||{};const V=view(VC),Q=frame([0,1]),hz=VC.hz,r=rng(2501
   /* the road up to the gate: footpaths, curbs, paving */
   band(g,V,Q,-3.4,-1.75,'#a49680','#b6a88c',2508);band(g,V,Q,1.75,3.4,'#a49680','#b6a88c',2509);
   road(g,V,Q,{s0:-1.4,s1:1.4,cell:.5,seed:2510,sun,haze:'#c8c6cc',hz0:12,hz1:60,y0:104});
-  curb(g,V,Q,{s0:-1.75,s1:-1.4,h:.12,u0:-1,u1:60,seed:2511,c:'#a8a294'});
+  curbSide(g,V,Q,-1.4,-1.75,.12,2511,1);
   curbSide(g,V,Q,1.4,1.75,.12,2512);
   /* the sill of the gate: one long slab across the threshold */
   R(g,GATE.x-2,103.2,GATE.w+4,1.6,'#c8bca0');R(g,GATE.x-2,103.2,GATE.w+4,.5,'#f4e8cc');R(g,GATE.x-2,104.6,GATE.w+4,.5,'rgba(60,46,50,.45)');
@@ -596,11 +596,12 @@ function circusSide(g,r){const S='#e2d4b4',xa=-2,xb=150,ta=6,tb=40,fa=70,fb=74,t
     /* the attic: plain, with its cornice */
     stroke(g,[xa,top(xa)+.3,xb,top(xb)+.3],'#fff6e0',.6)});
   void r}
-/* curbSide: the curb on the right of a road that runs away from us: we see its top and its inner face turned to the road (in shade) */
-function curbSide(g,V,Q,s0,s1,h,seed){const r=rng(seed),Pt=(u,s,hh)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z,hh)};
+/* curbSide: a curb beside a road that runs away from us: we see its top and its inner face (at s0) turned to the road; lit: that face is
+   turned to the light (the left curb, the light being at the right), else in shade */
+function curbSide(g,V,Q,s0,s1,h,seed,lit){const r=rng(seed),Pt=(u,s,hh)=>{const[X,Z]=Q.w(u,s);return V.P(X,Z,hh)};
   for(let u=Math.max(.6,uSpan(Q,s0,s1)[0])+r()*.5;u<60;){const L=.9+r()*.5,a=u,b=u+L,cc=tint('#a8a294',(r()-.5)*.14);
     const face=[...Pt(a,s0,h),...Pt(b,s0,h),...Pt(b,s0,0),...Pt(a,s0,0)],top=[...Pt(a,s0,h),...Pt(b,s0,h),...Pt(b,s1,h),...Pt(a,s1,h)];
-    poly(g,face,tint(cc,-.28));poly(g,top,tint(cc,.14));stroke(g,[top[0],top[1],top[6],top[7]],'rgba(50,40,40,.5)',.5);u=b}}
+    poly(g,face,tint(cc,lit?.02:-.28));poly(g,top,tint(cc,.14));stroke(g,[top[0],top[1],top[6],top[7]],'rgba(50,40,40,.5)',.5);u=b}}
 
 /* the figures' light: sun:[dx, dy, strength] is the tip of the shadow of a figure 46 pixels tall, from its feet. In both rooms the morning
    sun is low behind us at the right, so the shadows fall away from us and to the left; at the gate they reach the foot of the wall and
