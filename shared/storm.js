@@ -5,7 +5,9 @@
    offline play. Every painter takes a seed of its own and draws nothing from the room's rng().
 
    The account names a violent wind, thick cloud, rain and cold, and neither sun nor stars for many days (Acts 27:14, 20; 28:2). It names no
-   lightning and no thunder, and nothing here makes either: the light never flashes, and the night sky has no star and no moon.
+   lightning and no thunder; the maintainer decided that the storm has lightning far off (CONTRIBUTING section 4), drawn here only when a
+   room passes lightning:true (see "lightning, far off" below). Nothing makes thunder, the light never flashes, and the night sky has no
+   star and no moon.
 
    Nothing here reads a clock. Whatever moves takes the time t (ms, as a room's draw gets it) and, where the sea keeps a beat, the
    engine's phase e (shared/beat.js): pass G.beat.phase(t) straight in. 0 is the moment the sea breaks; the water runs off until G.beat.from
@@ -31,7 +33,9 @@
                                   torn off them, and no horizon (the far seas run into the rain). The sea that comes stands up highest at
                                   the windward end and comes over there first. o.pal, o.rail (the top of the rail, 82), o.deck0 (the foot
                                   of the bulwark on the deck, 97), o.height (the seas' height, 1), o.lamp [x, y, r] (a low warm light that
-                                  lights the water and the rain near it), o.from, o.to, o.seed. Returns, in the order a room draws them:
+                                  lights the water and the rain near it), o.from, o.to, o.seed; o.lightning (true: strokes far off in its
+                                  sky), o.clear [x0, x1] (where no stroke falls: the masts; default the middle third), o.period (the
+                                  beat's period, 6000). Returns, in the order a room draws them:
                                     draw(g, t, e)     the sky and the seas, over the whole picture. Not swayed
                                     sway(e, k)        the ship's motion now, k its strength (0 still, 1 as sketched): {a (radians), dx,
                                                       dy (room pixels), sy (vertical scale: she heels toward us), px, py (the pivot, low
@@ -55,7 +59,7 @@
                                   rain to the bottom of the picture, with the ship at o.zShip among them. o.pal, o.hz (the eyes' level,
                                   never drawn: the far seas are lost in rain and spindrift, with no level edge), o.eye, o.height, o.period
                                   (how long one sea takes to pass, 6000), o.hullH (her height from the waterline to the rail on the
-                                  screen, 24), o.seed. In this order:
+                                  screen, 24), o.seed; o.lightning and o.clear as for deckSea. In this order:
                                     far(g, t)         the sky and the seas beyond her
                                     ride(t, xa, xb)   where she floats: {y, a, ya, yb}, the waterline under her stern (xa) and her bow
                                                       (xb) and the angle between them, as the seas lift and drop her. Call it every frame
@@ -163,9 +167,64 @@ function skyTiles(pal,h,seed,ft){ft=ft||.84;const key=pal+'|'+h+'|'+seed+'|'+ft;
         S.data[i]=q[0];S.data[i+1]=q[1];S.data[i+2]=q[2];S.data[i+3]=a*255}}}
   dg.putImageData(D,0,0);sg.putImageData(S,0,0);finishA(dc,dg,12);finishA(sc_,sg,12,1);
   const T={deck:dc,scud:sc_,TW,h};if(SKYC.size>6)SKYC.delete(SKYC.keys().next().value);SKYC.set(key,T);return T}
-function sky(o){o=o||{};const pal=o.pal||'day',h=o.h||100,seed=o.seed||2207,ft=o.foot,dx=o.dx==null?-1:o.dx,sp=o.speed==null?4:o.speed;let T=null;
+function sky(o){o=o||{};const pal=o.pal||'day',h=o.h||100,seed=o.seed||2207,ft=o.foot,dx=o.dx==null?-1:o.dx,sp=o.speed==null?4:o.speed,
+    L=o.lightning?lightning({pal,w:o.w||320,foot:o.boltFoot==null?h-8:o.boltFoot,clear:o.clear,period:o.period,seed:seed+7}):null;let T=null;
   const put=(g,c,off)=>{const W=T.TW,x=hp(-(fr(off/W))*W);g.drawImage(c,0,0,c.width,c.height,x,0,W,T.h);g.drawImage(c,0,0,c.width,c.height,x+W,0,W,T.h)};
-  return{h,draw(g,t){if(!T)T=skyTiles(pal,h,seed,ft);put(g,T.deck,-t/1000*sp*dx);put(g,T.scud,-t/1000*sp*4*dx)}}}
+  return{h,L,
+    /* e: the engine's phase, for a room on the beat: no stroke falls in the half second when the sea strikes */
+    draw(g,t,e){if(!T)T=skyTiles(pal,h,seed,ft);put(g,T.deck,-t/1000*sp*dx);const B=L&&L.at(t,e);if(B)L.bolt(g,B);put(g,T.scud,-t/1000*sp*4*dx);if(B)L.glow(g,B,h)}}}
+
+/* ---------- lightning, far off ---------- */
+/* The account names none, but the maintainer decided that this storm has lightning (CONTRIBUTING section 4): far off in the sky, never
+   lighting the whole picture. A room never draws it: deckSea and sideSea draw it in their sky when the room passes lightning:true.
+   When: time is cut into slots of 5 s; in a slot a stroke falls or not, and when, as a hash of the slot's number decides (so two frames
+   of the same moment always agree, and nothing reads a clock or a random number): in 44 slots in a hundred, at most 1.4 s into it, so
+   that two strokes are at least 3.6 s apart and one falls every 11.4 s on average, every 15 s or so on the beat. A room on the beat passes the engine's phase e (and its
+   period); a stroke whose light would fall within the half second round the sea's striking the rail is left out, so that it cannot be
+   taken for the beat. Where: anywhere across the sky but within o.clear [x0, x1] (default: the middle third, where a mast may stand) and
+   6 px either side of it, its foot (o.foot) just over the far seas, where it is lost in the haze, its length a tenth to a fifth of the
+   picture's height. Its shape: one thin broken line that runs down, each step at most 35 degrees from upright; at most two branches,
+   one to each side and never two from one fork, each leaving downward at 46 to 57 degrees from upright, so that a branch draws away from the line below its fork
+   and the two lie on different sides: no branch can cross the line or the other, and none leaves square to it (no T, no plus).
+   The light: the stroke shows for a quarter of a second and goes; the cloud round its top brightens, a long low glow, over a fifth of a
+   second, and fades over half a second; the picture's brightness is not otherwise touched, and nothing below the sky is lit (by night
+   the far seas' crests catch a little of it). No thunder: nothing here makes a sound. */
+function lightning(o){const w=o.w||320,P=PAL[o.pal||'day'],night=o.pal==='night'||o.pal==='black',SLOT=5000,DUR=700,seed=o.seed||2251,
+    clr=o.clear||[w/3,w*2/3],per=o.period||6000,foot=o.foot,C=new Map();
+  /* the stroke of slot n, or null */
+  function plan(n){if(C.has(n))return C.get(n);const r=rng((Math.imul(n,2654435761)^Math.imul(seed,40503))>>>0);r();let p=null;
+    if(r()<.44){const ts=n*SLOT+r()*1400,len=14+r()*14,top=foot-len,
+        side=r()<.5?-1:1,room=side<0?clr[0]-14:w-clr[1]-14,x0=side<0?8+r()*Math.max(0,room-8):clr[1]+14+r()*Math.max(0,room-8);
+      /* the line: steps down, each at most .7 across for 1 down */
+      const M=[[x0,top]];let x=x0,y=top;const lean=(r()-.5)*.5;while(y<foot){const dy=2+r()*2.2,dx=clamp(lean*dy+(r()-.5)*dy,-.7*dy,.7*dy);x+=dx;y+=dy;M.push([x,y])}
+      /* the branches: at most one to each side, from a fork in its upper two thirds, leaving at 1.05 to 1.55 across for 1 down */
+      const Bs=[],nb=r()<.25?0:r()<.6?1:2,first=r()<.5?-1:1;
+      let i0=-9;for(let b=0;b<nb;b++){const sd=b?-first:first,top=Math.max(1,Math.floor(M.length*.6)-1);let i=1+Math.floor(r()*top);
+        /* two branches never leave from the same fork, nor from neighbouring ones: no three lines from one point */
+        if(Math.abs(i-i0)<2){i=i0+2<=top?i0+2:i0-2;if(i<1)break}i0=i;const pts=[M[i].slice()];let bx=M[i][0],by=M[i][1];
+        const st=2+Math.floor(r()*2);for(let k=0;k<st;k++){const dy=1.8+r()*1.5;bx+=sd*dy*(1.05+r()*.5);by+=dy;pts.push([bx,by])}Bs.push(pts)}
+      /* it keeps clear of the masts' span */
+      let lo=1e9,hi=-1e9;for(const q of[M,...Bs])for(const[a]of q){lo=Math.min(lo,a);hi=Math.max(hi,a)}
+      if(!(hi<clr[0]-6||lo>clr[1]+6)||lo<2||hi>w-2)p=null;else p={ts,M,Bs,top,foot,x:x0,box:[lo-3,top-3,hi+3,foot+3]}}
+    if(C.size>8)C.delete(C.keys().next().value);C.set(n,p);return p}
+  /* the stroke showing at t, with u its progress 0..1 over DUR, or null */
+  function at(t,e){const n=Math.floor(t/SLOT);for(const m of[n,n-1]){const p=plan(m);if(!p||t<p.ts||t>=p.ts+DUR)continue;
+      if(e!=null){const q=fr(e+(p.ts-t)/per),d=DUR/per;/* its light lies in [q, q + d]: keep it out of [-.06, .06] round the strike */
+        if(fr(q+.06+d)<.12+d)continue}
+      return{p,u:(t-p.ts)/DUR}}return null}
+  const strokeA=u=>smooth(0,.08,u)*(1-smooth(.2,.38,u)),lightA=u=>smooth(0,.2,u)*(1-smooth(.28,1,u))*(1-.2*Math.exp(-((u-.24)/.05)*((u-.24)/.05)));
+  function line(g,pts,col,wd){g.beginPath();pts.forEach(([x,y],i)=>g[i?'lineTo':'moveTo'](x,y));g.strokeStyle=col;g.lineWidth=wd;g.lineJoin='miter';g.lineCap='butt';g.stroke()}
+  /* the stroke: brightest at its top, lost in the haze toward its foot */
+  function bolt(g,B){const a=strokeA(B.u);if(a<=0)return;const p=B.p,c=night?'#e4e8ff':'#f2f4ff';
+    g.save();const gr=lg(g,0,p.top,0,p.foot,[cs(c,a),cs(c,a*.9),cs(c,0)]);
+    line(g,p.M,gr,.6);for(const b of p.Bs)line(g,b,gr,.5);g.restore()}
+  /* the light in the cloud round its top: long and low, softly, nowhere else */
+  function glow(g,B,h){const a=lightA(B.u);if(a<=0)return;const p=B.p;g.save();g.beginPath();g.rect(-8,0,w+16,h);g.clip();
+    pool(g,p.x,p.top-4,46,11,night?'#9aa6c8':'#d8dcec',(night?.34:.32)*a,'screen');pool(g,p.x,p.top-2,20,6,'#ffffff',(night?.18:.12)*a,'screen');g.restore()}
+  /* by night the far seas' crests catch a little of it */
+  function seas(g,B,y0,y1){if(!night)return;const a=lightA(B.u);if(a<=0)return;g.save();g.beginPath();g.rect(-8,y0,w+16,y1-y0);g.clip();
+    pool(g,B.p.x,y0+2,60,(y1-y0)*.6,'#7c88a8',.22*a,'screen');g.restore()}
+  return{at,bolt,glow,seas,plan,box:B=>B&&strokeA(B.u)>0?B.p.box:null,SLOT,DUR}}
 
 /* ---------- the rain ---------- */
 function rain(g,t,o){o=o||{};const w=o.w||320,y0=o.y0||0,y1=o.y1||144,H=y1-y0,P=PAL[o.pal||'day'],sl=o.slant==null?-.9:o.slant,dir=sl<0?-1:1,
@@ -179,7 +238,9 @@ function rain(g,t,o){o=o||{};const w=o.w||320,y0=o.y0||0,y1=o.y1||144,H=y1-y0,P=
   const n=Math.round(w*.9*den*(.35+.65*gu)),len=5.5,dx=sl*len;let warm=[];
   g.beginPath();
   for(let i=0;i<n;i++){const x0=r()*(w+Math.abs(sl)*H+20)-(dir<0?0:Math.abs(sl)*H)-10,ph=r(),sp=.8+r()*.5,k=fr(t/360*sp+ph),y=y0-len+k*(H+len),x=x0+sl*(y-y0);
-    if(lamp&&Math.hypot((x-lamp[0])/1.8,y-lamp[1])<lamp[2]*(.4+.6*r())){warm.push(x,y);continue}g.moveTo(x,y);g.lineTo(x+dx,y+len)}
+    if(lamp&&Math.hypot((x-lamp[0])/1.8,y-lamp[1])<lamp[2]*(.4+.6*r())){warm.push(x,y);continue}
+    /* none across a stroke of lightning (o.hole: its box), where it would make a cross */
+    if(o.hole&&x+Math.min(0,dx)<o.hole[2]&&x+Math.max(0,dx)>o.hole[0]&&y<o.hole[3]&&y+len>o.hole[1])continue;g.moveTo(x,y);g.lineTo(x+dx,y+len)}
   g.strokeStyle=cs(col,.34);g.lineWidth=.5;g.lineCap='butt';g.stroke();
   if(warm.length){g.beginPath();for(let i=0;i<warm.length;i+=2){g.moveTo(warm[i],warm[i+1]);g.lineTo(warm[i]+dx,warm[i+1]+len)}g.strokeStyle='rgba(236,200,160,.42)';g.stroke()}
   /* splashes on the deck or the sand: short level dashes that come and go */
@@ -291,7 +352,7 @@ function faceTex(pal){if(FACEC.has(pal))return FACEC.get(pal);const P=PAL[pal],T
    runs along the rail to the other end. No horizon is drawn: the farthest seas fade into the rain, the color of the sky's foot. */
 function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz==null?56:o.hz,F=o.F||150,cx=w/2,RAIL=o.rail||82,D0=o.deck0||97,
     ht=o.height==null?1:o.height,seed=o.seed||2209,Z0=24,DZ=60,N=4,lamp=o.lamp,dxW=o.dx==null?-1:o.dx,
-    SKY=sky({pal,h:hz+10,seed:seed+1,dx:dxW,w});
+    SKY=sky({pal,h:hz+10,seed:seed+1,dx:dxW,w,lightning:o.lightning,clear:o.clear,period:o.period});
   const bump=s=>{const q=fr(s+.5)-.5;return Math.exp(-(q/.15)*(q/.15))},
     E=s=>5.5-2.5*bump(s),
     /* the ship's motion (s = b - .6: 0 when the sea breaks on her): she sinks into the trough as the sea comes and is lifted as it passes
@@ -318,9 +379,10 @@ function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
       pts.push(x,y);sh.push(clamp(q*(1-be*.5)+be*m,0,1));bk.push(clamp((e-H)/z*F*.5,0,16))}
     const brk=clamp(1-(near+.04)/.22,0,1);if(near>-.12&&near<.4)NEAR={b,pts};
     rank(g,{pts,sh,bk,z,fade:1-Math.exp(-Math.max(0,z-Z0-14)/150),sc:F/z,ox:t/1000*1.6*dxW*F/z,k,thr:.74-.5*brk,brk,warm:lamp?lampK:0},{P,pal,t,dxW,seed})}
-  const draw=(g,t,e)=>{const b=inner(e,o),s=b-.6;NEAR=null;SKY.draw(g,t);R(g,-8,SKY.h-1,w+16,170-SKY.h,P.haze);
+  const draw=(g,t,e)=>{const b=inner(e,o),s=b-.6;NEAR=null;SKY.draw(g,t,o.lightning?e:undefined);R(g,-8,SKY.h-1,w+16,170-SKY.h,P.haze);
     g.save();
     for(let k=Math.ceil(s-.1)+N-1;k>=Math.ceil(s-.1);k--)sea(g,k,s,t,b);
+    if(SKY.L){const B=SKY.L.at(t,e);if(B)SKY.L.seas(g,B,hz-8,RAIL)}
     g.restore()};
   /* the water on the deck: its leading edge at x, running toward us and down the wind, from where it came over first */
   const runAt=(x,f)=>smooth(t0(x)+.035,t0(x)+.22,f),
@@ -376,7 +438,7 @@ function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
     if(f>.56&&f<.8){const ve=Math.sin(Math.PI*clamp((f-.57)/.21,0,1));
       if(ve>0){g.fillStyle=lg(g,0,RAIL-30,0,144,[cs(P.foamS,.16*ve),cs(P.foamS,.04*ve)]);g.fillRect(-6,0,w+12,144)}
       for(let j=0;j<7;j++){const x=12+j*48+(j%2)*13,u=clamp((f-t0(x))/.18,0,1);if(u<=0||u>=1)continue;spray(g,x,RAIL-8,dxW*26,60,u,46,seed+j*17+((b|0)%5)*101,P.foam,.85,12)}}
-    rain(g,t,{w,pal,density:o.rain==null?1:o.rain,lamp,splash:[D0+4,140],seed:seed+3})}
+    rain(g,t,{w,pal,density:o.rain==null?1:o.rain,lamp,splash:[D0+4,140],seed:seed+3,hole:SKY.L?SKY.L.box(SKY.L.at(t,e)):null})}
   /* sway(e, k): the transform under which a room draws everything that belongs to the ship (the deck, the rail, what stands on them,
      the people and aboard), with k the strength (0 still, 1 as sketched): {a: radians, dx, dy: room pixels, sy: the near deck dropping as
      she heels (a vertical scale, 1 when upright), px, py: the pivot, low and amidships}. Apply it as
@@ -392,7 +454,7 @@ function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
    screen from the waterline to the rail), so that she stays in sight. The nearest sea, at the foot of the picture, breaks. */
 function sideSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz==null?42:o.hz,F=o.F||300,E=o.eye||10,cx=w/2,ZS=o.zShip||60,DZ=o.spacing||50,Z0=10,
     ht=o.height==null?1:o.height,per=o.period||6000,seed=o.seed||2215,dxW=o.dx==null?-1:o.dx,rk=k=>h2(k,3,seed),N=6,HH=o.hullH||24;
-  const SKY=sky({pal,h:hz+8,seed:seed+1,dx:dxW,w,foot:.6});
+  const SKY=sky({pal,h:hz+8,seed:seed+1,dx:dxW,w,foot:.6,lightning:o.lightning,clear:o.clear,boltFoot:hz-1});
   const amp=k=>ht*(9+2*(rk(k)-.5)),
     shape=(k,X,t)=>{const dr=t/1000*1.5*dxW;return .62*pkb(X/56+rk(k+9)*3+dr/56)+.28*pk(X/20+rk(k+5)*3+dr*1.5/20)+.1*pk(X/8+rk(k+2)*3+dr*2/8)},
     zOf=(k,t)=>Z0+(k-t/per)*DZ,H=(k,X,t)=>amp(k)*(.25+.75*shape(k,X,t));
@@ -410,7 +472,7 @@ function sideSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
   const ks=t=>{const s=t/per,out=[];for(let k=Math.floor(s+N);k>=Math.ceil(s-.5);k--)out.push(k);return out};
   const ride=(t,xa,xb)=>{span=[Math.min(xa,xb),Math.max(xa,xb)];const ya=wl(xa,t),yb=wl(xb,t);return{ya,yb,y:(ya+yb)/2,a:Math.atan2(yb-ya,xb-xa)}};
   return{sky:SKY,
-    far(g,t){SKY.draw(g,t);R(g,-8,SKY.h-1,w+16,170-SKY.h,P.haze);for(const k of ks(t))if(zOf(k,t)>ZS)ridge(g,k,t);veil(g,t)},
+    far(g,t){SKY.draw(g,t);R(g,-8,SKY.h-1,w+16,170-SKY.h,P.haze);for(const k of ks(t))if(zOf(k,t)>ZS)ridge(g,k,t);if(SKY.L){const B=SKY.L.at(t);if(B)SKY.L.seas(g,B,hz-6,hz+30)}veil(g,t)},
     /* near: first the water at her own distance, from her waterline down to the foot of the picture across the whole width, so that
        whatever of her is below the waterline (her bottom, her keel) is always covered, whatever the trough; then the lace of foam at her
        waterline and the white water at her bow; then the seas between her and us */
@@ -421,7 +483,7 @@ function sideSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
       for(const k of ks(t))if(zOf(k,t)<=ZS)ridge(g,k,t)},
     ride,
     wash,
-    front(g,t){rain(g,t,{w,pal,density:o.rain==null?1:o.rain,seed:seed+3})}};
+    front(g,t){rain(g,t,{w,pal,density:o.rain==null?1:o.rain,seed:seed+3,hole:SKY.L?SKY.L.box(SKY.L.at(t)):null})}};
   /* the lace of foam at her waterline, and white water thrown up at her bow as she drops into a sea (near draws it) */
   function wash(g,t,xa,xb){const R0=ride(t,xa,xb);
       for(let x=xa;x<=xb;x+=1){const y=R0.ya+(R0.yb-R0.ya)*(x-xa)/(xb-xa),q=Math.sin(x/7+t/400)*.6+Math.sin(x/3.1-t/260)*.4;
