@@ -385,8 +385,8 @@ const SEA=Object.assign({},SEA_DRY,SEA_WET);
 const CARRIERS=[ROMAN.legionary_guard,ROMAN.legionary_bare,ROMAN.escort_cloak,ROMAN.legionary_guard,Object.assign({},ROMAN.legionary_bare,{skin:'#b47e56',hair:'#2a1c12',ph:2600})];
 const lit2=(c,l)=>{if(!l)return c;const a=hex(c),b=hex(l);return toHex(a[0]*b[0]/255,a[1]*b[1]/255,a[2]*b[2]/255)};
 /* where a cuff of actor a is, in room pixels: which: 'far' or 'near' */
-function cuffPt(a,which){const d=facing(a),p=cuffAt(a.look,poseOf(a),a.ges||0,a.fr)[which];if(!p)return null;const ly=poseOf(a)==='l'?LIFT:0;return[hp(a.x)+d*p[0]*FIG.K,hp(a.y)-ly+p[1]*FIG.K]}
-function place(kind,P,A,B){const d=P.dir||1;for(const a of[P,A,B])if(a){a.chained=a.held=a.keeper=a.grips=a.chainTo=0;a.walk=null}
+function cuffPt(a,which){const d=facing(a),ps=a.pose&&POSE[a.pose]?a.pose+(a.pk|0):'',p=(ps?cuffAt(a.look,poseOf(a),a.ges||0,a.fr,ps):cuffAt(a.look,poseOf(a),a.ges||0,a.fr))[which];if(!p)return null;const ly=poseOf(a)==='l'?LIFT:0;return[hp(a.x)+d*p[0]*FIG.K,hp(a.y)-ly+p[1]*FIG.K]}
+function place(kind,P,A,B){const d=P.dir||1;for(const a of[P,A,B])if(a){a.chained=a.held=a.keeper=a.grips=a.chainTo=a.wrist=a.tether=0;a.walk=null}
   if(kind==='one'){const S=A||B,side=A?-1:1;if(!S)return;P.chained=1;P.chainTo=S;S.room=P.room;S.dir=d;S.keeper=side===-d?'far':'near';S.x=P.x+side*18;S.y=P.y+(side===-d?-.5:.5);return}
   if(kind==='chain'){P.chained=1;const back=d>0?A:B,ahead=d>0?B:A;
     if(back){back.room=P.room;back.dir=d;back.keeper='far';back.x=P.x-d*18;back.y=P.y-.5}
@@ -406,7 +406,7 @@ function hang(g,p,q,slack,lit){const dx=q[0]-p[0],dy=q[1]-p[1],d=Math.hypot(dx,d
     nx=-dy/d,ny=dx/d,f=ny<0||ny===0&&nx<0?-1:1,n=Math.max(2,Math.ceil(L*2)),C=[lit2(CUFF[1],lit),lit2(CUFF[3],lit)];let last='',j=0;
   for(let i=0;i<=n;i++){const t=i/n,b=s*4*t*(1-t)*f,x=p[0]+dx*t+nx*b,y=p[1]+dy*t+ny*b,k=Math.round(x*2)+','+Math.round(y*2);if(k===last)continue;last=k;
     g.fillStyle=C[j++%2];g.fillRect(Math.round(x*2)/2,Math.round(y*2)/2,.5,.5)}}
-function chains(g,P,A,B,o){o=o||{};for(const S of[A,B]){if(!S||S.room!==P.room||!poseOf(S)||P.chainTo&&S!==P.chainTo)continue;
+function chains(g,P,A,B,o){o=o||{};for(const S of[A,B]){if(!S||S.room!==P.room||!poseOf(S)||P.chainTo&&S!==P.chainTo)continue;if(P.tether){tether(g,P,S);continue}
   const sp=cuffPt(S,'far')||cuffPt(S,'near'),pf=cuffPt(P,'far'),pn=cuffPt(P,'near');if(!sp||!pf&&!pn)continue;
   const pp=!pn||pf&&Math.abs(pf[0]-sp[0])<Math.abs(pn[0]-sp[0])?pf:pn,z=Math.max(P.y,S.y)+.01,lit=lightAt(P.room,P.x,P.y);
   depth(z,()=>P.chainTo?hang(g,pp,sp,o.slack||1.6,lit):span(g,pp,sp,o.slack,lit))}}
@@ -422,6 +422,102 @@ function knot(g,x,y,o){o=o||{};const d=o.dir||1,pd=o.pdir||d,men=o.men||CARRIERS
     if(!L){figure(g,mx,my-LIFT,lit(mx,my),'knotP|'+pd+(o.key||''),q=>person(q,0,0,Pl,pd,0,0,0,0,0,0,'l'),0);continue}
     /* they carry him together, keep step, and step short (the half step of the stride), so that no leg of one crosses a leg of the next */
     const fr=o.d!=null?36+((walkFr(L,o.d*2,WALK_V)-4)&15):0;figure(g,mx,my,lit(mx,my),'knot|'+off+'|'+d+'|'+fr,q=>person(q,0,0,L,d,fr,0,0,0,0,0),walkSw(L,fr))}})}
-const custody={place,chains,grips,knot,cuffPt,CARRIERS};
+/* ---- the long chain (Acts 28:16, 20, 30; Chapter Twenty-Five) ----
+   In Rome Paul stayed by himself with the soldier who guarded him, on one chain. In the lodging the soldier sits (by the door, at the
+   table, by the window: SHARED.lodging.AT.seats) and Paul moves about within the reach of a long chain, his right wrist to the soldier's
+   left (poseOf: a.wrist 'right' keeps Paul's hand whichever way he turns; a.keeper 'long', the soldier's far hand, mirrored as every
+   figure is when he faces left). The chain runs from the soldier's cuff over his lap and his knee
+   down to the floor, along the floor in a loose curve or two, and up to Paul's cuff; as Paul goes farther the curves straighten, and he
+   can never go so far that it is drawn taut (reach). It goes round whatever stands on the floor and never over its edge, never hangs
+   straight down from the middle of anything, its curves never close into a ring, and each link is drawn at its own depth: on the floor
+   at the floor's, and where it hangs from a hand at the depth of the one who holds it, in front of him where it falls on the side toward
+   the other, behind him where it would cross him (and so too from a hand on the table, which it leaves behind him, into his lap).
+     custody.sit(P, S, at, o)     chain P to S on a long chain, and sit S at a seat: at [x, y] (his feet), o: {dir (the way S faces), len
+                                  (the chain's length in room pixels, LONG), walk (the room's whole walk strip; SHARED.lodging.WALK)};
+                                  P walks freely within reach (the room's walk, see reach)
+     custody.tether(g, P, S, o)   in a room's draw(g, t): the chain, link by link (custody.chains draws it as well, for a P with a tether)
+     custody.path(P, S)           {pts, floor, slack, len}: the chain's points [x, y, z], those that lie on the floor (where a cat may sleep
+                                  on it), how much of it is to spare, and its length
+     custody.reach(room, at, o)   the box [x0, x1, y0, y1] of the room's walk strip (o.walk, the whole of it) that P can reach from a seat at
+                                  [x, y] (o: {dir, len, walk}),
+                                  with chain to spare everywhere in it: the room's walk while he is chained (a getter), and the test for a
+                                  click on something out of reach (ROOMS[id].reach, see clickView)
+     custody.stool(g, x, y, o)    in a room's draw: a stool standing on the floor with its foot line at y, as the lodging paints its own
+                                  (o: {room, hour}): the one the soldier of the last watch carries (the figure painter's pose 'stool') and
+                                  sets down where the chain reaches the door */
+const LONG=150,MARG=[3,1.4],SPARE=.9,LEAD_S=30,LEAD_P=26,strip=()=>SHARED.lodging?SHARED.lodging.WALK:[14,306,106,138];
+/* the floor: footprints of what stands on it, widened by a margin, but for the seat of anyone who sits on the chain */
+function obstacles(room,skip){return roomFeet(room).map(f=>f.b).filter(b=>!skip.some(([x,y])=>x>b[0]-1&&x<b[2]+1&&y>b[1]-1&&y<b[3]+1))
+  .map(b=>[b[0]-MARG[0],b[1]-MARG[1],b[2]+MARG[0],b[3]+MARG[1]])}
+const inB=(B,x,y)=>B.some(b=>x>b[0]&&x<b[2]&&y>b[1]&&y<b[3]),fd=(p,q)=>Math.hypot(q[0]-p[0],(q[1]-p[1])*2);
+/* does the segment p-q pass through the inside of box b (Liang and Barsky) */
+function cuts(p,q,b){let t0=0,t1=1;const dx=q[0]-p[0],dy=q[1]-p[1];
+  for(const[P_,Q_]of[[-dx,p[0]-b[0]],[dx,b[2]-p[0]],[-dy,p[1]-b[1]],[dy,b[3]-p[1]]]){if(P_===0){if(Q_<=0)return false;continue}const r=Q_/P_;if(P_<0){if(r>t1)return false;if(r>t0)t0=r}else{if(r<t0)return false;if(r<t1)t1=r}}
+  return t1-t0>1e-6}
+const clearSeg=(B,p,q)=>!B.some(b=>cuts(p,q,b));
+/* the shortest way along the floor from a to b round the boxes, by their corners (the floor counts double in depth, as a walk does) */
+function route(B,a,b,yl){if(clearSeg(B,a,b))return[a,b];const N=[a,b];
+  for(const r of B)for(const c of[[r[0]-.5,r[1]-.5],[r[2]+.5,r[1]-.5],[r[0]-.5,r[3]+.5],[r[2]+.5,r[3]+.5]])if(c[1]>=yl[0]&&c[1]<=yl[1]&&!inB(B,c[0],c[1]))N.push(c);
+  const D=N.map(()=>Infinity),from=N.map(()=>-1),done=N.map(()=>0);D[0]=0;
+  for(;;){let i=-1;for(let k=0;k<N.length;k++)if(!done[k]&&D[k]<Infinity&&(i<0||D[k]<D[i]))i=k;if(i<0||i===1)break;done[i]=1;
+    for(let k=0;k<N.length;k++)if(!done[k]){const c=D[i]+fd(N[i],N[k]);if(c<D[k]&&clearSeg(B,N[i],N[k])){D[k]=c;from[k]=i}}}
+  if(D[1]===Infinity)return[a,b];const out=[];for(let i=1;i>=0;i=from[i])out.unshift(N[i]);return out}
+const len=pts=>{let s=0;for(let i=1;i<pts.length;i++)s+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);return s};
+const quad=(a,c,b,n)=>{const o=[];for(let i=0;i<=n;i++){const t=i/n,u=1-t;o.push([u*u*a[0]+2*u*t*c[0]+t*t*b[0],u*u*a[1]+2*u*t*c[1]+t*t*b[1]])}return o};
+/* one end of the chain: from the cuff of a down to the floor (lead, ending at the floor point F), and the depth it hangs at (z). Seated,
+   over the lap and the knee and down in front of the shin; at the table writing, behind him into his lap; standing or walking, down from
+   the hand, toward the other end where the hand is on that side, behind him where it is not */
+function endOf(a,other){const c=cuffPt(a,'far')||cuffPt(a,'near');if(!c)return null;const d=facing(a),x=hp(a.x),y=hp(a.y),ps=a.pose&&POSE[a.pose];
+  if(a.fr===-1&&!ps){
+    /* on a bench, whose seat runs on past his knee, it falls behind his legs (from the knee between the shins, from the hip under the
+       seat), so that it never crosses the seat's edge; on a stool, over the knee and down in front of the shin */
+    if(roomFeet(a.room).some(f=>f.b[2]-f.b[0]>14&&a.x>f.b[0]-1&&a.x<f.b[2]+1&&a.y>f.b[1]-1&&a.y<f.b[3]+2)){const kn=(c[0]-x)*d>6,F=kn?[x+d*5,y-.8]:[c[0]+d,y-.8];
+      return{c,F,z:a.y-.03,lead:kn?quad(c,[x+d*6,y-6],F,12):quad(c,[c[0],y-4],F,10),sat:1}}
+    const K=[x+d*11.5,y-13.5],F=[x+d*14.5,y+1.6];return{c,F,z:a.y+.02,lead:[c].concat(quad(K,[K[0]+d*1.2,F[1]-1.5],F,12)),sat:1}}
+  if(ps&&a.pose==='write'){const F=[x+d*5,y-1];return{c,F,z:a.y-.03,lead:quad(c,[c[0],F[1]],F,14)}}
+  const s=other.x>=a.x?1:-1,front=Math.sign(c[0]-x)===s,F=[c[0]+s*4,y+(front?1.4:-1.2)];return{c,F,z:a.y+(front?.02:-.03),lead:quad(c,[c[0]+s,F[1]-2],F,14)}}
+/* the chain's whole course: the soldier's end, the floor between, Paul's end; the floor in a loose curve or two as long as there is chain
+   to spare, its sway in the floor's own plane, flipped or lessened where it would come too near something that stands there */
+function path(P,S){const ES=endOf(S,P),EP=endOf(P,S);if(!ES||!EP)return null;const W=P.tetherW||strip(),
+    B=obstacles(P.room,[[S.x,S.y]].concat(EP.sat||P.pose==='write'?[[P.x,P.y]]:[])),yl=[W[2]-4,143],fl=route(B,ES.F,EP.F,yl);
+  /* the floor course, every pixel along it */
+  const q=[];for(let i=1;i<fl.length;i++){const a=fl[i-1],b=fl[i],n=Math.max(1,Math.ceil(fd(a,b)));for(let k=i>1?1:0;k<=n;k++)q.push([a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n])}
+  const cum=[0];for(let i=1;i<q.length;i++)cum.push(cum[i-1]+fd(q[i-1],q[i]));const D=cum[cum.length-1]||1,L=P.tether||LONG,
+    slack=L-len(ES.lead)-len(EP.lead)-D,sl=len(q),n=sl<40?1:2,A0=Math.min(7,sl*.16,slack>0?2/(Math.PI*n)*Math.sqrt(slack*D):0);
+  const sway=(A,sg)=>q.map((p,i)=>{const j=Math.min(q.length-1,i+1),h=Math.max(0,i-1),dx=q[j][0]-q[h][0],dy=(q[j][1]-q[h][1])*2,l=Math.hypot(dx,dy)||1,
+      w=A*sg*Math.sin(Math.PI*n*cum[i]/D)*Math.min(1,cum[i]/6,(D-cum[i])/6);return[p[0]-dy/l*w,clamp(p[1]+dx/l*w/2,yl[0],yl[1])]});
+  let floor=null;for(const A of[A0,A0*.6,A0*.3,0])for(const sg of[1,-1]){const f=sway(A,sg);if(!f.some(p=>inB(B,p[0],p[1]))){floor=f;break}if(!A)floor=f}
+  const pts=ES.lead.map(p=>[p[0],p[1],ES.z]).concat(floor.map(p=>[p[0],p[1],p[1]]),EP.lead.slice().reverse().map(p=>[p[0],p[1],EP.z]));
+  return{pts,floor,slack,len:L,D}}
+/* the chain drawn: a link every half pixel along its course, light and dark in turn, at the canvas's own pixels; the links of one depth
+   are laid down together, each run at its own depth in the room */
+function tether(g,P,S){if(!S||S.room!==P.room)return;const pa=path(P,S);if(!pa)return;const p=pa.pts,runs=[];let last='',j=0,run=null;
+  for(let i=1;i<p.length;i++){const a=p[i-1],b=p[i],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])*4));
+    for(let k=i>1?1:0;k<=n;k++){const t=k/n,x=a[0]+(b[0]-a[0])*t,y=a[1]+(b[1]-a[1])*t,z=a[2]+(b[2]-a[2])*t,key=Math.round(x*2)+','+Math.round(y*2);if(key===last)continue;last=key;
+      if(!run||Math.abs(z-run.z)>.5){run={z,l:[]};runs.push(run)}run.l.push([Math.round(x*2)/2,Math.round(y*2)/2,j++%2,y])}}
+  for(const r of runs)depth(r.z+.004,()=>{for(const[x,y,c,fy]of r.l){const lit=lightAt(P.room,x,Math.max(fy,r.z));g.fillStyle=lit2(CUFF[c?3:1],lit);g.fillRect(x,y,.5,.5)}})}
+/* the reach: the part of the walk strip where Paul may stand with chain to spare (worked out on the floor, round what stands there, for
+   the soldier seated at, facing dir, and a hand's drop at each end); the box grows from the seat column by column while every place in
+   the column is within reach */
+const RCH={};
+function reach(room,at,o){o=o||{};const L=o.len||LONG,dir=o.dir||1,W=o.walk||strip(),key=[room,at,L,dir,W].join();if(RCH[key])return RCH[key];
+  const B=obstacles(room,[at]),F=[at[0]+dir*14.5,at[1]+1.6],bud=L*SPARE-LEAD_S-LEAD_P,yl=[W[2]-4,143],
+    ok=(x,y)=>{if(inB(B,x,y))return true;const f=route(B,F,[x,y+1.4],yl);let s=0;for(let i=1;i<f.length;i++)s+=fd(f[i-1],f[i]);return s<=bud},
+    ys=[];for(let y=W[2];y<=W[3];y+=Math.max(1,(W[3]-W[2])/6))ys.push(y);
+  let y0=W[2],y1=W[3];const col=x=>ys.filter(y=>y>=y0&&y<=y1).every(y=>ok(x,y));
+  while(!col(clamp(at[0],W[0],W[1]))&&y1-y0>4){if(Math.abs(at[1]-y0)>Math.abs(at[1]-y1))y0+=2;else y1-=2}
+  let x0=clamp(at[0],W[0],W[1]),x1=x0;while(x0-2>=W[0]&&col(x0-2))x0-=2;while(x1+2<=W[1]&&col(x1+2))x1+=2;
+  return RCH[key]=[x0,x1,y0,y1]}
+/* a stool on the floor: a small square seat on four legs at its corners, as high as a seated man's hips, its top seen a little from above,
+   in the room's light, with its contact shadow */
+function stool(g,x,y,o){o=o||{};const lit=o.room?lightAt(o.room,x,y):null,Wd='#6a4c30',hw=5,t=y-9,col=c=>lit2(c,lit);
+  depth(y,()=>{const M=SHARED.materials;if(M&&M.shadow)M.shadow(g,x,y-.6,hw+1,1.2,.45);
+    for(const lx of[x-hw+1.6,x+hw-2.6])R(g,lx,t+1,1,y-2-t,col(tint(Wd,-.45)));
+    poly(g,[x-hw+1,t-1.6,x+hw-1,t-1.6,x+hw,t,x-hw,t],col(tint(Wd,.22)));R(g,x-hw,t,hw*2,1.6,col(Wd));R(g,x-hw,t,hw*2,.5,col(tint(Wd,.12)));
+    for(const lx of[x-hw+.2,x+hw-1.8]){R(g,lx,t+1.6,1.6,y-t-1.6,col(tint(Wd,-.12)));R(g,lx,y-.5,1.6,.5,'#24160c')}})}
+function sit(P,S,at,o){o=o||{};for(const a of[P,S]){a.chained=a.held=a.keeper=a.grips=a.chainTo=a.wrist=a.tether=0;a.walk=null;a.pose=0}
+  S.room=P.room;S.x=at[0];S.y=at[1];S.dir=o.dir||(P.x>=at[0]?1:-1);S.seat=1;S.keeper='long';
+  P.chained=1;P.chainTo=S;P.wrist='right';P.tether=o.len||LONG;P.tetherW=o.walk||strip()}
+const custody={place,chains,grips,knot,cuffPt,CARRIERS,sit,tether,path,reach,stool,LONG};
 
 return{ROMAN,SANHEDRIN,FAMILY,CAESAREA,SHIPWRECK,SEA,shipwrecked,custody}})();
