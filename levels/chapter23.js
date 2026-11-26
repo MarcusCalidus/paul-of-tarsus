@@ -132,29 +132,59 @@ function lantern23(g,x,y,t){stroke(g,[x-1.6,y-5,x-5,0],'#2a2018',.5);stroke(g,[x
 const fig23=(g,room,x,y,id,dir,ps)=>man(g,x,y,id,dir,0,lightAt(room,x,y),0,undefined,0,0,null,ps);
 
 /* ==== ART stern23: begin ==== */
-/* ART-TODO. The after deck of the grain ship by night, the fourteenth night (27:27), looking across the deck: no stars, no moon, a black
-   sea beyond the bulwark and no horizon to be seen. One lantern, hung by two cords that part upward from out of the picture at the top
-   (the stern's curl is out of the picture, so that nothing upright crosses the sea's level), lights the deck from the right. At the right
-   the two steering oars, lashed up out of the water, lie slanting along the top of the bulwark and stay below the level of the sea.
-   At the left the leadsman stands at the bulwark; his coil lies at his feet. When the four anchors go (27:29) four cables run from the
-   deck over the stern rail at the right and down behind the bulwark into the sea: no anchor is seen, and no cable stands upright.
-   Called from outside: ART.stern23. Reads F.anchors and G.cab23 (the cables run out). Hotspots (ROOMS.stern23): the sky 0,0,320,58 ·
-   the sea 0,58,320,28 · the lantern 250,30,24,26 · the steering oars 270,64,50,24 · the stern rail 120,84,130,20 · the four cables
-   226,82,70,28 (once they run) · the sounding line 58,108,30,12. Walk: 30..296 by 112..138. Wall foot (the bulwark's) y 104. Light: night,
-   one lantern at 262,46 (lamps), shadows bend up onto the bulwark. */
-const LAMP_STERN23=[262,46];
-ART.stern23={w:320,q:12,paint(g){const r=rng(2301);band23(g,0,0,320,86,'#06080e','#101622');
-    for(let i=0;i<60;i++)R(g,r()*320,60+r()*24,3+r()*6,.4,'rgba(120,140,170,.18)');
-    bulwark23(g,84,104,'#3a2a1c');deck23(g,104,144,'#5e4630',r);
-    /* the steering oars, lashed up: two looms slanting along the bulwark's top, below the sea's level */
-    for(const[x0,y0,x1,y1]of[[262,86,320,78],[278,90,320,84]]){poly(g,[x0,y0,x1,y1,x1,y1+2.4,x0,y0+2.4],'#4e3a26');stroke(g,[x0,y0,x1,y1],'#8a6a44',.5)}
-    comp(g,'multiply',.5,()=>{g.fillStyle=rg(g,LAMP_STERN23[0],110,260,['#ffffff','#5a5a80']);g.fillRect(0,0,320,144)})},
-  light:{amb:'#4a4e6a',wallY:104,wall:[[0,320,104,84]],lamps:[[LAMP_STERN23[0],LAMP_STERN23[1],150,'#e8a860',104,LAMP_STERN23[1]]]},
-  draw(g,t){lantern23(g,LAMP_STERN23[0],LAMP_STERN23[1],t);
-    /* the leadsman's coil at his feet */
-    depth(118,()=>{oval(g,72,116,10,2.6,'#3a2c1c');oval(g,72,115.4,8,1.8,'#8a7048')});
-    /* the four cables, from the deck over the stern rail, slanting; none upright */
-    if(F.anchors||G.cab23)for(let i=0;i<4;i++){const x=232+i*16,k=F.anchors?1:G.cab23;stroke(g,[x-6,112+i,x-6+(14*k),112+i-(26*k)],'#9a8058',.8)}},
+/* The after deck of the grain ship by night, the fourteenth night (27:27-29): SHARED.grainship.sternNight, the picture the maintainer
+   approved, looking aft from just forward of the stern: the swan's neck of the sternpost, the plain stern rail passing in front of its
+   foot, the steering oars lashed up at both quarters, and one lantern hung beside the post by two cords that part upward, the only light.
+   We stand a little less far to starboard than in the approved picture (cam .6 for 1.3), so that the deck the people stand on lies in the
+   middle of the picture; and the lantern hangs a little higher on its cords (1.5 m for 1.25), above the heads of whoever stands at the
+   rail, so that its glow, long and low, never lies round a head (CONTRIBUTING section 3). Beyond the ship the storm's night
+   (SHARED.storm.deckSea, pal 'night'): no star, no moon, no horizon, the sea and the sky one darkness, lightning far off. She lies near
+   land now, and from 27:29 at four anchors: she still rolls, gently (a third of the storm's motion), while the sea, the sky and the rain do
+   not. When the anchors go (27:29) the four cables come aft along the deck one after another, two on each side of the post, rise to the
+   stern rail and go over it into the dark; no anchor is seen, and none crosses another, the post or a plank of the stern.
+   The leadsman's coil lies at his feet; while he heaves and pays out, his line runs from his far fist over the bulwark at the port quarter.
+   Called from outside: ART.stern23, LAMP_STERN23, SEA23N and ride23 (the bow by night has the same sea and the same motion). Reads F.lead2,
+   F.anchors and G.cab23 (the cables run out). Hotspots (ROOMS.stern23): the sky 0,0,320,58 · the sea 0,58,320,26 · the lantern round
+   LAMP_STERN23 · the starboard steering oar 236,42,30,52 · the stern rail 92,76,104,32 · the four cables 154,96,42,22 (once they run) ·
+   the sounding line 58,106,30,14. Walk: 30..270 by 113..138, its corners on the bulwarks and the place under the lantern blocked. Light:
+   night, the lantern a lamp (behind the people: their shadows fall toward us). */
+const GS23=SHARED.grainship,
+  /* the storm's night, for the stern and the bow: the seas lower than in the storm (she lies near land), lightning far off */
+  SEA23N=SHARED.storm.deckSea({pal:'night',lightning:true,height:.5,hz:94,rail:100,deck0:110,clear:[96,196],seed:2311}),
+  NIGHT23={cam:.6,lp:[.5,1.5,5.35],sky:false,rain:false},NG23=GS23.nightGeo(NIGHT23),
+  LAMP_STERN23=NG23.lamp.map(v=>Math.round(v*2)/2);
+/* the night beyond the rail: the storm's sky (its seas lie below the rail, out of sight, so that no line of sea and sky is seen
+   anywhere, as in the approved picture), and low down the foam of the seas that cannot be seen, a few faint streaks drifting with the
+   wind, fading upward into the dark */
+function night23(g,t){SEA23N.draw(g,t,(t/6000)%1);const r=rng(2315),d=t/1000*3.2;
+  for(let i=0;i<64;i++){const y=60+Math.pow(r(),1.3)*36,x=((r()*360-d*(.5+(y-60)/36))%360+360)%360-20,a=.03+.09*r()*(y-60)/36;R(g,x,y,1+r()*4,.5,`rgba(150,170,180,${a.toFixed(3)})`)}}
+/* her motion at anchor: the storm's own sway (shared/storm.js) at a third of its strength, on the storm's own six-second sea */
+const ride23=(t,k)=>{const s=SEA23N.sway((t/6000)%1,k);return{a:s.a,dx:s.dx,dy:s.dy,cx:s.px,cy:s.py}};
+/* the cables seen: one after another while they run out (G.cab23 0..1), all four from then on; held through the fade to the bow */
+let cab23=0;const cables23=()=>{if(!F.lead2)cab23=0;else if(G.cab23)cab23=Math.max(cab23,Math.min(4,Math.ceil(G.cab23*4)));return F.anchors?4:cab23};
+/* a coil of rope lying on the deck, lit from behind by the lantern: its turns, the slot of its eye, a warm edge on its far side */
+function coil23(g,x,y,lit){comp(g,'multiply',.5,()=>oval(g,x+1,y+.8,11.5,3.2,'#2a2438'));
+  /* the turns laid one on another: each a ring of rope, its far side lit, its near side in shade */
+  for(let k=0;k<4;k++){const ry=2.9-k*.12,rx=10-k*.5,yy=y-k*.75;g.lineWidth=1.3;g.strokeStyle=k%2?'#4a3a28':'#56442e';g.beginPath();g.ellipse(x,yy,rx,ry,0,0,6.2832);g.stroke();
+    g.lineWidth=.5;g.strokeStyle=rgba(lit||'#e8b070',.32+.08*k);g.beginPath();g.ellipse(x,yy-.4,rx,ry,0,3.4,6.0);g.stroke()}
+  /* the eye: the deck dark inside the turns, a slot */
+  oval(g,x,y-2.3,6.6,1.7,'#1e1610');R(g,x-3,y-2.8,6,1,'#100a08')}
+ART.stern23={w:320,q:12,
+  variant:()=>'c'+cables23(),
+  paint(g,v){GS23.sternNight(g,Object.assign({cables:+(v||'c0').slice(1)},NIGHT23))},
+  light:{amb:'#4a4e6a',wallY:108,wall:[[92,195,108,77]],lamps:[[LAMP_STERN23[0],LAMP_STERN23[1],150,'#e8a860',110,LAMP_STERN23[1]]]},
+  behind:night23,
+  sway:t=>ride23(t,F.anchors||G.cab23?.25:.34),
+  air(g,t){SHARED.storm.rain(g,t,{pal:'night',density:.55,lamp:[LAMP_STERN23[0],LAMP_STERN23[1],34],seed:2313})},
+  draw(g,t){const[lx,ly]=LAMP_STERN23,f=Math.floor(t/110)%3;
+    /* the lantern's flame, alive behind its horn */
+    R(g,lx-.5,ly-.6+(f===1?-.5:0),1,1.6+(f===1?.5:0),f===2?'#ffe8b0':'#fff4d0');
+    /* the leadsman's coil, at his feet */
+    depth(118,()=>coil23(g,72,116));
+    /* his line, while he heaves the lead and pays it out: from his far fist over the bulwark at the port quarter, and down out of sight */
+    if(SA1.room==='stern23'&&(SA1.pose==='payout'||SA1.pose==='heave'&&SA1.pk===1)){const h=poseAt(SA1.look,SA1.pose+SA1.pk),fx=SA1.x+(h?h.far[0]:11)*SA1.dir,fy=SA1.y+(h?h.far[1]:-25),
+        [rx,ry]=NG23.P(-3.0,1.25,4.9),p=[];for(let i=0;i<=10;i++){const u=i/10;p.push(fx+(rx-fx)*u,fy+(ry-fy)*u+2.2*Math.sin(Math.PI*u))}p.push(rx-1.2,ry+.4);
+      depth(SA1.y+.5,()=>{stroke(g,p,'rgba(10,6,6,.55)',.9);stroke(g,p,'#a88a60',.55)})}},
   front(){}};
 /* ==== ART stern23: end ==== */
 
@@ -592,11 +622,11 @@ async function lead23(){const L=ld23(),s=SOUND23[L.n];if(L.bottom)return say(LK,
   if(!L.tallow)return say(LK,'luke_first_the_tallow',TL);L.bottom=1;SFX.click();await say(LK,s.bottom,TL);return written23()}
 async function tallow23(){const L=ld23();L.tallow=1;return say(LK,SOUND23[L.n].tallow,TL)}
 async function written23(){const L=ld23();if(!L.depth||!L.bottom)return;SFX.good();
-  if(!L.n){F.lead1=1;G.ld23=null;await goto23('stern23',124,124,-1);await say(SA1,'leadsman_twenty_and_sand',{to:LK});await say(SA1,'leadsman_again_in_a_while',{to:LK});return codeBtn()}
-  F.lead2=1;G.ld23=null;await goto23('stern23',124,124,-1);
+  if(!L.n){F.lead1=1;G.ld23=null;await goto23('stern23',138,126,-1);await say(SA1,'leadsman_twenty_and_sand',{to:LK});await say(SA1,'leadsman_again_in_a_while',{to:LK});return codeBtn()}
+  F.lead2=1;G.ld23=null;await goto23('stern23',138,126,-1);
   await tell('n28');await say(SA1,'leadsman_fifteen_and_stones',{to:PI});await say(PI,'pilot_land_is_close',{to:SA1});
   /* 27:29: four cables run out over the stern; no anchor is seen. They long for day. */
-  place(SA2,'stern23',224,120,1);place(SA3,'stern23',260,118,1);SA2.pose=SA3.pose='payout';
+  place(SA2,'stern23',196,117,-1);place(SA3,'stern23',78,124,1);SA2.pose=SA3.pose='payout';
   await Promise.all([tween(fast()?120:2600,k=>{G.cab23=k;SA2.pk=SA3.pk=((k*6)|0)%2}),tell('n29')]);G.cab23=0;
   return toBow23()}
 /* ---- an anchor from the bow (27:30-32): Paul ---- */
@@ -739,20 +769,20 @@ async function closeTablet23(){await goto23(G.from23&&G.from23!=='tablet23'&&ROO
 /* A room's hotspots are listed from the back to the front: where two overlap, the later one is meant. */
 const NOW=[160,160,236,236];   /* a close view: whoever is played stands below the picture, and takes no step */
 const atP=o=>Object.defineProperties(o,{wx:{get(){return P.x},enumerable:true},wy:{get(){return P.y},enumerable:true}});   /* acted on where Paul is, with no step (the surf) */
-ROOMS.stern23={space:.6,walk:[30,296,112,138],mood:'night',amb:AMB.stern23,block:[[60,112,24,8]],hs:[
-  {name:'sky_without_stars',x:0,y:0,w:320,h:58,wx:150,wy:120,look:'sky_without_stars_look'},
-  {name:'dark_sea',x:0,y:58,w:320,h:26,wx:160,wy:118,look:'dark_sea_look'},
-  {name:'lantern',x:250,y:30,w:24,h:26,wx:244,wy:118,look:'lantern23_look'},
-  {name:'steering_oars',x:270,y:64,w:50,h:24,wx:276,wy:118,look:'steering_oars_at_the_stern_look'},
-  {name:'stern_rail',x:120,y:84,w:130,h:20,wx:170,wy:118,look:'stern_rail_look',use:'luke_nothing_to_see_but_the_dark'},
-  {name:'four_cables',x:226,y:82,w:70,h:28,wx:240,wy:120,vis:()=>!!F.anchors,look:'four_cables_look'},
+ROOMS.stern23={space:.6,walk:[30,270,113,138],mood:'night',amb:AMB.stern23,block:[[60,112,24,8],[30,113,18,5],[236,113,34,5],[250,118,20,6],[262,124,8,4],[140,113,36,8]],hs:[
+  {name:'sky_without_stars',x:0,y:0,w:320,h:58,wx:150,wy:124,look:'sky_without_stars_look'},
+  {name:'dark_sea',x:0,y:58,w:320,h:26,wx:160,wy:124,look:'dark_sea_look'},
+  {name:'lantern',x:LAMP_STERN23[0]-10,y:LAMP_STERN23[1]-14,w:20,h:22,wx:LAMP_STERN23[0]-6,wy:124,look:'lantern23_look'},
+  {name:'steering_oars',x:236,y:42,w:30,h:52,wx:240,wy:122,look:'steering_oars_at_the_stern_look'},
+  {name:'stern_rail',x:92,y:76,w:104,h:32,wx:186,wy:118,look:'stern_rail_look',use:'luke_nothing_to_see_but_the_dark'},
+  {name:'four_cables',x:154,y:96,w:42,h:22,wx:186,wy:122,vis:()=>!!F.anchors,look:'four_cables_look'},
   {name:'sounding_line',x:58,y:106,w:30,h:14,wx:96,wy:124,def:'use',look:'sounding_line_look',use:()=>G.heave23&&!F.lead2?goto23('lead23'):say(LK,'luke_ask_the_leadsman',TL)}]};
 ROOMS.lead23={space:.6,walk:NOW,mood:'night',amb:AMB.lead23,hs:[
   {name:'wet_line',x:52,y:76,get w(){return TAGX23[SOUND23[F.lead1?1:0].tag]-52},h:18,wx:160,wy:236,look:'wet_line_look'},
   {name:'dry_line',get x(){return TAGX23[SOUND23[F.lead1?1:0].tag]+14},y:76,get w(){return 318-this.x},h:18,wx:160,wy:236,look:'dry_line_look'},
   {name:'the_lead',x:10,y:72,w:42,h:34,wx:160,wy:236,def:'look',look:()=>tallow23(),use:()=>lead23(),useWith:it=>it==='tablet23'?lead23():false},
   ...TAGS23.map((tg,i)=>({name:tg.name,x:TAGX23[i]-10,y:lineY23(TAGX23[i])+1,w:22,h:16,wx:160,wy:236,def:'use',look:tg.look,use:()=>tag23(i),useWith:it=>it==='tablet23'?tag23(i):false})),
-  {name:'back_to_the_deck',x:0,y:128,w:96,h:16,wx:160,wy:236,exit:()=>goto23('stern23',124,124,-1),look:'back_to_the_deck_look'}]};
+  {name:'back_to_the_deck',x:0,y:128,w:96,h:16,wx:160,wy:236,exit:()=>goto23('stern23',138,126,-1),look:'back_to_the_deck_look'}]};
 ROOMS.bow23={space:.6,walk:[20,296,114,138],get mood(){return'tense'},amb:AMB.bow23,hs:[
   {name:'dark_sea',x:0,y:40,w:320,h:44,wx:160,wy:120,look:'dark_sea_look'},
   {name:'lantern',x:140,y:28,w:22,h:26,wx:150,wy:120,look:'lantern23_look'},
@@ -861,7 +891,7 @@ function place23(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
   const ph=phase23(),pl=(a,r,x,y,d,pose)=>{place(a,r,x,y,d);if(pose){a.pose=pose;a.pk=0}},wet=wet23();
   for(const a of EVERY.concat([P]))dress23(a,wet);
   setPC23(lukePlays()?LK:P);
-  if(ph==='sound'){pl(P,'stern23',206,124,-1);pl(SA1,'stern23',100,118,-1);pl(PI,'stern23',282,120,-1)}
+  if(ph==='sound'){pl(P,'stern23',216,128,-1);pl(SA1,'stern23',100,118,-1);pl(PI,'stern23',252,126,-1)}
   if(ph==='bow'){pl(JU,'bow23',40,124,1);pl(SO2,'bow23',24,132,1);pl(SA1,'bow23',196,126,-1);pl(SA2,'bow23',224,118,1,'payout');pl(SA3,'bow23',252,124,1,'payout');pl(SA4,'bow23',280,118,1,'hold')}
   if(ph==='hold'){const H='huddle';pl(PR1,'hold23',66,118,1,H);pl(PR2,'hold23',90,137,1,H);pl(LK,'hold23',112,118,1,H);pl(AR,'hold23',136,137,1,H);pl(ME,'hold23',160,118,1,H);
     pl(BOY,'hold23',186,137,1,H);pl(OLD,'hold23',252,118,-1,H);pl(SA3,'hold23',272,137,-1,H);pl(SO1,'hold23',290,118,-1,H);pl(JU,'hold23',306,127,-1)}

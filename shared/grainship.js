@@ -692,20 +692,30 @@ function deckBeyond(g,D){const place=D.o.place||'myra',my=place==='myra',K=SHARE
    from behind and a little from the side, and it rises where the stern's rail turns round toward us; the rail is a plain rail. The steering oars stand lashed up at both quarters, their lashings slanting to the rail. Four cables come aft
    along the deck side by side, two each side of the post, rise to the stern rail and go over it and down into the dark: none crosses
    another, the post or a plank of the stern, whose inner face is left without seams where they pass. No anchor is seen.
-     o.post    'bird' | 'curl'      o.cables   how many (default 4)      o.t   the time, for the flame
-   Returns the geometry {P, hz, lamp:[x, y]} for the room. */
-function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160+F*(x-cam)/z,hz+F*(E-y)/z],ZS=5.5,
+     o.post    'bird' | 'curl'      o.cables   how many (default 4; 0 for none)      o.t   the time, for the flame
+   For a room built on this picture (Chapter Twenty-Three's stern23), all optional and all leaving the picture as it was when not given:
+     o.cam     how far to starboard of her middle line we stand (metres, default 1.3)
+     o.lp      where the lantern hangs, [x, y, z] in metres (default [.5, 1.25, 5.35]); it must hang below both points its cords go to
+     o.sky     false leaves the sky and the sea out, transparent, for a room that paints the storm's night behind the ship
+     o.rain    false leaves the rain out, for a room that lets it fall in its own air
+   Returns the geometry {P, hz, lamp:[x, y]} for the room (nightGeo gives the same without painting). */
+function nightGeo(o){o=o||{};const F=150,E=1.7,hz=62,cam=o.cam!=null?o.cam:1.3,P=(x,y,z)=>[160+F*(x-cam)/z,hz+F*(E-y)/z],ZS=5.5,
+    b=z=>z<=2?3.7:z>=ZS?1.9:1.9+1.8*Math.sqrt(Math.max(0,1-Math.pow((z-2)/(ZS-2),2.2))),LP=o.lp||[.5,1.25,5.35],zOf=Y=>F*E/(Y-hz);
+  /* the deck's edges at a height Y on the screen (the foot of each bulwark), and the foot of the stern's face */
+  return{F,E,hz,cam,P,b,ZS,lamp:P(...LP),lampFloor:P(LP[0],0,LP[2]),
+    edge:(Y,sd)=>{const z=zOf(Y);return P(sd*b(z),0,z)[0]},sternFoot:P(0,0,ZS)[1],sternTop:P(0,1.17,ZS)[1]}}
+function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=o.cam!=null?o.cam:1.3,P=(x,y,z)=>[160+F*(x-cam)/z,hz+F*(E-y)/z],ZS=5.5,
     b=z=>z<=2?3.7:z>=ZS?1.9:1.9+1.8*Math.sqrt(Math.max(0,1-Math.pow((z-2)/(ZS-2),2.2))),sz=x=>ZS+.2*(1-Math.pow(x/1.9,2)),rh=1.05,
     /* the rail: a little higher round the stern than at the quarters, a rail and nothing more */
     RH=(x,z)=>rh+.12*clamp((z-(ZS-1.5))/1.5,0,1),
-    LP=[.5,1.25,5.35],
+    LP=o.lp||[.5,1.25,5.35],
     /* the lantern's light on a face: night ambient, and the lamp's warm light by angle and distance */
     lamp=(c,p,n)=>{const d=[LP[0]-p[0],LP[1]-p[1],LP[2]-p[2]],l=Math.hypot(...d),q=Math.max(0,(n[0]*d[0]+n[1]*d[1]+n[2]*d[2])/l/(Math.hypot(...n)||1)),f=q/(1+Math.pow(l/1.9,2)),h=hex(c);
       return toHex(h[0]*(.14+1.15*f),h[1]*(.16+.9*f),h[2]*(.24+.55*f))};
   /* the sky and the sea: one darkness, a little lighter low down where the sea's foam catches what light there is; no line between */
-  sky(g,320,144,[[0,'#04060a'],[.35,'#0a0e16'],[.5,'#10161e'],[.7,'#0c1218'],[1,'#080c10']]);
+  if(o.sky!==false){sky(g,320,144,[[0,'#04060a'],[.35,'#0a0e16'],[.5,'#10161e'],[.7,'#0c1218'],[1,'#080c10']]);
   for(let i=0;i<16;i++){const r=rng(500+i);pool(g,r()*320,8+r()*40,40+r()*50,5+r()*6,'#161c28',.5,'source-over')}
-  for(let i=0;i<70;i++){const r=rng(800+i),y=66+Math.pow(r(),1.4)*30;R(g,r()*320,y,1+r()*4,.5,`rgba(150,170,180,${(.05+.1*r()).toFixed(2)})`)}
+  for(let i=0;i<70;i++){const r=rng(800+i),y=66+Math.pow(r(),1.4)*30;R(g,r()*320,y,1+r()*4,.5,`rgba(150,170,180,${(.05+.1*r()).toFixed(2)})`)}}
   /* the deck: planks running aft, converging; the lantern's pool on it */
   const C=[];for(let z=2;z<ZS;z+=.25)C.push([-b(z),z]);for(let i=0;i<=10;i++){const x=-1.9+3.8*i/10;C.push([x,sz(x)])}for(let z=ZS-.25;z>=2;z-=.25)C.push([b(z),z]);
   const N=C.map((p,i)=>{const a=C[Math.max(0,i-1)],c=C[Math.min(C.length-1,i+1)],tx=c[0]-a[0],tz=c[1]-a[1],l=Math.hypot(tx,tz)||1;return[tz/l,-tx/l]});
@@ -735,7 +745,7 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160
     const cl=P(xr-sd*.25,.12,z-.55),m=P(xr+sd*.42,rh+.45,z+.18);stroke(g,[m[0],m[1],cl[0],cl[1]],lamp('#b8a070',[xr,1.2,z+.5],[-sd,.5,-.5]),.6)}
   /* the four cables: from the deck at our feet aft along the planks, rising to the stern rail, over it and away (each ends at the
      rail's top, where it bends down out of sight) */
-  const n=o.cables||4;for(let i=0;i<n;i++){const x0=[-1.45,-.8,.8,1.45][i]||0,x1=x0*.86,z1=sz(x1)+.02,ye=RH(x1,z1)+.12,p=[];
+  const n=o.cables!=null?o.cables:4;for(let i=0;i<n;i++){const x0=[-1.45,-.8,.8,1.45][i]||0,x1=x0*.86,z1=sz(x1)+.02,ye=RH(x1,z1)+.12,p=[];
     for(let j=0;j<=16;j++){const t=j/16,z=1.9+(z1-1.9)*t,y=.1+(ye-.1)*Math.pow(t,2.2);p.push(...P(x0+(x1-x0)*t,y,z))}
     const w0=150*.06/1.9,w1=150*.06/z1;for(let j=2;j<p.length;j+=2){const t=j/(p.length-2),w=w0+(w1-w0)*t,zz=1.9+(z1-1.9)*t,c=lamp('#9a8058',[x0,.5,zz],[0,1,-.3]);stroke(g,[p[j-2]+w*.25,p[j-1]+w*.3,p[j]+w*.25,p[j+1]+w*.3],'rgba(4,3,3,.6)',w);stroke(g,[p[j-2],p[j-1],p[j],p[j+1]],c,w*.8);stroke(g,[p[j-2]-w*.2,p[j-1]-w*.2,p[j]-w*.2,p[j+1]-w*.2],rgba(lamp('#e8c898',[x0,.5,zz],[0,1,-.3]),.6),Math.max(.4,w*.25))}
 }
@@ -747,9 +757,9 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=1.3,P=(x,y,z)=>[160
   comp(g,'lighter',.4,()=>{pool(g,lx,ly+4,18,8,'#ff9a40',.45);pool(g,lx,ly+1,7,4,'#ffc070',.55)});
   poly(g,[lx-1.6,ly-2,lx+1.6,ly-2,lx+1.9,ly+2.6,lx-1.9,ly+2.6],'#5a3a22');R(g,lx-1,ly-1.2,2,3,'#ffd890');R(g,lx-.5,ly-.6,1,1.6,'#fff4d0');R(g,lx-1.9,ly+2.6,3.8,.6,'#3a2414');
   /* rain, faint, brighter where it falls through the lantern's light */
-  if(SHARED.weather){SHARED.weather.rain(g,o.t||3000,320,{density:.5,len:4,col:'rgba(150,160,180,.22)',wind:-1.2,seed:2307});
+  if(SHARED.weather&&o.rain!==false){SHARED.weather.rain(g,o.t||3000,320,{density:.5,len:4,col:'rgba(150,160,180,.22)',wind:-1.2,seed:2307});
     clipTo(g,()=>{g.beginPath();g.ellipse(lx,ly+10,40,26,0,0,6.2832)},()=>SHARED.weather.rain(g,o.t||3000,320,{density:.9,len:4,col:'rgba(255,214,150,.4)',wind:-1.2,seed:2308}))}
   return{P,hz,lamp:[lx,ly]}}
 
-return{side,geo,anchor,wreckage,LIGHT,hawser:hawserS,deck,geoDeck,sternNight};
+return{side,geo,anchor,wreckage,LIGHT,hawser:hawserS,deck,geoDeck,sternNight,nightGeo};
 })();
