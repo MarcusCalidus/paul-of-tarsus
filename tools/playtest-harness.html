@@ -5699,16 +5699,20 @@
     R.off=()=>{window.codeBtn=cb0;window.say=say0;window.cut=cut0};return R};
   const codesCheck=async(ch,R,finish)=>{R.off();
     const fresh=()=>{for(const k of Object.keys(G))if(new RegExp(ch+'$').test(k)||/^(mailSaid|skiffT|pk23saw)$/.test(k))delete G[k]},
-      settle=async()=>{for(let i=0;i<60&&(G.busy||ov.classList.contains('on'));i++){if(G.skip)G.skip();await wait(50)}await idle();await wait(150)},
+      settle=async()=>{for(let i=0;i<80&&(G.busy||ov.classList.contains('on')||P.walk||PC().walk);i++){if(G.skip)G.skip();await wait(50)}await wait(150)},
+      /* a restore that does not come back in eight seconds is a fault of its own, not a wait */
+      rest=c=>Promise.race([restore(c,1),wait(8000).then(()=>'timeout')]),
       todo=()=>(ROOMS[G.room].hs||[]).some(h=>!h.vis||h.vis())||Object.values(ACT).some(a=>a!==PC()&&a.room===G.room&&a.hs),
       uniq=[...new Map(R.codes.map(c=>[c.code,c])).values()],bad=[];
     ok(!R.bad.length&&new Set(R.told).size===Object.keys(CHAP[ch].told).length,'no code is kept between a change in the story and the told line that belongs to it: each of the '+R.told.length+' told lines after a code comes only once the player has acted again, so a restored code never skips one'+(R.bad.length?'. SKIPPED: '+R.bad.join(' | '):''));
-    for(const c of uniq){fresh();const r=await restore(c.code,1);await settle();
+    const t0=performance.now();
+    for(const c of uniq){fresh();const r=await rest(c.code);await settle();
       const why=[r!==true&&'not restored',G.ch!==ch&&'chapter '+G.ch,G.room!==c.room&&'room '+G.room,PC().room!==G.room&&'not in the room',G.busy&&'busy',G.scene&&'a scene up',
         $('#choices').classList.contains('on')&&'a choice open',mn.classList.contains('on')&&'the menu open',ov.classList.contains('on')&&'an overlay',!todo()&&'nothing to do',makeCode()!==c.code&&'another code '+makeCode()].filter(Boolean);
       if(why.length)bad.push(c.room+' '+c.code+': '+why.join(', '))}
+    L('     '+uniq.length+' codes restored in '+Math.round((performance.now()-t0)/1000)+' s');
     ok(!bad.length&&uniq.length>8,uniq.length+' codes offered on the way, each restored in a fresh state: the game idle, no menu, choice or scene up, whoever is played in the code\'s room with something to do there, and the same code again'+(bad.length?'. BAD: '+bad.slice(0,8).join(' | '):''));
-    const last=R.codes.at(-1);fresh();await restore(last.code,1);await settle();const ph=CHAP[ch].phase();await finish();
+    const last=R.codes.at(-1);fresh();await rest(last.code);await settle();const ph=CHAP[ch].phase();await finish();
     for(let i=0;i<4000&&!ov.classList.contains('end');i++)await wait(30);await wait(120);
     ok(ov.classList.contains('end'),'from the latest point ('+last.code+', '+last.room+', '+ph+') the end screen is reached');return uniq};
   if(C22){const R22=stop==='codes22'?codeLog():null;await ch22();ok(!MISSING.size&&!RAWKEY.size,'every line shown had its text in '+LANGS[lang].native+(RAWKEY.size?'. A KEY SHOWN AS IT IS: '+[...RAWKEY].slice(0,10).join(' | '):'')+(MISSING.size?'. MISSING: '+[...MISSING].slice(0,10).join(' | '):''));
@@ -5722,9 +5726,9 @@
       /* a code restored while the voyage out waits on the map for Myra to be clicked (the map's pick is ended, commit c7b313d: no key is
          pressed for it, so no menu opens) */
       {const q=uniq.find(c=>c.room==='quay22'),my=uniq.find(c=>c.room==='myra22');for(const k of Object.keys(G))if(/22$/.test(k))delete G[k];
-        await restore(q.code,1);await idle();const h=ROOMS.quay22.hs.find(h=>h.name==='gangplank');verb('use');clickView(h.x+h.w/2,h.y+h.h/2,h);
+        await restore(q.code,1);for(let i=0;i<80&&G.busy;i++){if(G.skip)G.skip();await wait(50)}const h=ROOMS.quay22.hs.find(h=>h.name==='gangplank');verb('use');clickView(h.x+h.w/2,h.y+h.h/2,h);
         for(let i=0;i<900&&!(SHARED.map&&SHARED.map.state.places&&G.scene===SHARED.map.draw&&!G.busy);i++)await wait(30);await wait(200);const M=SHARED.map,waited=!!(M&&M.state.places&&G.scene===M.draw);
-        await restore(my.code,1);await wait(800);await idle();
+        await Promise.race([restore(my.code,1),wait(8000)]);await wait(800);
         ok(waited&&G.room==='myra22'&&F.out&&!G.scene&&!G.busy&&!mn.classList.contains('on')&&!$('#choices').classList.contains('on')&&!ov.classList.contains('on')&&!M.state.places&&makeCode()===my.code,
           'with the voyage out waiting on the map for Myra, a code restored ('+my.code+'): the map\'s wait ends, no menu or choice opens, and the game is idle at Myra')}}
     L('DONE');throw 'halt'}
