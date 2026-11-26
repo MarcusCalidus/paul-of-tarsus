@@ -6421,7 +6421,7 @@
      clicked. The full run is to call its test when Chapter Twenty-Three has ended (LOGIC24 for the lead: chain ch24() and ch25() after ch23()
      in the full run once Chapter Twenty-Three's end screen leads on). all24 halts nowhere. Its halts: quay24 (the quay of Malta, Luke) ·
      court24 (Puteoli, the news for Rome) · capua24 (the carter played) · canal24 (the trader played, at dusk) · dawn24 (the boatman at the
-     Marketplace at daybreak) · stones24 (Proculus has learned the stones) · rome24 (Vibia's house) · board24 (the board) · hills24 (the road,
+     Marketplace at daybreak) · stones24 (Sextus has learned the stones) · rome24 (Vibia's house) · board24 (the board) · hills24 (the road,
      Paul in step) · marsh24 (weary) · meet24 (28:15) · taverns24 · far24 · capena24 · camp24 · lane24 · look24 (the small room) · final24
      (the end screen with Chapter Twenty-Five's code). After final24 the end screen is clicked: Chapter Twenty-Five opens with from24 and
      street carried, in the room chosen, and the printed code, typed, gives the same room. The stops that begin with "p" open one point at
@@ -6513,10 +6513,10 @@
     ok(!l.querySelector('[data-ch="24"]')&&building(24)&&plans&&plans.textContent.includes(T('twenty_four')),'FOR NOW: the title does not list Chapter Twenty-Four while the line of the chapters in preparation still names it')}
   if(C24){const e=document.querySelector('#overlay [data-ch="24"]');if(e)e.click();else startChapter(24)}else ov.click();
   await until(()=>G.ch===24&&G.room==='quay24'&&!G.busy,6000);note();
-  const LK=A('luke24'),AR=A('aris24'),JU=A('julius24'),SO=A('sold24a'),SL=A('sailor24'),HE=A('host24'),CA=A('carter24'),TR=A('trader24'),BO=A('boatman24'),DE=A('proculus24'),
+  const LK=A('luke24'),AR=A('aris24'),JU=A('julius24'),SO=A('sold24a'),SL=A('sailor24'),HE=A('host24'),CA=A('carter24'),TR=A('trader24'),BO=A('boatman24'),DE=A('sextus24'),
     MI=A('mikon24'),VI=A('vibia24'),AE=A('aemilia24'),PO=A('postumus24'),FI=A('firmus24'),TH=A('thallos24'),IK=A('inn24'),GW=A('watch24'),LL=A('landlord24'),MSG=C().msg,H=C().hand;
-  ok(seenTold.has('n11')&&said('luke_three_months_on_this_island')&&PC()===LK&&P.room==='quay24'&&AR.room==='quay24'&&JU.room==='quay24'&&SO.room==='quay24'&&SL.room==='quay24'
-    &&C().party.join()==='paul,luke24,proculus24,carter24,trader24,boatman24'&&C().swap===false&&G.inv.includes('ltab24')&&!P.chained,
+  ok(seenTold.has('n11')&&seenTold.has('n11b')&&said('luke_three_months_on_this_island')&&PC()===LK&&P.room==='quay24'&&AR.room==='quay24'&&JU.room==='quay24'&&SO.room==='quay24'&&SL.room==='quay24'
+    &&C().party.join()==='paul,luke24,sextus24,carter24,trader24,boatman24'&&C().swap===false&&G.inv.includes('ltab24')&&!P.chained,
     'after three months we sailed, in a ship of Alexandria that had wintered at the island, the Sons of Zeus her figurehead (Acts 28:11), from the scroll; the quay of Malta: Luke is played, Paul, Aristarchus, Julius and a soldier by him, no chain');
   ok(/^24(-[0-9A-Z]{3}){2,6}$/.test(makeCode())&&decode(makeCode()).ch===24,'a code of Chapter Twenty-Four: '+makeCode());
   ok(AU.score===C().music&&C().music.steps===15&&C().music.root===60&&C().music.group.join()==='5,5,5'&&C().music.scale.join()==='0,2,4,5,7,9,11','the chapter\'s score, in C major and in bars of fifteen that fall five, five, five');
@@ -6576,14 +6576,14 @@
   ok(F.given3&&PC()===BO&&ART.appius24.variant()==='dawn'&&DE.room==='appius24','the Marketplace of Appius at daybreak: the boatman is played; a young carrier is loading for Rome');
   halt('dawn24');
   await thinks('think_the_young_man_1','think_the_young_man_2','at daybreak');
-  /* the boatman to Proculus, who gets it all right in his own words: every correction is answered kindly and changes nothing */
+  /* the boatman to Sextus, who gets it all right in his own words: every correction is answered kindly and changes nothing */
   heard.length=0;talkTo(DE);await line(MSG[0]);ok(said('thats_what_i_said'),'a correction of nothing: that\'s what I said');for(let i=1;i<4;i++)await line('let_it_stand');
   await until(()=>PC()===DE&&!G.busy,6000);
-  ok(F.given4&&!said('wait_one_thing_again')&&said('proculus_how_far_is_it_really')&&$('#pray').dataset.k==='pray_to_jehovah','Proculus has it right; he is played now, and he prays');
-  heard.length=0;await onH('road_north','walk');ok(said('proculus_first_what_the_stone_says')&&G.room==='appius24','first the stone');
+  ok(F.given4&&!said('wait_one_thing_again')&&said('sextus_how_far_is_it_really')&&$('#pray').dataset.k==='pray_to_jehovah','Sextus has it right; he is played now, and he prays');
+  heard.length=0;await onH('road_north','walk');ok(said('sextus_first_what_the_stone_says')&&G.room==='appius24','first the stone');
   await hints('hint_the_stones_1','hint_the_stones_2','at the stone');
-  heard.length=0;await onH('milestone','look');ok(said('proculus_letters_cut_in_the_stone'),'the stone: XLIII, and he cannot read it');
-  heard.length=0;await talkTo(BO);ok(F.numerals&&said('boatman_i_is_one_v_five_x_ten_l_fifty')&&said('boatman_a_small_one_before_a_big_one_takes_away')&&said('boatman_so_xliii_is_forty_three'),'Ursus teaches the stones: I, V, X, L; a smaller one before a bigger takes away; XLIII is forty-three');
+  heard.length=0;await onH('milestone','look');ok(said('sextus_letters_cut_in_the_stone'),'the stone: XLIII, and he cannot read it');
+  heard.length=0;await talkTo(BO);ok(F.numerals&&said('boatman_i_is_one_v_five_x_ten_l_fifty')&&said('boatman_a_small_one_before_a_big_one_takes_away')&&said('boatman_so_xliii_is_forty_three'),'Varro teaches the stones: I, V, X, L; a smaller one before a bigger takes away; XLIII is forty-three');
   heard.length=0;await onH('milestone','look');ok(said('xliii_forty_three_miles_to_rome'),'and now he reads it');
   await code('with the stones learned',()=>G.room==='appius24'&&PC()===DE&&F.numerals&&!F.news&&BO.room==='appius24');
   halt('stones24');
@@ -6593,15 +6593,15 @@
     'Vibia\'s house: the news reaches Rome whole; seven want to go out, Mikon of Cenchreae among them');
   halt('rome24');
   await hints('hint_the_board_1','hint_the_board_2','in Vibia\'s house');
-  for(const[a,k]of[[MI,'mikon_paul_knows_my_face'],[VI,'vibia_bread_on_my_mule'],[AE,'aemilia_i_go_where_my_mother_goes'],[PO,'postumus_thirty_five_miles'],[FI,'firmus_my_oven_cant_spare_a_day'],[TH,'thallos_as_far_as_the_fortieth_mile']]){
+  for(const[a,k]of[[MI,'mikon_paul_knows_my_face'],[VI,'vibia_bread_on_my_mule'],[AE,'aemilia_i_go_where_my_mother_goes'],[PO,'postumus_vibia_says_thirty_five_miles'],[FI,'firmus_my_oven_cant_spare_a_day'],[TH,'thallos_as_far_as_the_fortieth_mile']]){
     heard.length=0;await talkTo(a);ok(said(k),T(a.name)+': '+T(k))}
   heard.length=0;await onH('board','use');await until(()=>G.room==='board24'&&!G.busy,3000);ok(G.room==='board24'&&ART.board24.light===null,'the board, close');
   halt('board24');
   const put=async(id,p)=>{const t=C().tok.find(t=>t.id===id);await onH(t.name,'use');await onH(p==='T'?'three_taverns':'marketplace_of_appius','use')};
-  heard.length=0;for(const[id,p]of[['proculus24','M'],['mikon24','M'],['vibia24','M'],['aemilia24','M'],['postumus24','M'],['firmus24','T'],['thallos24','T']])await put(id,p);
-  ok(said('postumus_farther_than_my_knees')&&!G.tok24.postumus24&&!F.planned,'all set: the first wish broken is said by the one it concerns (Postumus, his knees), and his peg comes back');
+  heard.length=0;for(const[id,p]of[['sextus24','M'],['mikon24','M'],['vibia24','M'],['aemilia24','M'],['postumus24','M'],['firmus24','T'],['thallos24','T']])await put(id,p);
+  ok(said('postumus_vibia_wont_hear_of_it')&&!G.tok24.postumus24&&!F.planned,'all set: the first wish broken is said by the one it concerns (Postumus, his knees), and his peg comes back');
   heard.length=0;await put('postumus24','T');await until(()=>G.room==='hills24'&&!G.busy,15000);note();
-  ok(F.planned&&said('proculus_four_to_the_marketplace_three_to_three_taverns')&&said('vibia_then_its_settled_we_leave_at_dawn')&&seenTold.has('n14b')&&ROADS24.slice(3).join()==='puteoli-capua,capua-appius',
+  ok(F.planned&&said('sextus_four_to_the_marketplace_three_to_three_taverns')&&said('vibia_then_its_settled_we_leave_at_dawn')&&seenTold.has('n14b')&&ROADS24.slice(3).join()==='puteoli-capua,capua-appius',
     'four to the Marketplace, three to Three Taverns; "After that we went on toward Rome" (Acts 28:14, its last sentence); the road on the map');
   /* the road: in step */
   ok(PC()===P&&C().phase()==='road'&&!P.chained&&P.look===LOOK.paul&&said('soldier_keep_step_with_me')&&said('paul_a_soldiers_pace')&&ROOMS.hills24.birds.prey,'the Appian Way in the hills: Paul is played, beside a soldier, unchained; the soldier teaches the step; a bird of prey over the hills');
@@ -6618,7 +6618,7 @@
     'the brothers came out to meet us (Acts 28:15); at the sight of them Paul thanked God and took courage; Mikon; what he wrote to them (Romans 1:11, 12); the beat no longer has to be kept');
   await code('at the Marketplace with the brothers',()=>G.room==='appius24'&&PC()===P&&F.met&&!F.taverns&&MI.room==='appius24'&&!G.beat);
   halt('meet24');
-  heard.length=0;await talkTo(DE);ok(said('proculus_your_news_came_mouth_to_mouth'),'how the news came: a carter, a trader, a boatman');
+  heard.length=0;await talkTo(DE);ok(said('sextus_your_news_came_mouth_to_mouth'),'how the news came: a carter, a trader, a boatman');
   await hints('hint_on_to_rome_1','hint_on_to_rome_2','at the Marketplace');
   heard.length=0;onH('road_north','walk');await until(()=>G.room==='taverns24'&&!G.busy,6000);
   ok(F.taverns&&said('postumus_we_waited_here_since_yesterday')&&[PO,FI,TH,IK,MI,LK].every(a=>a.room==='taverns24'),'Three Taverns: the others are waiting; the group that goes on is large');
@@ -6638,15 +6638,15 @@
   ok(JU.room==='camp24'&&!P.chained,'the wall of the Praetorians\' camp; Julius a last time');
   halt('camp24');
   heard.length=0;talkTo(JU);await until(()=>G.room==='lane24'&&!G.busy,15000);note();
-  ok(said('julius_ill_tell_them_what_i_saw_at_sea')&&said('paul_that_was_gods_doing')&&said('julius_go_well_paul')&&seenTold.has('n16')&&PC()===LK&&!P.room&&GW.room==='lane24'&&LL.room==='lane24',
-    'Julius: what he saw at sea; nobody is handed over on screen; we came into Rome (Acts 28:16), from the scroll; Luke and Proculus look for a lodging');
+  ok(said('julius_i_wont_forget_what_i_saw_at_sea')&&said('paul_that_was_gods_doing')&&said('julius_go_well_paul')&&seenTold.has('n16')&&PC()===LK&&!P.room&&GW.room==='lane24'&&LL.room==='lane24',
+    'Julius: what he saw at sea; nobody is handed over on screen; we came into Rome (Acts 28:16), from the scroll; Luke and Sextus look for a lodging');
   await code('in the street',()=>G.room==='lane24'&&PC()===LK&&F.camp&&!F.chosen&&!P.room);
   halt('lane24');
   await hints('hint_a_room_with_a_door_1','hint_a_room_with_a_door_2','in the street');
   /* a room with a door: the two that fail, each said by the one it concerns; then the room at street level */
   heard.length=0;await onH('door_small','open');await until(()=>G.room==='look24'&&!G.busy,3000);
   ok(ART.look24.variant()==='small','the small room');halt('look24');
-  heard.length=0;await onH('this_room','use');ok(said('proculus_four_would_fill_this_room')&&!F.chosen,'too small: Proculus, for the many who will come');
+  heard.length=0;await onH('this_room','use');ok(said('sextus_four_would_fill_this_room')&&!F.chosen,'too small: Sextus, for the many who will come');
   await code('in the small room',()=>G.room==='look24'&&ART.look24.variant()==='small'&&PC()===LK);
   heard.length=0;await onH('back_to_the_street','walk');await until(()=>G.room==='lane24'&&!G.busy,3000);
   heard.length=0;await onH('door_garret','open');await until(()=>G.room==='look24'&&!G.busy,3000);
