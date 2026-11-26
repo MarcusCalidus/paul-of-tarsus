@@ -403,6 +403,35 @@
       const z=document.createElement('canvas'),Z=6,parts=[[0,76,70,32],[150,90,70,50]];z.width=70*2*Z;z.height=parts.reduce((s,r)=>s+r[3]*2*Z,0);const g=z.getContext('2d');g.imageSmoothingEnabled=false;let y=0;
       for(const[x0,y0,w,h]of parts){g.drawImage(k,x0*2,y0*2,w*2,h*2,0,y,w*2*Z,h*2*Z);y+=h*2*Z}
       window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'map21-zoom']:z.toDataURL()})})}
+  /* lookback: the table of every journey of the game (shared/lookback.js), for the look back at its end. Every chapter from the Prologue
+     to Chapter Twenty-Five has exactly one part, in order; every place of every map is a place of the travel map; and every map, shown
+     whole, in each language (de:lookback): no two roads on it cross, no name crosses a coast, an island, a lake or a road, no two names
+     touch, every name and every lit place lies inside the window, and the light stands where its last part ended (shown up to each part
+     in turn, too). A map whose places or window are not on the travel map yet (the voyage on from Malta, the window east) is skipped and
+     named, so that the check tightens by itself when they come. It hands over lookback.png (de-lookback.png): every map at 2x, three
+     to a row, for the cross-shape check. */
+  if(stop==='lookback'){clearInterval(sk);sk=0;await need('map');const LB=await need('lookback');ov.className='';ov.onclick=null;G.busy=true;lock(true);status();
+    const M=SHARED.map,J=LB.JOURNEYS,cross=L=>{const ccw=(a,b,c)=>(c[1]-a[1])*(b[0]-a[0])-(b[1]-a[1])*(c[0]-a[0]),inter=(p,q,r,t)=>ccw(p,r,t)*ccw(q,r,t)<0&&ccw(p,q,r)*ccw(p,q,t)<0;let k=0;
+        for(let x=0;x<L.length;x++)for(let y=x+1;y<L.length;y++)for(let i=1;i<L[x].dots.length;i++)for(let j=1;j<L[y].dots.length;j++)if(inter(L[x].dots[i-1],L[x].dots[i],L[y].dots[j-1],L[y].dots[j]))k++;return k},
+      tidy=()=>{const[ox,oy,w,h]=M.window(),bx=M.state.boxes,bad=[];for(const b of bx)if(b[0]<ox-.5||b[2]>ox+w+.5||b[1]<oy-.5||b[3]>oy+h+.5)bad.push(b[4]+' (off the map)');
+        for(let i=0;i<bx.length;i++)for(let j=i+1;j<bx.length;j++){const a=bx[i],b=bx[j];if(a[0]<b[2]&&b[0]<a[2]&&a[1]<b[3]&&b[1]<a[3])bad.push(a[4]+' on '+b[4])}return bad},
+      inWin=id=>{const[x,y]=M.where(id);return x>6&&x<314&&y>6&&y<138},
+      say=(c,cl,td,out)=>(c?'. CROSSINGS: '+c:'')+(cl?'':'. CROSSES: '+[...mapClear.bad].join(', '))+(td.length?'. NAMES: '+td.join(', '):'')+(out.length?'. OUT: '+out.join(', '):'');
+    const order=J.flatMap(m=>m.parts.map(p=>p.ch)),want=['pro',...Array.from({length:25},(_,i)=>i+1)];
+    ok(order.join()===want.join()&&want.every(ch=>{const o=LB.partOf(ch);return o&&J[o.map].parts[o.part].legs===LB.legsOf(ch)}),'the look back has one part for every chapter from the Prologue to Chapter Twenty-Five, in order: '+order.join(' '));
+    const shots=[],skipped=[];
+    for(let i=0;i<J.length;i++){const m=J[i],name=`map ${i+1} (${m.id}, ${m.view||'the usual window'})`;
+      if(!LB.ready(i)){const miss=[...new Set([...(m.old||[]),...m.parts.flatMap(p=>p.legs)].flatMap(l=>l.slice(0,2)).concat(m.parts.map(p=>p.at)))].filter(k=>!M.places[k]);
+        skipped.push(name+': '+(miss.length?'no place '+miss.join(', '):'no window '+m.view));continue}
+      let lit=1;for(let u=0;u<m.parts.length;u++){await LB.show(i,u);lit=lit&&M.state.pulse===m.parts[u].at&&M.state.seen.has(m.parts[u].at)}
+      await LB.show(i);await wait(40);
+      const c=cross(M.state.legs),cl=mapClear(),td=tidy(),out=[...M.state.seen].filter(k=>!M.places[k].hide&&!inWin(k)),n=[...(m.old||[]),...m.parts.flatMap(p=>p.legs)].length;
+      ok(!c&&cl&&!td.length&&!out.length&&lit&&M.state.legs.length===n,'lookback, '+name+', chapters '+m.parts.map(p=>p.ch).join(', ')+': '+n+' roads, none crosses another, no name crosses a coast, a road or another name, and the light stands where each part ends'+say(c,cl,td,out)+(lit?'':'. LIGHT in the wrong place'));
+      const k=document.createElement('canvas');k.width=640;k.height=288;const q=k.getContext('2d');q.scale(2,2);M.draw(q,G.t);shots.push(k)}
+    L((skipped.length?'note ':'ok   ')+'lookback: '+(skipped.length?'skipped, until the travel map has them: '+skipped.join(' | '):'every map was shown'));
+    halt('lookback',()=>{const z=document.createElement('canvas'),C=3,R=Math.ceil(shots.length/C);z.width=C*640+(C-1)*8;z.height=R*288+(R-1)*8;const g=z.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,z.width,z.height);
+      shots.forEach((k,i)=>g.drawImage(k,(i%C)*648,Math.floor(i/C)*296));
+      window.SHEETS=Object.assign(window.SHEETS||{},{[(lang==='en'?'':lang+'-')+'lookback']:z.toDataURL()})})}
   /* A figure bound with a belt (a.bound; person's fr -6): Agabus binds his own feet and hands with Paul's belt (Acts 21:11). For every look
      of Chapters Three, Sixteen and Seventeen (if it is there) and the usual kinds of dress, facing both ways: each pose is one piece, and
      a.bound seats an actor bound, keeps him from turning, and lets him go when it is cleared. cast-bound.png shows them three times
