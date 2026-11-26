@@ -2,6 +2,7 @@
 # file where it is not the stop's own (a sheet that the stop `cast` hands over, the icon that the stop `pwa` saves). A stop written
 # de:name is taken in German. `node tools/retake.mjs` takes them all again; the playtest fails if a picture is not listed here.
 aegean journey8
+after25 pafter25
 agabus-belt pbound17
 ages ages
 agora agora11
@@ -140,6 +141,7 @@ lane-map lanes
 lane-map-harbor lanes2
 lane24 plane24
 lanes19 phalves19
+later-map plater
 letter12 pletter12
 letter19 letter19
 letters-map pletters
@@ -181,6 +183,7 @@ on-the-stairs pstairs18
 one-by-one pone18
 options de:menu
 other-road map15
+out25 pout25
 outcry pspeech18
 palace19 ppalace19
 paphos paphos

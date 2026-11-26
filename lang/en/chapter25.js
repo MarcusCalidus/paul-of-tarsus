@@ -410,11 +410,23 @@ TEXTS('en',25,{
   "hint_by_mouth_2":"I should tell Tychicus what the letters leave out.",
   "hint_the_last_door_1":"Someone's at the door.",
   "hint_the_last_door_2":"I should open the door and let my visitor in.",
+  /* ---- after Acts: the morning of the release, played after the narrator's roll is closed (the finale's after) ---- */
+  "celer_orders_from_the_camp_youre_free":"Orders from the camp, Paul. You're free. Give me your wrist.",
+  "celer_ive_never_let_a_prisoner_go":"There. I've never let a prisoner go for good before.",
+  "paul_thank_you_celer":"Thank you, Celer.",
+  "paul_my_cloak_now_ill_need_it":"My cloak. Now I'll need it.",
+  "celer_itll_be_quiet_here_now":"It'll be quiet here now. Almost too quiet.",
+  "hint_after_the_chain_1":"The soldier has something to do with my chain.",
+  "hint_after_the_chain_2":"I should hold the chain out to Celer.",
+  "hint_after_the_cloak_1":"I'll be outdoors from now on.",
+  "hint_after_the_cloak_2":"I should take my cloak from the peg.",
+  "hint_after_the_door_1":"Nothing holds me in this room now.",
+  "hint_after_the_door_2":"I should go out through the door.",
   "hint_his_question_1":"He asked one thing. He wants one answer.",
   "hint_his_question_2":"I should talk to the soldier and answer just what he asked.",
   /* ---- the page about the chapter: the lead's keys, written by the lead ---- */
   "without_hindrance_about":"Three days after his arrival Paul asked the principal men among the Jews to come together and told them why he was a prisoner: it was for the hope of Israel that the chain was on him. On the day they agreed on, still more came, and from morning to evening he bore thorough witness about the Kingdom of God. Some began to believe; others would not. For two whole years he lived in the house he had rented. He wrote to the Ephesians, the Philippians, the Colossians and Philemon, and he sent Epaphroditus home to Philippi and Tychicus to Asia with Onesimus. Everyone who came was welcome, and he spoke with all freeness of speech, without hindrance.",
-  "based_on_acts_28_17_31":"Based on Acts 28:17-31 and on Paul's letters from Rome: Philippians 1:12-14; 2:25-30; 4:18, 22; Colossians 4:7-18; Ephesians 6:21, 22; Philemon. Supporting characters, dialogue and puzzles are invented for this dramatization; the account and the letters are told here in paraphrase. Acts does not name the passages Paul used that day: the five here were told in Chapters Five and Ten. The letters say that his bonds became known in all the Praetorian Guard and that those of Caesar's household sent greetings, not that a soldier or anyone of that household came to believe through Paul. No source sets the four letters in a strict order or names a secretary: that Timothy holds the pen is invented. That Luke works on his account in this room follows Insight on the Scriptures: he likely finished Acts in Rome. The publications think that Paul apparently wrote to the Hebrews about that time as well.",
+  "based_on_acts_28_17_31":"Based on Acts 28:17-31 and on Paul's letters from Rome: Philippians 1:12-14; 2:25-30; 4:18, 22; Colossians 4:7-18; Ephesians 6:21, 22; Philemon. Supporting characters, dialogue and puzzles are invented for this dramatization; the account and the letters are told here in paraphrase. Acts does not name the passages Paul used that day: the five here were told in Chapters Five and Ten. The letters say that his bonds became known in all the Praetorian Guard and that those of Caesar's household sent greetings, not that a soldier or anyone of that household came to believe through Paul. No source sets the four letters in a strict order or names a secretary: that Timothy holds the pen is invented. That Luke works on his account in this room follows Insight on the Scriptures: he likely finished Acts in Rome. The publications think that Paul apparently wrote to the Hebrews about that time as well. Acts ends before Paul's release. The publications think that about 61 C.E. he was apparently tried and declared innocent. The morning of the release and Celer's orders are invented. The places on the last map come from the letters to Titus and Timothy, which the publications date to the years after; whether Paul reached Spain is not known.",
   /* ---- the door, and the way back to the title until the finale is merged ---- */
   "door":"door",
   "click_to_return_to_the_title":"Click to return to the title"

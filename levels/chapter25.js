@@ -144,8 +144,8 @@ const stools25=()=>watch25()===7?['desk']:undefined;
    at 102); the bed 8..64. Walk: 14..306 by 106..138, and while Paul is chained the reach of the chain from the soldier's seat. */
 const ROOM25=()=>({kind:kind25(),hour:hour25(),stools:stools25()});
 const MOT25={};
-ART.lodging25={w:320,q:12,variant:()=>kind25()+'_'+hour25()+(watch25()===7?'_7':''),
-  paint(g,v){const[k,h,s]=(v||'flat_early').split('_');LG.room(g,{kind:k,hour:h,stools:s?['desk']:undefined})},
+ART.lodging25={w:320,q:12,variant:()=>kind25()+'_'+hour25()+(watch25()===7?'_7':'')+(G.cloak25?'_bare':''),
+  paint(g,v){const[k,h,...m]=(v||'flat_early').split('_');LG.room(g,{kind:k,hour:h,stools:m.includes('7')?['desk']:undefined,cloak:!m.includes('bare')})},
   get light(){return LG.light(kind25(),hour25())},
   /* the table and the stools (the stools are seats); the benches and, in the last watch, the soldier's own stool are seats too, with no
      cut-out of their own (the benches stand at the back wall, behind everyone) */
@@ -410,6 +410,12 @@ function roll25c(g,x0,x1,y,h,r){const rx=h*.28,ry=h/2,cy=y-ry,PI=Math.PI,
   g.beginPath();g.ellipse(x0,cy,rx,ry,0,PI*.55,PI*1.45);g.strokeStyle='rgba(255,250,230,.55)';g.lineWidth=.5;g.stroke()}
 /* ==== ART letters25: end ==== */
 
+/* ==== ART street25: begin ==== */
+/* The street in the morning after Acts (shared/rome.js, street): the tenement of the lodging with both its doors, the flat's stair door
+   and the shop room's doorway, in the low sun of the early morning; its light is the street's. Nothing stands on its walk strip. */
+ART.street25={w:320,q:12,variant:()=>kind25(),paint(g,v){SHARED.rome.street(g,{kind:v||'flat'})},get light(){return SHARED.rome.light('street',kind25())},props:[],draw(){},front(){}};
+/* ==== ART street25: end ==== */
+
 /* ---- the inventory ---- */
 /* the chain on Paul's wrist (Chapter Twenty-One's); the sheet folded once; a roll with its face toward us */
 Object.assign(ICON,{
@@ -563,7 +569,7 @@ async function move25(to){const S=SO25(),at=SEATS[to];G.seat25=to;
 /* where Paul stands as a watch begins (inside the reach of the soldier's seat) */
 const STAND25={1:[176,116,1],2:[198,130,-1],3:[148,132,-1],4:[214,128,-1],5:[186,130,-1],6:[198,128,-1],7:[198,126,1]};
 const pos25=()=>{const w=watch25();return w===1&&F.men?[214,128,-1]:STAND25[w]};
-const ENT={get lodging25(){return pos25()},sheet25:[160,236,1],letters25:[160,236,1]};
+const ENT={get lodging25(){return pos25()},sheet25:[160,236,1],letters25:[160,236,1],get street25(){return SHARED.rome.STREET.door[kind25()].concat(-1)}};
 /* the leading men on the benches (watch 1), and the listeners (watch 2): [actor, x, facing]; their feet at the benches' foot line */
 const BENCH=102;
 const MEN25=[[JA,84,1],[JC,104,1],[JE,124,1],[JF,168,1],[JD,188,1],[JB,208,1]],SPOKES25=JB;
@@ -610,7 +616,7 @@ async function start25(){ov.onclick=null;ov.className='';audioInit();SFX.good();
 
 /* ---- watch 1: this chain (28:17-22) ---- */
 /* the door: the leading men come in (watch 1), the visitor of the last watch, or nothing yet */
-async function door25(){const w=watch25();
+async function door25(){if(G.after25)return afterDoor25();const w=watch25();
   if(w===7)return G.w7?final25():say(P,'paul_hes_getting_up',TP);
   if(w===1&&!F.men)return men25();
   return say(P,'paul_ill_open_it_when_someone_knocks',TP)}
@@ -786,12 +792,62 @@ async function final25(){if(G.door25)return;G.door25=1;const D=LG.AT.door,st=LG.
 /* toFinale: the one way out of the chapter, into the finale (shared/finale.js): its run() takes over from the open door to the closing
    screen. Should that file ever fail to load, the chapter returns to the title after a click instead of standing still. */
 async function toFinale(){let fin=null;try{fin=await need('finale')}catch(e){fin=null}
-  if(fin&&fin.run)return fin.run();
+  if(fin&&fin.run)return fin.run({after:after25});
   await fade(1,700);overlay('on end',()=>{ov.innerHTML='<p class="go">'+esc(T('click_to_return_to_the_title'))+'</p>'});
   await wait(1500);ov.onclick=()=>location.reload();await new Promise(()=>{})}
 
+/* ---- after Acts: the morning of the release (decided by the maintainer on 26 November 2026) ----
+   Acts ends inside the two years. The publications think that about 61 C.E. Paul was apparently tried and declared innocent (the Study
+   Edition's note on Acts 28:30; Bearing Thorough Witness, chapter 27). The finale plays this one morning after the narrator's roll has
+   been closed (SHARED.finale.run, its after): the lodging early in the day, as the last watch left it but with no visitors, Celer at
+   his stool by the door with his orders. Paul is alone with him: nobody named in the Scriptures is placed at that morning, for no source
+   puts anyone there (the maintainer took Luke out of it, 26 November 2026). The player does three plain things: holds the chain out to
+   Celer, takes the cloak from the peg, and goes out through the door. Outside, the street in the morning (street25, SHARED.rome.street),
+   and Paul walks off along it. No court, no emperor and no verdict is seen; Celer is not shown believing. No flag is set and no point is kept
+   for this morning: G.after25 is its step ('chain', 'cloak', 'door', 'out'), for this sitting only; the finale keeps the game as finished
+   at the lodging, the chapter's last safe point (it takes the room as its run begins). */
+const AFTER25={chain:['hint_after_the_chain_1','hint_after_the_chain_2'],cloak:['hint_after_the_cloak_1','hint_after_the_cloak_2'],door:['hint_after_the_door_1','hint_after_the_door_2']};
+let afterEnd25=null;
+function after25(){return new Promise(async res=>{afterEnd25=res;G.after25='chain';G.cloak25=0;
+  try{G.scene=null;G.w7=1;G.seat25='door';STOOL25.splice(0,2,...SEATS.door);place25('lodging25');
+    const b=box25(),at=[clamp(214,b[0]+3,b[1]-3),clamp(124,b[2]+1,b[3]-1)];
+    enterRoom('lodging25',at[0],at[1],1);chain25();P.dir=1;drawInv();
+    await fade(0,fast()?40:900);
+    await narr('acts_tells_no_more_paul_apparently_declared_innocent',{dur:Math.max(6500,2200+T('acts_tells_no_more_paul_apparently_declared_innocent').length*55)});
+    await tw(500);await say(CE,'celer_orders_from_the_camp_youre_free',{to:P});
+    /* from here the player plays: the chain, the cloak, the door (each in a cut of its own; the last one resolves this promise) */
+    G.with=null;G.busy=false;lock(false);G.verb='walk';G.item=null;syncVerbs();drawInv();status()}
+  catch(e){console.error(e);afterEnd25=null;res()}})}
+/* the chain: Celer unlocks it, and it leaves the inventory by his hand */
+async function unchain25(){if(G.after25!=='chain')return say(P,'paul_thank_you_celer',{to:CE});
+  SFX.pick();P.chained=0;P.chainTo=0;P.wrist=0;P.tether=0;CE.keeper=0;CE.held=0;CE.grips=0;
+  G.inv=G.invs.paul=G.invs.paul.filter(k=>k!=='chain25');G.item=null;drawInv();await tw(300);SFX.good();
+  G.after25='cloak';
+  await say(CE,'celer_ive_never_let_a_prisoner_go',{to:P});await say(P,'paul_thank_you_celer',{to:CE})}
+/* the cloak, from the peg: outdoors he needs it again (his look with the mantle, the room painted with the peg bare) */
+async function cloak25(){if(G.after25==='chain')return say(P,'paul_i_dont_need_it_indoors',TP);
+  if(G.cloak25)return;G.cloak25=1;SFX.pick();P.look=LOOK.paul=paulLook(25);P.wear='cloak';   /* wear: the sprites are kept by id and wear */
+  await say(P,'paul_my_cloak_now_ill_need_it',TP);if(G.after25==='cloak')G.after25='door'}
+/* the door: Celer stays on his stool; Paul goes out, and is seen in the street in the morning */
+async function afterDoor25(){if(G.after25==='chain')return say(CE,'celer_orders_from_the_camp_youre_free',{to:P});
+  if(!G.cloak25)return say(P,'hint_after_the_cloak_1',TP);
+  if(G.after25!=='door')return;G.after25='out';
+  const D=LG.AT.door,R=SHARED.rome,ST=R.STREET,k=kind25();
+  await say(CE,'celer_itll_be_quiet_here_now',{to:P});
+  SFX.door();await go25(P,D[0],D[1]);
+  await fade(1,fast()?40:700);
+  for(const a of EVERY)a.room=null;const d=ST.door[k];
+  enterRoom('street25',d[0],d[1],-1);
+  await fade(0,fast()?40:900);await tw(600);
+  const E=ST.exit;
+  await go25(P,E[0],E[1]);
+  await tw(900);await fade(1,fast()?40:1200);
+  /* nothing is kept for this morning: in the dark the code button offers none (codeBtn needs a room and no scene) */
+  G.scene=DARK;const f=afterEnd25;afterEnd25=null;if(f)f()}
+
 /* ---- the soldier: his care, the requests to move, or his question ---- */
-async function soldier25(){const w=watch25(),S=S_();
+async function soldier25(){if(G.after25)return G.after25==='chain'?say(CE,'celer_orders_from_the_camp_youre_free',{to:P}):say(P,'paul_thank_you_celer',{to:CE});
+  const w=watch25(),S=S_();
   if(Q25[w]&&!F['q'+w]&&!owed25())return question25();
   if(w===7)return say(S,CARE25[7],{to:P});
   if(G.care25!==w){G.care25=w;await say(S,CARE25[w],{to:P})}
@@ -836,7 +892,7 @@ ROOMS.lodging25={space:.7,
     look:()=>say(P,F.street?'high_window_look':hour25()==='night'?'window_at_night_look':'window25_look',TP)},
   {name:'shelf',x:PO.shelf.x0,y:PO.shelf.top,w:PO.shelf.x1-PO.shelf.x0,h:PO.shelf.b-PO.shelf.top,wx:40,wy:110,look:'shelf_look'},
   {name:'lamp',x:PO.niche.x0-2,y:PO.niche.top-2,w:PO.niche.x1-PO.niche.x0+4,h:PO.niche.b-PO.niche.top+4,wx:194,wy:110,look:()=>say(P,hour25()==='night'?'lamp_lit_look':'lamp_look',TP)},
-  {name:'my_cloak',x:PO.peg.x-6,y:PO.peg.y-2,w:12,h:28,wx:166,wy:110,look:'my_cloak_on_the_peg_look',pickup:'paul_i_dont_need_it_indoors'},
+  {name:'my_cloak',x:PO.peg.x-6,y:PO.peg.y-2,w:12,h:28,wx:166,wy:110,vis:()=>!G.cloak25,look:'my_cloak_on_the_peg_look',pickup:()=>G.after25?cloak25():say(P,'paul_i_dont_need_it_indoors',TP)},
   {get name(){return F.street?'doorway':'door'},get x(){return F.street?PO.wide.x0:PO.door.x0},y:40,get w(){return F.street?PO.wide.x1-PO.wide.x0:PO.door.x1-PO.door.x0},h:58,wx:262,wy:110,dir:1,def:'open',
     look:()=>say(P,F.street?(hour25()==='night'?'doorway_at_night_look':'doorway25_look'):'door_look',TP),open:()=>door25(),use:()=>door25()},
   {name:'bed',x:PO.bed.x0,y:PO.bed.top-4,w:PO.bed.x1-PO.bed.x0,h:PO.bed.foot-PO.bed.top+4,wx:44,wy:110,look:'bed25_look'},
@@ -858,6 +914,11 @@ async function roll25look(){await say(P,'lukes_roll_look',TP);await say(LK,'luke
 ROOMS.sheet25={space:.8,walk:NOW,mood:'close',amb:AMB.close,hs:[
   {name:'letter_to_philemon',x:60,y:6,w:200,h:124,wx:160,wy:236,def:'use',look:()=>say(P,F.phm?'paul_the_letter_is_written':'sheet_to_philemon_look',TP),use:()=>sheet25()},
   {name:'back_to_the_room',x:0,y:134,w:120,h:10,wx:160,wy:236,exit:()=>leaveSheet25(),look:'back_to_the_room_look'}]};
+/* street25: the street in the morning, after Acts (SHARED.rome.street, whose header describes it). It is only seen: Paul comes
+   out of the lodging's door (the flat's stair door or the shop room's doorway, STREET.door[kind]) and walks off along it, in a cut that
+   the finale's after plays (afterDoor25). Sparrows and doves sit on its roofs and fly up as Paul comes under them. */
+ROOMS.street25={space:.7,get walk(){return SHARED.rome.WALK.street},get block(){return SHARED.rome.STREET.foot||[]},mood:'home',amb:{crowd:.06,birds:.35,wind:.04},
+  birds:()=>({perch:SHARED.rome.STREET.perch}),hs:[]};
 ROOMS.letters25={space:.8,walk:NOW,mood:'close',amb:AMB.close,hs:[
   ...Object.entries({phm:[40,50,70,44],col:[130,58,64,30],eph:[206,52,90,34]}).map(([k,[x,y,w,h]])=>({name:LETTERS25[k].name,x,y,w,h,wx:160,wy:236,def:'pickup',
     vis:()=>!has25(k)&&!F[LETTERS25[k].f],look:LETTERS25[k].look,pickup:()=>take25(k),use:()=>take25(k)})),
@@ -867,7 +928,9 @@ ROOMS.letters25={space:.8,walk:NOW,mood:'close',amb:AMB.close,hs:[
 const who=(a,o)=>{a.hs=Object.assign({name:a.name,actor:a},o)};
 const chainOn=fn=>it=>it==='chain25'?fn():false;
 const SLOOK25={fulvius25:'fulvius25_look',valens25:'valens25_look',bassus25:'bassus25_look',macer25:'macer25_look',celer25:'celer25_look'};
-for(const S of SOLDIERS)who(S,{free25:1,look:()=>say(P,SLOOK25[S.id],TP),talk:()=>soldier25(),useWith:chainOn(()=>say(P,'paul_he_has_the_other_end',TP)),give:it=>it==='chain25'?say(P,'paul_he_has_the_other_end',TP):false,
+/* after Acts the chain held out to Celer is the one he unlocks (unchain25) */
+const heldOut25=()=>G.after25?unchain25():say(P,'paul_he_has_the_other_end',TP);
+for(const S of SOLDIERS)who(S,{free25:1,look:()=>say(P,SLOOK25[S.id],TP),talk:()=>soldier25(),useWith:chainOn(heldOut25),give:it=>it==='chain25'?heldOut25():false,
   show:{'*':'soldier_keep_it_its_yours'}});
 /* the men of the Jews of Rome: leading men on the first day, listeners on the day of 28:23 (place25 names them for the watch) */
 for(const a of JEWS){who(a,{free25:1,
@@ -913,9 +976,9 @@ const TABLETS={
   scripture:[]};
 
 /* ============ SETUP, PRAYER ============ */
-function setup25(){P.hs=null;P.called='Paul';LOOK.paul=RO.paul_home;P.look=LOOK.paul;
+function setup25(){P.hs=null;P.called='Paul';LOOK.paul=RO.paul_home;P.look=LOOK.paul;P.wear=0;
   Object.assign(G,{seat25:null,seatW25:0,desk25:0,pt25:0,ph25:0,pm25:0,obj25:-1,asked25:0,wall25:0,care25:0,news25:null,took25:0,roof25:0,catj25:0,cat25:null,
-    w7:0,w7run:0,w7script:0,door25:0,caps25:null});STOOL25.length=0;said25=0;
+    w7:0,w7run:0,w7script:0,door25:0,caps25:null,after25:0,cloak25:0});STOOL25.length=0;said25=0;
   G.invs={paul:['tablets','chain25']};G.inv=G.invs.paul;drawInv()}
 /* hints: two per point, the second worded as a person speaks and naming both things */
 const HINT25={seat1:['hint_let_them_in_1','hint_let_them_in_2'],door1:['hint_open_the_door_1','hint_open_the_door_2'],points:['hint_my_points_1','hint_my_points_2'],
@@ -925,20 +988,20 @@ const HINT25={seat1:['hint_let_them_in_1','hint_let_them_in_2'],door1:['hint_ope
   write:['hint_ask_not_order_1','hint_ask_not_order_2'],greet:['hint_greetings_1','hint_greetings_2'],hand:['hint_my_own_hand_1','hint_my_own_hand_2'],
   letters:['hint_three_letters_1','hint_three_letters_2'],news:['hint_by_mouth_1','hint_by_mouth_2'],door7:['hint_the_last_door_1','hint_the_last_door_2'],
   question:['hint_his_question_1','hint_his_question_2']};
-function hint25(){const o=owed25()||'question';return[o+watch25(),HINT25[o]]}
+function hint25(){if(G.after25&&AFTER25[G.after25])return['after'+G.after25,AFTER25[G.after25]];const o=owed25()||'question';return[o+watch25(),HINT25[o]]}
 
 /* ============ CHAPTER DEFINITION ============ */
 /* No birds: the chapter is played indoors (the roofs through the flat's window are far off and small). */
-return{rooms:['lodging25','sheet25','letters25'],setup:setup25,start:start25,hint:hint25,music:MUSIC,topics:[],tablets:TABLETS,
+return{rooms:['lodging25','sheet25','letters25','street25'],setup:setup25,start:start25,hint:hint25,music:MUSIC,topics:[],tablets:TABLETS,
   /* for the playtest: what is told, said and written, the tables of the puzzles, the watches, the reach, the door, the way to the finale */
   told:TOLD,spoken:SPOKEN25,labels:{points:PLAB25,phil:PHLAB25,household:HHLAB25,ask:ASK25},written:WRITTEN25,called:CALLED25,first:FIRST25,pass:PASS25,obj:OBJ25,demand:DEMAND25,greet:GREET25,letters:LETTERS25,news:NEWS25,q:Q25,
-  watch:watch25,hour:hour25,owed:owed25,seat:seat25,box:box25,deskOk:deskOk25,road:ROAD25,soldier:S_,door:door25,toFinale,
+  watch:watch25,hour:hour25,owed:owed25,seat:seat25,box:box25,deskOk:deskOk25,road:ROAD25,soldier:S_,door:door25,toFinale,after:after25,
   /* the generic stops (routes25, shadows25) look at the room in each of its variants: each entry sets the flags for one */
   views:{lodging25:{flat:()=>{F.street=0},street:()=>{F.street=1}}},
   /* the page about the chapter, behind the closing screen (the lead's keys and text) */
   about:{title:'without_hindrance_2',text:'without_hindrance_about',based:'based_on_acts_28_17_31'},
   flags:FLAGS,
-  /* three rooms and twenty-nine flags; the code keeps room for sixteen rooms and forty flags. Paul alone is played (party:['paul'], so
+  /* four rooms (the street only seen, after Acts) and twenty-nine flags; the code keeps room for sixteen rooms and forty flags. Paul alone is played (party:['paul'], so
      that its codes are wide). */
   codeBits:{flags:40,rooms:4},party:['paul'],swap:false,ent:ENT,home:{},away:()=>false,
   inv:()=>['tablets','chain25'],place:place25}
