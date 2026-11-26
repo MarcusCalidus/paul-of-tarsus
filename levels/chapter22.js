@@ -805,7 +805,8 @@ const LK=actor('luke22','Luke','#d0e8e0',112),AR=actor('aris22','Aristarchus','#
   SC=actor('sail22c','sailor','#e0e0d0',124),SD=actor('sail22d','sailor','#d0d8e0',94),PI=actor('pilot22','pilot','#d8d8f0',88),OW=actor('owner22','shipowner','#e8d8f0',106);
 const PRISONERS=[PR1,PR2,PR3];
 /* the men on the skiff's rope, each with his place and his pose's own frame (see drawStorm22) */
-const HAUL22=[{a:SA,x:106,y:122},{a:LK,x:126,y:124},{a:AR,x:146,y:128},{a:SD,x:166,y:126}];
+/* the haulers stand to either side of the line below the swan's neck, so that no head stands under its loop (CONTRIBUTING section 3) */
+const HAUL22=[{a:SA,x:100,y:122},{a:LK,x:120,y:124},{a:AR,x:139,y:128},{a:SD,x:173,y:126}];
 const PULLS22=4;
 /* the sailor who calls the moment, in the act that is being played */
 const caller22=()=>phase22()==='skiff'?SA:phase22()==='load'?SD:null;
@@ -1190,7 +1191,7 @@ function place22(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
     pl(GU,'quay22',176,132,-1);pl(GU2,'quay22',262,126,-1);pl(PR1,'quay22',240,120,-1);pl(PR2,'quay22',284,128,-1);pl(PR3,'quay22',300,118,-1);pl(CS,'quay22',226,116,-1)}
   if(ph==='myra'){pl(P,'myra22',470,126,-1);pl(LK,'myra22',500,122,-1);pl(AR,'myra22',522,130,-1);pl(JU,'myra22',388,122,1);
     pl(GU,'myra22',446,132,-1);pl(PR1,'myra22',280,118,1);pl(PR2,'myra22',258,130,1);pl(PR3,'myra22',544,118,-1);pl(SA,'myra22',318,124,1)}
-  if(ph==='shelter'){pl(P,'deck22',120,128,1);pl(LK,'deck22',60,122,1);pl(AR,'deck22',36,128,1);pl(GU,'deck22',96,134,1);pl(SB,'deck22',238,134,-1);pl(PR2,'deck22',146,110,-1)}
+  if(ph==='shelter'){pl(P,'deck22',120,128,1);pl(LK,'deck22',60,122,1);pl(AR,'deck22',36,128,1);pl(GU,'deck22',96,134,1);pl(SB,'deck22',238,134,-1);pl(PR2,'deck22',176,108,-1)}
   if(ph==='havens'){pl(P,'deck22',130,126,1);pl(LK,'deck22',30,128,1);pl(AR,'deck22',170,134,-1);pl(GU,'deck22',104,132,1);pl(SC,'deck22',58,120,1);
     pl(JU,'deck22',214,124,-1);pl(PI,'deck22',240,112,-1);pl(OW,'deck22',298,132,-1)}
   /* in the storm (storm22): whoever holds on has his far hand on a thing of the ship (STORM22: the holds of the crossing, the port rail) */

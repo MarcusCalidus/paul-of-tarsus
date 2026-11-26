@@ -167,10 +167,11 @@ const fig23=(g,room,x,y,id,dir,ps)=>man(g,x,y,id,dir,0,lightAt(room,x,y),0,undef
 /* ==== ART stern23: begin ==== */
 /* The after deck of the grain ship by night, the fourteenth night (27:27-29): SHARED.grainship.sternNight, the picture the maintainer
    approved, looking aft from just forward of the stern: the swan's neck of the sternpost, the plain stern rail passing in front of its
-   foot, the steering oars lashed up at both quarters, and one lantern hung beside the post by two cords that part upward, the only light.
-   We stand a little less far to starboard than in the approved picture (cam .6 for 1.3), so that the deck the people stand on lies in the
-   middle of the picture; and the lantern hangs a little higher on its cords (1.5 m for 1.25), above the heads of whoever stands at the
-   rail, so that its glow, long and low, never lies round a head (CONTRIBUTING section 3). Beyond the ship the storm's night
+   foot, the steering oars lashed up at both quarters, and one lantern, the only light, hung well to starboard of the post by two cords that
+   part upward to the rigging out of the picture: nothing of it touches the swan, neither it nor its glow lies under the head or inside the
+   loop, and it hangs above every head (the painter's default). We stand a little less far to starboard than in the approved picture (cam
+   .6 for 1.3), so that the deck the people stand on lies in the middle of the picture. Nobody stands under the loop: Luke's places are
+   to port of it (CONTRIBUTING section 3). Beyond the ship the storm's night
    (SHARED.storm.deckSea, pal 'night'): no star, no moon, no horizon, the sea and the sky one darkness, lightning far off. She lies near
    land now, and from 27:29 at four anchors: she still rolls, gently (a third of the storm's motion), while the sea, the sky and the rain do
    not. When the anchors go (27:29) the four cables come aft along the deck one after another, two on each side of the post, rise to the
@@ -179,13 +180,13 @@ const fig23=(g,room,x,y,id,dir,ps)=>man(g,x,y,id,dir,0,lightAt(room,x,y),0,undef
    Called from outside: ART.stern23, LAMP_STERN23, SEA23N and ride23 (the bow by night has the same sea and the same motion). Reads F.lead2,
    F.anchors and G.cab23 (the cables run out). Hotspots (ROOMS.stern23): the sky 0,0,320,58 · the sea 0,58,320,26 · the lantern round
    LAMP_STERN23 · the starboard steering oar 236,42,30,52 · the stern rail 92,76,104,32 · the four cables 154,96,42,22 (once they run) ·
-   the sounding line 58,106,30,14. Walk: 30..270 by 113..138, its corners on the bulwarks blocked, and the deck under the lantern
-   (140..176 by 113..126), so that nobody's head comes to stand in its glow. Light:
+   the sounding line 58,106,30,14. Walk: 30..270 by 113..138, its corners on the bulwarks blocked, and the deck under the swan's loop
+   (128..164 by 113..126), so that nobody's head comes to stand under it. Light:
    night, the lantern a lamp (behind the people: their shadows fall toward us). */
 const GS23=SHARED.grainship,
   /* the storm's night, for the stern and the bow: the seas lower than in the storm (she lies near land), lightning far off */
   SEA23N=SHARED.storm.deckSea({pal:'night',lightning:true,height:.5,hz:94,rail:100,deck0:110,clear:[96,196],seed:2311}),
-  NIGHT23={cam:.6,lp:[.5,1.5,5.35],sky:false,rain:false},NG23=GS23.nightGeo(NIGHT23),
+  NIGHT23={cam:.6,sky:false,rain:false},NG23=GS23.nightGeo(NIGHT23),
   LAMP_STERN23=NG23.lamp.map(v=>Math.round(v*2)/2);
 /* the night beyond the rail: the storm's sky (its seas lie below the rail, out of sight, so that no line of sea and sky is seen
    anywhere, as in the approved picture), and low down the foam of the seas that cannot be seen, a few faint streaks drifting with the
@@ -209,7 +210,7 @@ ART.stern23={w:320,q:12,
   light:{amb:'#4a4e6a',wallY:108,wall:[[92,195,108,77]],lamps:[[LAMP_STERN23[0],LAMP_STERN23[1],150,'#e8a860',110,LAMP_STERN23[1]]]},
   behind:night23,
   sway:t=>ride23(t,F.anchors||G.cab23?.25:.34),
-  air(g,t){SHARED.storm.rain(g,t,{pal:'night',density:.55,lamp:[LAMP_STERN23[0],LAMP_STERN23[1],34],seed:2313})},
+  air(g,t){SHARED.storm.rain(g,t,{pal:'night',density:.55,lamp:[LAMP_STERN23[0],LAMP_STERN23[1],26],seed:2313})},
   draw(g,t){const[lx,ly]=LAMP_STERN23,f=Math.floor(t/110)%3;
     /* the lantern's flame, alive behind its horn */
     R(g,lx-.5,ly-.6+(f===1?-.5:0),1,1.6+(f===1?.5:0),f===2?'#ffe8b0':'#fff4d0');
@@ -1444,8 +1445,9 @@ async function lead23(){const L=ld23(),s=SOUND23[L.n];if(L.bottom)return say(LK,
   if(!L.tallow)return say(LK,'luke_first_the_tallow',TL);L.bottom=1;SFX.click();await say(LK,s.bottom,TL);return written23()}
 async function tallow23(){const L=ld23();L.tallow=1;return say(LK,SOUND23[L.n].tallow,TL)}
 async function written23(){const L=ld23();if(!L.depth||!L.bottom)return;SFX.good();
-  if(!L.n){F.lead1=1;G.ld23=null;await goto23('stern23',138,126,-1);await say(SA1,'leadsman_twenty_and_sand',{to:LK});await say(SA1,'leadsman_again_in_a_while',{to:LK});return codeBtn()}
-  F.lead2=1;G.ld23=null;await goto23('stern23',138,126,-1,QUIET);
+  if(!L.n){F.lead1=1;G.ld23=null;await goto23('stern23',120,128,-1);await say(SA1,'leadsman_twenty_and_sand',{to:LK});await say(SA1,'leadsman_again_in_a_while',{to:LK});return codeBtn()}
+  /* after the second sounding Luke stands at the port quarter, clear of the swan's loop and of the cables that are about to run out */
+  F.lead2=1;G.ld23=null;await goto23('stern23',54,134,1,QUIET);
   await tell('n28');await say(SA1,'leadsman_fifteen_and_stones',{to:PI});await say(PI,'pilot_land_is_close',{to:SA1});
   /* 27:29: four cables run out over the stern; no anchor is seen. They long for day. */
   place(SA2,'stern23',196,117,-1);place(SA3,'stern23',78,124,1);SA2.pose=SA3.pose='payout';
@@ -1592,7 +1594,7 @@ async function closeTablet23(){await goto23(G.from23&&G.from23!=='tablet23'&&ROO
 /* A room's hotspots are listed from the back to the front: where two overlap, the later one is meant. */
 const NOW=[160,160,236,236];   /* a close view: whoever is played stands below the picture, and takes no step */
 const atP=o=>Object.defineProperties(o,{wx:{get(){return P.x},enumerable:true},wy:{get(){return P.y},enumerable:true}});   /* acted on where Paul is, with no step (the surf) */
-ROOMS.stern23={space:.6,walk:[30,270,113,138],mood:'night',amb:AMB.stern23,block:[[60,112,24,8],[30,113,18,5],[236,113,34,5],[250,118,20,6],[262,124,8,4],[140,113,36,13]],hs:[
+ROOMS.stern23={space:.6,walk:[30,270,113,138],mood:'night',amb:AMB.stern23,block:[[60,112,24,8],[30,113,18,5],[236,113,34,5],[250,118,20,6],[262,124,8,4],[128,113,36,13]],hs:[
   {name:'sky_without_stars',x:0,y:0,w:320,h:58,wx:150,wy:124,look:'sky_without_stars_look'},
   {name:'dark_sea',x:0,y:58,w:320,h:26,wx:160,wy:124,look:'dark_sea_look'},
   {name:'lantern',x:LAMP_STERN23[0]-10,y:LAMP_STERN23[1]-14,w:20,h:22,wx:LAMP_STERN23[0]-6,wy:124,look:'lantern23_look'},
@@ -1605,7 +1607,7 @@ ROOMS.lead23={space:.6,walk:NOW,mood:'night',amb:AMB.lead23,hs:[
   {name:'dry_line',get x(){return TAGX23[SOUND23[F.lead1?1:0].tag]+14},y:76,get w(){return 318-this.x},h:18,wx:160,wy:236,look:'dry_line_look'},
   {name:'the_lead',x:10,y:72,w:42,h:34,wx:160,wy:236,def:'look',look:()=>tallow23(),use:()=>lead23(),useWith:it=>it==='tablet23'?lead23():false},
   ...TAGS23.map((tg,i)=>({name:tg.name,x:TAGX23[i]-10,y:lineY23(TAGX23[i])+1,w:22,h:16,wx:160,wy:236,def:'use',look:tg.look,use:()=>tag23(i),useWith:it=>it==='tablet23'?tag23(i):false})),
-  {name:'back_to_the_deck',x:0,y:128,w:96,h:16,wx:160,wy:236,exit:()=>goto23('stern23',138,126,-1),look:'back_to_the_deck_look'}]};
+  {name:'back_to_the_deck',x:0,y:128,w:96,h:16,wx:160,wy:236,exit:()=>goto23('stern23',120,128,-1),look:'back_to_the_deck_look'}]};
 ROOMS.bow23={space:.6,walk:[20,296,114,138],block:[[286,114,10,3]],get mood(){return'tense'},amb:AMB.bow23,hs:[
   {name:'dark_sea',x:0,y:20,w:320,h:40,wx:160,wy:120,look:'dark_sea_look'},
   {name:'lantern',x:LAMP_BOW23[0]-10,y:LAMP_BOW23[1]-14,w:20,h:24,wx:LAMP_BOW23[0],wy:120,look:'lantern23_look'},
@@ -1705,7 +1707,8 @@ const TABLETS={
   scripture:[]};
 
 /* ============ PLACING THE CAST, SETUP ============ */
-const ENT={stern23:[150,128,1],lead23:[160,236,1],bow23:[70,128,1],get hold23(){return F.stood?[SPOT23[0],SPOT23[1],-1]:[44,127,1]},bay23:[160,236,1],
+/* Luke stands clear of the swan's neck: no head under its loop (CONTRIBUTING section 3) */
+const ENT={stern23:[120,128,1],lead23:[160,236,1],bow23:[70,128,1],get hold23(){return F.stood?[SPOT23[0],SPOT23[1],-1]:[44,127,1]},bay23:[160,236,1],
   wreck23:[62,126,1],planks23:[160,236,1],get surf23(){return[HOLDX23[Math.min(3,G.at23||0)],WATER23,1]},
   get beach23(){const p=phase23();return p==='count'?[200,128,1]:p==='talk'?[268,128,1]:[196,130,-1]},estate23:[70,126,1],sick23:[160,236,1],tablet23:[160,236,1]};
 /* place23: everyone where the story has him, from the flags; whoever is played is set by the scene */
