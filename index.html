@@ -1967,8 +1967,12 @@ async function talkTree(topics,o){const A=G.talking,T=CHAP[G.ch].topics||[];
 function buildVerbs(){const v=$('#verbs');v.innerHTML='';
   VERBS.forEach(([id,label])=>{const b=document.createElement('button');b.type='button';b.textContent=T(label);b.dataset.v=id;
     b.onclick=()=>{if(G.busy)return;audioInit();SFX.click();G.verb=G.verb===id?'walk':id;G.item=null;syncVerbs();drawInv();status()};v.appendChild(b)});
-  const p=document.createElement('button');p.type='button';p.id='pray';p.textContent=T('pray_to_jehovah');p.onclick=pray;v.appendChild(p);
+  const p=document.createElement('button');p.type='button';p.id='pray';p.onclick=pray;v.appendChild(p);prayBtn();
   const w=document.createElement('button');w.type='button';w.id='swap';w.onclick=()=>swap();v.appendChild(w);syncVerbs()}
+/* prayBtn: the hint button reads Pray to Jehovah, or Think it over while whoever is played does not worship Jehovah (an actor with noPray,
+   such as the governor's clerk of Chapter Twenty-One: CONTRIBUTING section 2). The main loop calls it, so that it follows every change of
+   who is played, however a chapter makes it. */
+function prayBtn(){const b=$('#pray');if(!b)return;const k=PC().noPray?'think_it_over':'pray_to_jehovah';if(b.dataset.k!==k){b.dataset.k=k;b.textContent=T(k)}}
 /* swapBtn: in a chapter with a party, the prayer bar gives up a third of its width to a button naming the character to switch to. */
 function swapBtn(){const b=$('#swap'),ps=party(),on=ps.length>1&&CHAP[G.ch].swap!==false;$('#verbs').classList.toggle('party',on);if(!on)return;
   const n=ps[(ps.indexOf(PC())+1)%ps.length];b.textContent='\u21c4 '+T(storyName(n));b.title=T('play_as_name_c',{name:T(storyName(n))});b.disabled=!n.room}
@@ -2222,7 +2226,7 @@ addEventListener('keydown',e=>{if(e.target&&e.target.tagName==='INPUT')return;co
   else if(k>='1'&&k<='6'){const b=document.querySelectorAll('#verbs button')[+k-1];if(b)b.click()}});
 /* --- main loop --- */
 let lastT=0,stepT=0;
-function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;
+function update(ts){const dt=Math.min(.05,(ts-lastT)/1000);lastT=ts;prayBtn();
   /* A walk is driven by the ground: the frame follows the distance covered (a.gait: the phase of the stride, and how far he has come), so that
      a foot that stands is not carried along. It begins as the legs pass each other, and begins and ends on a shorter step, as does a walk up or
      down the room, where the side view would stride on the spot. A step is heard as a foot lands. */
@@ -2446,15 +2450,18 @@ const PRAYERS=['name_bows_his_head_james_1_5',
 const PRAYERS2=['name_bow_their_heads_james_1_5',
   'name_pause_and_in_prayer_1_peter_5_7','in_the_stillness_name_ask'];
 function hint(){return CHAP[G.ch].hint()}
+/* nextHint: the hint for the point the story has reached, the gentle one first and the direct one from the second time on */
+async function nextHint(me,o){const[k,ls]=hint(),n=G.hintAt[k]=(G.hintAt[k]||0)+1;await say(me,ls[Math.min(n,ls.length)-1],o)}
+/* Whoever does not worship Jehovah (noPray) does not pray: the button reads Think it over (prayBtn), and gives the same hint as his own thought
+   (in his own colour, a.thought, if he has one), with no prayer shown and none counted for the end screen. */
 function pray(){if(G.busy||G.scene||!G.room)return;audioInit();
+  if(PC().noPray)return cut(async()=>{const me=PC();await nextHint(me,me.thought||TH)});
   cut(async()=>{G.prays++;const me=PC(),d=$('#dim'),m=AU.mus,ab=AU.ambG;d.style.opacity=.55;me.bow=true;SFX.pray();
     if(m){m.gain.setTargetAtTime(.12*OPTS.mus,now(),.3);ab.gain.setTargetAtTime(.15*OPTS.fx,now(),.3)}
     await wait(900);
     {const PR=me.mate?PRAYERS2:PRAYERS;await say(null,T(G.prays===1?PR[0]:pick(PR),{name:T(storyName(me))}),{dur:4200,color:'#cfe2ff'})}
     await wait(500);me.bow=false;d.style.opacity=0;if(m){m.gain.setTargetAtTime(.55*OPTS.mus,now(),.8);ab.gain.setTargetAtTime(.5*OPTS.fx,now(),.8)}
-    await wait(600);
-    const[k,ls]=hint(),n=G.hintAt[k]=(G.hintAt[k]||0)+1;
-    await say(me,ls[Math.min(n,ls.length)-1],{thought:1,color:'#cfe2ff'})})}
+    await wait(600);await nextHint(me,{thought:1,color:'#cfe2ff'})})}
 /* ============ SHARED SCRIPT HELPERS ============ */
 /* take: pick something up for good. Marked, so that Pick up is its default verb. */
 const take=(flag,item,line)=>Object.assign(async()=>{F[flag]=1;addItem(item);await say(P,line)},{take:1});
