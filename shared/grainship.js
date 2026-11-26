@@ -770,21 +770,23 @@ function deckBeyond(g,D){const place=D.o.place||'myra',my=place==='myra',K=SHARE
 
 /* ======== The stern by night, from aboard (Chapter Twenty-Three, the soundings: 27:27-29) ========
    sternNight(g, o) paints the after deck seen from just aft of the cabin, looking aft, on the fourteenth night: no moon and no star
-   (27:20), the sea and the sky one darkness with no line between them, rain. One lantern hangs beside the sternpost, from it, by two
-   cords that part upward (one to the post's shaft, one to its bent head), and is the only light: a small low glow, warm on the post, the
-   rail and the deck. We stand a little to starboard of the middle, so the sternpost (the same bird's neck as from the side) is seen
+   (27:20), the sea and the sky one darkness with no line between them, rain. One lantern hangs well to starboard of the sternpost, above
+   the head of anyone who stands on the deck, by two cords that part upward to the rigging out of the picture (nothing of it touches the
+   swan's neck, and neither it nor its glow lies under the head or inside the loop), and is the only light: a soft glow round it without an
+   edge, its light long and low on the deck under it, warm on the post, the rail and the deck. We stand a little to starboard of the middle, so the sternpost (the same bird's neck as from the side) is seen
    from behind and a little from the side, and it rises where the stern's rail turns round toward us; the rail is a plain rail. The steering oars stand lashed up at both quarters, their lashings slanting to the rail. Four cables come aft
    along the deck side by side, two each side of the post, rise to the stern rail and go over it and down into the dark: none crosses
    another, the post or a plank of the stern, whose inner face is left without seams where they pass. No anchor is seen.
      o.post    'bird' | 'curl'      o.cables   how many (default 4; 0 for none)      o.t   the time, for the flame
    For a room built on this picture (Chapter Twenty-Three's stern23), all optional and all leaving the picture as it was when not given:
      o.cam     how far to starboard of her middle line we stand (metres, default 1.3)
-     o.lp      where the lantern hangs, [x, y, z] in metres (default [.5, 1.25, 5.35]); it must hang below both points its cords go to
+     o.lp      where the lantern hangs, [x, y, z] in metres (default [1.4, 2.2, 5.35]: to starboard of the post, clear of the loop, above
+               every head); its cords run up out of the top of the picture, as at the bow
      o.sky     false leaves the sky and the sea out, transparent, for a room that paints the storm's night behind the ship
      o.rain    false leaves the rain out, for a room that lets it fall in its own air
    Returns the geometry {P, hz, lamp:[x, y]} for the room (nightGeo gives the same without painting). */
 function nightGeo(o){o=o||{};const F=150,E=1.7,hz=62,cam=o.cam!=null?o.cam:1.3,P=(x,y,z)=>[160+F*(x-cam)/z,hz+F*(E-y)/z],ZS=5.5,
-    b=z=>z<=2?3.7:z>=ZS?1.9:1.9+1.8*Math.sqrt(Math.max(0,1-Math.pow((z-2)/(ZS-2),2.2))),LP=o.lp||[.5,1.25,5.35],zOf=Y=>F*E/(Y-hz);
+    b=z=>z<=2?3.7:z>=ZS?1.9:1.9+1.8*Math.sqrt(Math.max(0,1-Math.pow((z-2)/(ZS-2),2.2))),LP=o.lp||[1.4,2.2,5.35],zOf=Y=>F*E/(Y-hz);
   /* the deck's edges at a height Y on the screen (the foot of each bulwark), and the foot of the stern's face */
   return{F,E,hz,cam,P,b,ZS,lamp:P(...LP),lampFloor:P(LP[0],0,LP[2]),
     edge:(Y,sd)=>{const z=zOf(Y);return P(sd*b(z),0,z)[0]},sternFoot:P(0,0,ZS)[1],sternTop:P(0,1.17,ZS)[1]}}
@@ -792,7 +794,7 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=o.cam!=null?o.cam:1
     b=z=>z<=2?3.7:z>=ZS?1.9:1.9+1.8*Math.sqrt(Math.max(0,1-Math.pow((z-2)/(ZS-2),2.2))),sz=x=>ZS+.2*(1-Math.pow(x/1.9,2)),rh=1.05,
     /* the rail: a little higher round the stern than at the quarters, a rail and nothing more */
     RH=(x,z)=>rh+.12*clamp((z-(ZS-1.5))/1.5,0,1),
-    LP=o.lp||[.5,1.25,5.35],
+    LP=o.lp||[1.4,2.2,5.35],
     /* the lantern's light on a face: night ambient, and the lamp's warm light by angle and distance */
     lamp=(c,p,n)=>{const d=[LP[0]-p[0],LP[1]-p[1],LP[2]-p[2]],l=Math.hypot(...d),q=Math.max(0,(n[0]*d[0]+n[1]*d[1]+n[2]*d[2])/l/(Math.hypot(...n)||1)),f=q/(1+Math.pow(l/1.9,2)),h=hex(c);
       return toHex(h[0]*(.14+1.15*f),h[1]*(.16+.9*f),h[2]*(.24+.55*f))};
@@ -833,12 +835,11 @@ function sternNight(g,o){o=o||{};const F=150,E=1.7,hz=62,cam=o.cam!=null?o.cam:1
     for(let j=0;j<=16;j++){const t=j/16,z=1.9+(z1-1.9)*t,y=.1+(ye-.1)*Math.pow(t,2.2);p.push(...P(x0+(x1-x0)*t,y,z))}
     const w0=150*.06/1.9,w1=150*.06/z1;for(let j=2;j<p.length;j+=2){const t=j/(p.length-2),w=w0+(w1-w0)*t,zz=1.9+(z1-1.9)*t,c=lamp('#9a8058',[x0,.5,zz],[0,1,-.3]);stroke(g,[p[j-2]+w*.25,p[j-1]+w*.3,p[j]+w*.25,p[j+1]+w*.3],'rgba(4,3,3,.6)',w);stroke(g,[p[j-2],p[j-1],p[j],p[j+1]],c,w*.8);stroke(g,[p[j-2]-w*.2,p[j-1]-w*.2,p[j]-w*.2,p[j+1]-w*.2],rgba(lamp('#e8c898',[x0,.5,zz],[0,1,-.3]),.6),Math.max(.4,w*.25))}
 }
-  /* the sternpost: up from the stern's middle, its head bent over toward us */
-  /* the lantern: a little lantern of clay and horn, hung by two cords that part upward to the post's shaft and to its head */
-  /* its two cords part upward from the lantern: one to the rising limb of the neck nearest us, one to the outer back of the descending limb clear of the head */
-  const[lx,ly]=P(...LP),s1=SW(.35,1.05),s2=SW(-.78,2.28);
-  stroke(g,[lx-.6,ly-2,s1[0],s1[1]],'#6a5a40',.5);stroke(g,[lx+.6,ly-2,s2[0],s2[1]],'#6a5a40',.5);
-  comp(g,'lighter',.4,()=>{pool(g,lx,ly+4,18,8,'#ff9a40',.45);pool(g,lx,ly+1,7,4,'#ffc070',.55)});
+  /* the lantern: a little lantern of clay and horn, hung by two cords that part upward to the rigging out of the picture, well clear of
+     the swan's neck; round it a soft glow without an edge (round, never a flat ellipse on its body: that reads as a plus sign) */
+  const[lx,ly]=P(...LP);
+  stroke(g,[lx-.6,ly-2,lx-9,-4],'#6a5a40',.5);stroke(g,[lx+.6,ly-2,lx+8,-4],'#6a5a40',.5);
+  comp(g,'lighter',.4,()=>{pool(g,lx,ly+1,11,11,'#ff9a40',.3);pool(g,lx,ly+.5,5,5,'#ffc070',.35)});
   poly(g,[lx-1.6,ly-2,lx+1.6,ly-2,lx+1.9,ly+2.6,lx-1.9,ly+2.6],'#5a3a22');R(g,lx-1,ly-1.2,2,3,'#ffd890');R(g,lx-.5,ly-.6,1,1.6,'#fff4d0');R(g,lx-1.9,ly+2.6,3.8,.6,'#3a2414');
   /* rain, faint, brighter where it falls through the lantern's light */
   if(SHARED.weather&&o.rain!==false){SHARED.weather.rain(g,o.t||3000,320,{density:.5,len:4,col:'rgba(150,160,180,.22)',wind:-1.2,seed:2307});
@@ -929,7 +930,9 @@ function bowNight(g,o){o=o||{};const D=bowGeo(o),{P,b,s,rh,C,N,ZS}=D,r=rng(23081
     stroke(g,lash,lt('#5a4a32',[x(8),.6,8],[0,1,-.3]),.6);const la=P2(.05,.5,z0-.25),lb=P2(.05,.5,z1+.25);stroke(g,[lash[0],lash[1],la[0],la[1]],lt('#5a4a32',[x(8),.6,7],[0,1,-.3]),.5);stroke(g,[lash[lash.length-2],lash[lash.length-1],lb[0],lb[1]],lt('#5a4a32',[x(8),.6,9],[0,1,-.3]),.5)}
   /* the lantern: horn and clay, hung by two cords that part upward to the rigging out of the picture */
   if(o.lantern!==false){const[lx,ly]=D.lamp;stroke(g,[lx-.6,ly-2,lx-9,-4],'#6a5a40',.5);stroke(g,[lx+.6,ly-2,lx+8,-4],'#6a5a40',.5);
-    comp(g,'lighter',.4,()=>{pool(g,lx,ly+3,20,7,'#ff9a40',.45);pool(g,lx,ly+1,7,3.6,'#ffc070',.55)});
+    /* round it a soft glow without an edge (round, never a flat ellipse on its body: that reads as a plus sign); its light lies long and
+       low on the deck under it */
+    comp(g,'lighter',.4,()=>{pool(g,lx,ly+1,11,11,'#ff9a40',.3);pool(g,lx,ly+.5,5,5,'#ffc070',.35)});
     poly(g,[lx-1.6,ly-2,lx+1.6,ly-2,lx+1.9,ly+2.6,lx-1.9,ly+2.6],'#5a3a22');R(g,lx-1,ly-1.2,2,3,'#ffd890');R(g,lx-.5,ly-.6,1,1.6,'#fff4d0');R(g,lx-1.9,ly+2.6,3.8,.6,'#3a2414')}
   return D}
 /* a soft shade under a thing that lies on the deck */
@@ -1071,15 +1074,20 @@ function wreckGeo(){const sl=.035,top0=x=>84+sl*(x-160)-14*Math.pow(clamp((64-x)
   return{top,foot,sl,gaps:[[150,175],[236,251]],planks:[[24,foot(24)-1.2,62,foot(62)-1.4],[68,foot(68)-1.6,104,foot(104)-1.8]],
     hatch:[106,foot(106)-.6,128,foot(128)-.8,125,foot(125)-8,104,foot(104)-7.6]}}
 function wreckDeck(g,o){o=o||{};const W=wreckGeo(),C=LIGHT.dawn,r=rng(23101),{top,foot,gaps}=W,inGap=x=>gaps.some(([a,b])=>x>a&&x<b);
-  /* the deck: planks along her length, slanting with her, wider apart as they come toward us; butts staggered inside each plank */
-  const pl=[0,2,4.4,7.2,10.6,14.6,19.4,25,31.6,39.4,48.6,60];
+  /* the deck: wet wooden planks along her length, slanting with her, wider as they come toward us: long strakes in a wood tone, the grain
+     running along each, the grey of the sky lying on them in streaks; butts staggered, each stopping inside its own plank */
+  let prevB=[];const pl=[0];for(let wd=1.3;pl[pl.length-1]<60;wd*=1.17)pl.push(Math.min(60,pl[pl.length-1]+wd));
   for(let i=0;i<pl.length-1;i++){const P0=[],P1=[];for(let x=-30;x<=350;x+=10){P0.push(x,foot(x)+pl[i]);P1.push(x,foot(x)+pl[i+1])}
-    const c=tint(mix('#6e6458','#82766a',i/pl.length),(r()-.5)*.1);poly(g,P0.concat(ptsBackG(P1)),c);
-    clipTo(g,()=>poly(g,P0.concat(ptsBackG(P1))),()=>{tex(g,'wood',.3,-20,60,360,90,'overlay',.45);
-      /* the deck is wet: the grey of the sky lies on it in long streaks */
-      for(let k=0;k<6;k++){const x=r()*320,w=20+r()*60;R(g,x,foot(x)+pl[i]+(pl[i+1]-pl[i])*(.3+.4*r()),w,.5,'rgba(214,222,230,.26)')}});
-    stroke(g,P0,'rgba(30,22,20,.5)',.5);
-    for(let x=-20+r()*60;x<340;x+=70+r()*50){const y0=foot(x)+pl[i]+.4,y1=foot(x)+pl[i+1]-.4;if(y1-y0>1.2)R(g,x,y0,.5,y1-y0,'rgba(30,22,20,.45)')}}
+    const c=tint(mix('#5a4434','#6e5642',i/pl.length),(r()-.5)*.12),hw=pl[i+1]-pl[i];poly(g,P0.concat(ptsBackG(P1)),c);
+    clipTo(g,()=>poly(g,P0.concat(ptsBackG(P1))),()=>{tex(g,'wood',.3,-20,60,360,90,'overlay',.5);
+      /* the grain: long fine lines along the plank, never across it */
+      for(let k=0;k<Math.max(1,Math.round(hw/2.5));k++){const u=(k+.5)/Math.max(1,Math.round(hw/2.5)),x0=-30+r()*200,x1=x0+80+r()*200,p=[];for(let x=x0;x<=x1;x+=10)p.push(x,foot(x)+pl[i]+hw*u+(r()-.5)*.3);stroke(g,p,'rgba(36,24,16,.22)',.5)}
+      /* wet: the grey of the sky lies on it in long streaks */
+      for(let k=0;k<6;k++){const x=r()*320,w=20+r()*60;R(g,x,foot(x)+pl[i]+hw*(.3+.4*r()),w,.5,'rgba(214,222,230,.22)')}});
+    /* the seam between two planks, dark, with the wet edge of the plank beyond it catching the light */
+    stroke(g,P0,'rgba(26,18,14,.6)',.5);if(hw>2.2)stroke(g,P0.map((v,j)=>j%2?v+.6:v),'rgba(196,184,166,.16)',.5);
+    /* the butts, staggered: none within six pixels of a butt in the plank before, so that no two meet across a seam */
+    const bt=[];for(let x=-20+r()*60;x<340;x+=50+r()*60){if(prevB.some(q=>Math.abs(q-x)<6))x+=8;bt.push(x);const y0=foot(x)+pl[i]+.5,y1=foot(x)+pl[i+1]-.5;if(y1-y0>1.2)R(g,x,y0,.5,y1-y0,'rgba(26,18,14,.5)')}prevB=bt}
   /* the shade along the foot of the bulwark */
   {const p=[];for(let x=-30;x<=350;x+=10)p.push(x,foot(x)+.8);stroke(g,p,'rgba(30,26,34,.35)',1.6)}
   /* the bulwark's inner face: three strakes, butts inside their strakes; broken away at the top in two places */

@@ -34,7 +34,10 @@
                                   the windward end and comes over there first. o.pal, o.rail (the top of the rail, 82), o.deck0 (the foot
                                   of the bulwark on the deck, 97), o.height (the seas' height, 1), o.slant (the rain's, as rain's), o.lamp [x, y, r] (a low warm light that
                                   lights the water and the rain near it), o.from, o.to, o.seed; o.lightning (true: strokes far off in its
-                                  sky), o.clear [x0, x1] (where no stroke falls: the masts; default the middle third), o.period (the
+                                  sky), o.clear [x0, x1] (where no stroke falls: the masts; default the middle third), o.posts [[xc, half, A], ...] (an upright
+                                 of the ship that stands against the seas, such as a mast, at xc on the screen, half its width with a margin
+                                 for her sway: there every sea's outline runs down a flank, A pixels lower to the right and A higher to the
+                                 left, so that no nearly level crest line crosses it; none given, nothing changes), o.period (the
                                   beat's period, 6000). Returns, in the order a room draws them:
                                     draw(g, t, e)     the sky and the seas, over the whole picture. Not swayed
                                     sway(e, k)        the ship's motion now, k its strength (0 still, 1 as sketched): {a (radians), dx,
@@ -75,7 +78,9 @@
                                   and the wet sand. Needs SHARED.country. o.seed, o.shoal (true: a bar off to the left with the sea
                                   breaking on both sides of it); o.mid(g, t, f) (optional: a painter called between the far seas
                                   with the bar and the near ranks, unclipped, so that a ship on the bar stands behind the near surf;
-                                  f is the inner phase). Returns:
+                                  f is the inner phase); o.dy (pixels, default 0: a room that looks at the bay from higher, as from the
+                                  deck of the wreck, lets everything below the cloud down by dy, so that the level line of the open sea
+                                  lies at the eyes of the people who stand there, and the cloud reaches down to it). Returns:
                                     paint(g)          the whole still picture (for a backdrop or a told picture)
                                     draw(g, t, e)     the cloud, the land and everything that moves: the breakers, and on the beat a
                                                       set of greater seas whose white water runs through the shallows
@@ -373,11 +378,13 @@ function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
     t0=x=>.565+.045*(dxW<0?1-x/w:x/w);
   /* the shape of sea k along X (metres across): three trains of peaks that drift with the wind */
   const shapeOf=(k,X,t)=>{const dr=t/1000*1.6*dxW;return .6*pkb(X/58+rk(k+99)*3+dr/58)+.3*pkb(X/23+rk(k+51)*3+dr*1.5/23)+.1*pk(X/9+rk(k+23)*3+dr*2.2/9)};
+  /* where an upright stands against the seas (o.posts), every outline runs down a flank across it */
+  const posts=o.posts||[],postsAt=x=>{let d=0;for(const[xc,h,A]of posts){const u=x-xc;d+=A*Math.tanh(u/h)*Math.exp(-(u/(h+28))*(u/(h+28)))}return d};
   let NEAR=null;
   function sea(g,k,s,t,b){const near=k-s;if(near<-.1)return;const z=Z0+near*DZ,e=E(s),f=fr(b),tl=0,
       a=ht*(14+2.4*(rk(k)-.5))*(.72+.28*smooth(150,Z0,z)),be=near<.5?smooth(.5,.08,near):0,xs=xsh(f),pts=[],sh=[],bk=[];
     for(let x=-6;x<=w+6;x+=2){const X=(x-cx)*z/F,q=shapeOf(k,X,t),m=Math.exp(-((x-xs)/130)*((x-xs)/130)),
-        H=a*(-.3+1.3*q)*(1-be*.45)+be*a*(.1+.26*m),y=hz+F*(e-H)/z+tl*(x-cx);
+        H=a*(-.3+1.3*q)*(1-be*.45)+be*a*(.1+.26*m),y=hz+F*(e-H)/z+tl*(x-cx)+postsAt(x);
       pts.push(x,y);sh.push(clamp(q*(1-be*.5)+be*m,0,1));bk.push(clamp((e-H)/z*F*.5,0,16))}
     const brk=clamp(1-(near+.04)/.22,0,1);if(near>-.12&&near<.4)NEAR={b,pts};
     rank(g,{pts,sh,bk,z,fade:1-Math.exp(-Math.max(0,z-Z0-14)/150),sc:F/z,ox:t/1000*1.6*dxW*F/z,k,thr:.74-.5*brk,brk,warm:lamp?lampK:0},{P,pal,t,dxW,seed})}
@@ -506,7 +513,7 @@ function sideSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
    y = HZ + (edge(x) - HZ) / (1 + d / 25)), pale green behind their white; they rise, curl, break and tumble in toward us, foam lies in the
    shallows, the wash runs up the sand and back over a wide wet sheen, and spray goes up where the seas meet the point. On the beat a greater
    sea does the same, and its white water fills the shallows from side to side. */
-function bay(o){o=o||{};const w=o.w||320,P=PAL.dawn,HZ=60,seed=o.seed||2301,CO=SHARED.country,SKY=sky({pal:'dawn',h:70,seed:seed+1,dx:-1,w,speed:3}),D=25;
+function bay(o){o=o||{};const w=o.w||320,P=PAL.dawn,HZ=60,seed=o.seed||2301,CO=SHARED.country,DY=o.dy||0,SKY=sky({pal:'dawn',h:70+DY,seed:seed+1,dx:-1,w,speed:3}),D=25;
   const edge=x=>121+2.4*Math.sin(x/41+1)+1.2*Math.sin(x/13)-37*Math.pow(smooth(170,326,x),1.15),
     far=x=>x<150?HZ:HZ+2+(x-150)*.13,
     yAt=(x,d)=>HZ+(edge(x)-HZ)/(1+d/D),
@@ -589,7 +596,7 @@ function bay(o){o=o||{};const w=o.w||320,P=PAL.dawn,HZ=60,seed=o.seed||2301,CO=S
   const setD=f=>f<.3?Infinity:f<.5?180-(f-.3)/.2*110:f<.58?70-(f-.5)/.08*30:f<.66?40-(f-.58)/.08*18:f<.82?22-(f-.66)/.16*22:0,
     setBr=f=>smooth(.56,.64,f),setA=f=>1.1+smooth(.3,.56,f)*1.6,
     wetAt=(x,y,e)=>{const f=fr(inner(e,o));if(f<.62||f>.92)return false;const d=setD(f),front=f<.82?yAt(x,d)+3:edge(x)+(f<.88?8:4);return y<=front&&y>=yAt(x,d+16)};
-  function draw(g,t,e){const b=inner(e,o),f=fr(b);SKY.draw(g,t);g.drawImage(land(),0,0,w,144);
+  function draw(g,t,e){const b=inner(e,o),f=fr(b);SKY.draw(g,t);if(DY){g.save();g.translate(0,DY)}g.drawImage(land(),0,0,w,144);
     g.save();g.clip(water);point(g,t);
     /* the ranks that keep coming between the sets, drawn far to near */
     /* (they spend themselves before they reach the near shallows, so that the way through the water is plainly clear between sets) */
@@ -598,9 +605,10 @@ function bay(o){o=o||{};const w=o.w||320,P=PAL.dawn,HZ=60,seed=o.seed||2301,CO=S
     rows.sort((p,q)=>q[0]-p[0]);for(const[d,a,br,id]of rows)if(d>=70)breaker(g,d,a,br,t,id);if(BAR)bar(g,t);if(o.mid){g.restore();o.mid(g,t,f);g.save();g.clip(water)}for(const[d,a,br,id]of rows)if(d<70)breaker(g,d,a,br,t,id);
     g.restore();
     for(let j=0;j<2;j++){const u=fr(t/3800+j*.5);wash(g,Math.sin(Math.PI*u)*.7,.7,j)}
-    if(f>.8){const u=clamp((f-.8)/.18,0,1);wash(g,Math.sin(Math.PI*u)*1.6,1,9)}}
+    if(f>.8){const u=clamp((f-.8)/.18,0,1);wash(g,Math.sin(Math.PI*u)*1.6,1,9)}
+    if(DY)g.restore()}
   function front(g,t,b){rain(g,t,{w,pal:'dawn',density:o.rain==null?.85:o.rain,splash:[104,142],seed:seed+3,slant:-.75})}
-  function paint(g){const T=skyTiles('dawn',70,seed+1);g.drawImage(T.deck,0,0,w,70);g.drawImage(T.scud,0,0,w,70);g.drawImage(land(),0,0,w,144)}
+  function paint(g){const T=skyTiles('dawn',70+DY,seed+1);g.drawImage(T.deck,0,0,w,70+DY);g.drawImage(T.scud,0,0,w,70+DY);g.drawImage(land(),0,DY,w,144)}
   return{paint,draw,front,edge,wetAt,yAt,setD,beat:e=>beat(e,o)}}
 
 /* ---------- placeholders, for mockups only: the ship's painter paints the real deck and hull ---------- */

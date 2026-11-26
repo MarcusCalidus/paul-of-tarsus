@@ -167,10 +167,11 @@ const fig23=(g,room,x,y,id,dir,ps)=>man(g,x,y,id,dir,0,lightAt(room,x,y),0,undef
 /* ==== ART stern23: begin ==== */
 /* The after deck of the grain ship by night, the fourteenth night (27:27-29): SHARED.grainship.sternNight, the picture the maintainer
    approved, looking aft from just forward of the stern: the swan's neck of the sternpost, the plain stern rail passing in front of its
-   foot, the steering oars lashed up at both quarters, and one lantern hung beside the post by two cords that part upward, the only light.
-   We stand a little less far to starboard than in the approved picture (cam .6 for 1.3), so that the deck the people stand on lies in the
-   middle of the picture; and the lantern hangs a little higher on its cords (1.5 m for 1.25), above the heads of whoever stands at the
-   rail, so that its glow, long and low, never lies round a head (CONTRIBUTING section 3). Beyond the ship the storm's night
+   foot, the steering oars lashed up at both quarters, and one lantern, the only light, hung well to starboard of the post by two cords that
+   part upward to the rigging out of the picture: nothing of it touches the swan, neither it nor its glow lies under the head or inside the
+   loop, and it hangs above every head (the painter's default). We stand a little less far to starboard than in the approved picture (cam
+   .6 for 1.3), so that the deck the people stand on lies in the middle of the picture. Nobody stands under the loop: Luke's places are
+   to port of it (CONTRIBUTING section 3). Beyond the ship the storm's night
    (SHARED.storm.deckSea, pal 'night'): no star, no moon, no horizon, the sea and the sky one darkness, lightning far off. She lies near
    land now, and from 27:29 at four anchors: she still rolls, gently (a third of the storm's motion), while the sea, the sky and the rain do
    not. When the anchors go (27:29) the four cables come aft along the deck one after another, two on each side of the post, rise to the
@@ -179,13 +180,13 @@ const fig23=(g,room,x,y,id,dir,ps)=>man(g,x,y,id,dir,0,lightAt(room,x,y),0,undef
    Called from outside: ART.stern23, LAMP_STERN23, SEA23N and ride23 (the bow by night has the same sea and the same motion). Reads F.lead2,
    F.anchors and G.cab23 (the cables run out). Hotspots (ROOMS.stern23): the sky 0,0,320,58 · the sea 0,58,320,26 · the lantern round
    LAMP_STERN23 · the starboard steering oar 236,42,30,52 · the stern rail 92,76,104,32 · the four cables 154,96,42,22 (once they run) ·
-   the sounding line 58,106,30,14. Walk: 30..270 by 113..138, its corners on the bulwarks blocked, and the deck under the lantern
-   (140..176 by 113..126), so that nobody's head comes to stand in its glow. Light:
+   the sounding line 58,106,30,14. Walk: 30..270 by 113..138, its corners on the bulwarks blocked, and the deck under the swan's loop
+   (128..164 by 113..126), so that nobody's head comes to stand under it. Light:
    night, the lantern a lamp (behind the people: their shadows fall toward us). */
 const GS23=SHARED.grainship,
   /* the storm's night, for the stern and the bow: the seas lower than in the storm (she lies near land), lightning far off */
   SEA23N=SHARED.storm.deckSea({pal:'night',lightning:true,height:.5,hz:94,rail:100,deck0:110,clear:[96,196],seed:2311}),
-  NIGHT23={cam:.6,lp:[.5,1.5,5.35],sky:false,rain:false},NG23=GS23.nightGeo(NIGHT23),
+  NIGHT23={cam:.6,sky:false,rain:false},NG23=GS23.nightGeo(NIGHT23),
   LAMP_STERN23=NG23.lamp.map(v=>Math.round(v*2)/2);
 /* the night beyond the rail: the storm's sky (its seas lie below the rail, out of sight, so that no line of sea and sky is seen
    anywhere, as in the approved picture), and low down the foam of the seas that cannot be seen, a few faint streaks drifting with the
@@ -209,7 +210,7 @@ ART.stern23={w:320,q:12,
   light:{amb:'#4a4e6a',wallY:108,wall:[[92,195,108,77]],lamps:[[LAMP_STERN23[0],LAMP_STERN23[1],150,'#e8a860',110,LAMP_STERN23[1]]]},
   behind:night23,
   sway:t=>ride23(t,F.anchors||G.cab23?.25:.34),
-  air(g,t){SHARED.storm.rain(g,t,{pal:'night',density:.55,lamp:[LAMP_STERN23[0],LAMP_STERN23[1],34],seed:2313})},
+  air(g,t){SHARED.storm.rain(g,t,{pal:'night',density:.55,lamp:[LAMP_STERN23[0],LAMP_STERN23[1],26],seed:2313})},
   draw(g,t){const[lx,ly]=LAMP_STERN23,f=Math.floor(t/110)%3;
     /* the lantern's flame, alive behind its horn */
     R(g,lx-.5,ly-.6+(f===1?-.5:0),1,1.6+(f===1?.5:0),f===2?'#ffe8b0':'#fff4d0');
@@ -459,7 +460,8 @@ ART.bay23={w:320,q:12,paint(g){},
    anywhere (27:42 is told). Rain in the air.
    Called from outside: ART.wreck23. Hotspots (ROOMS.wreck23): the shore 0,30,320,32 · the surf 0,62,320,22 · the stern breaking up
    272,30,48,62 · the planks and the hatch cover 22,92,108,18. Walk: 24..296 by 114..138. Light: overcast, soft. */
-const BAY23W=SHARED.storm.bay({seed:2331}),WG23=GS23.wreckGeo();
+/* the bay from the wreck's deck: its open sea's level line at the eyes of the people standing on the foredeck (CONTRIBUTING section 4) */
+const BAY23W=SHARED.storm.bay({seed:2331,dy:21}),WG23=GS23.wreckGeo();
 /* the stern breaking up, astern of the picture's right edge: timbers standing up at slants beyond the rail, each alone, and the white
    water thrown up behind them on the beat of the surf */
 function stern23w(g,t){const C=GS23.LIGHT.dawn,e=(t/6000)%1;
@@ -468,8 +470,9 @@ function stern23w(g,t){const C=GS23.LIGHT.dawn,e=(t/6000)%1;
     poly(g,[ex-w/2*.7,ey,ex+w/2*.7,ey,ex+.4,ey-1.6],tint(C.hull[1],.1))}
   /* the surf bursting up behind the broken stern: white water that rises and falls back, never a flash */
   const u=Math.sin(Math.PI*clamp((e-.05)/.5,0,1));if(u>0){const r=rng(2333+Math.floor(t/6000)%7);
-    for(let i=0;i<46;i++){const x=270+r()*56,h=(8+r()*26)*u,y=WG23.top(x)-h*(.3+.7*r()),s=.5+r()*1.2;R(g,x,y,s,s,`rgba(240,244,240,${(.35+.4*r())*u})`)}
-    comp(g,'screen',.25*u,()=>pool(g,300,WG23.top(300)-8,26,12,'#e8eef0',1,'source-over'))}}
+    /* all of it astern of the walking strip (which ends at x 296), so that neither the white water nor its soft light lies behind a head */
+    for(let i=0;i<46;i++){const x=304+r()*26,h=(8+r()*26)*u,y=WG23.top(x)-h*(.3+.7*r()),s=.5+r()*1.2;R(g,x,y,s,s,`rgba(240,244,240,${(.35+.4*r())*u})`)}
+    comp(g,'screen',.25*u,()=>pool(g,321,WG23.top(318)-8,15,10,'#e8eef0',1,'source-over'))}}
 ART.wreck23={w:320,q:12,paint(g){GS23.wreckDeck(g,{})},
   light:{amb:'#bcc0c8'},   /* an overcast daybreak in rain: soft light, the contact shadow alone */
   /* the bay behind her, mirrored: the land ahead of her bow at the left, the open sea astern at the right */
@@ -1151,9 +1154,8 @@ function stoolC23(g,x,foot,r){const M=SHARED.materials,W='#7a5a3a',top=foot-8;M.
 /* ==== ART tablet23: begin ==== */
 /* A close view of Luke's wax tablet, carried in from Chapter Twenty-Two, by the lantern's light from the upper right: the same tablet as
    tablet22 there, the same board of fine-grained wood, the same dark wax sunk into it (16..304 by 12..130) and the same stylus lying on
-   the frame below it (paintTabletC23 follows paintTablet22 of chapter22.js line for line, with its seed: keep the two in step). Everything
-   on it is scratched as Chapter Twenty-Two scratches it (SHARED.tablets.scratch and lukeLine; scratchTB23 stands in for them until
-   shared/tablets.js has them): a thin pale line with its groove's dark shade half a pixel below and to the right, a little uneven.
+   the frame below it (both chapters paint it with SHARED.tablets.lukeTablet). Everything
+   on it is scratched as Chapter Twenty-Two scratches it (SHARED.tablets.scratch and lukeLine): a thin pale line with its groove's dark shade half a pixel below and to the right, a little uneven.
    Along its head the strokes of the fourteen days, in two groups of seven, each alone, none crossing another and none laid across a group.
    Below, if the tablet was carried in with marks, Luke's line (markLine23, the same as SHARED.tablets.lukeLine at k 1 from 284,82): one
    piece for each of the six marks, only ever westward, a gap with a small square dot for a day with only the day, a small square where
@@ -1189,39 +1191,10 @@ ART.tablet23={w:320,q:12,paint(g){paintTabletC23(g)},
 function namePos23(){const pts=markLine23(),e=pts[pts.length-1],sc=1.2,w=wordW23(NAME23,sc),left=e[0]-8-w>20;
   return[left?e[0]-8-w:Math.max(20,e[0]-w/2),clamp(left?e[1]-3.5*sc:e[1]+6,40,118),w,7*sc]}
 function nameBox23(){const[x,y,w,h]=namePos23();return[Math.round(x-4),Math.round(y-4),Math.round(w+8),Math.round(h+8)]}
-/* the tablet itself: as paintTablet22 in chapter22.js (the same numbers and seed), so that the two chapters show one tablet */
-function paintTabletC23(g){const r=rng(2205),[x0,y0,x1,y1]=[16,12,304,130];
-  R(g,0,0,320,144,'#120e0c');
-  const F=[3,1,317,1,319,3,319,141,317,143,3,143,1,141,1,3];poly(g,F);g.fillStyle=lg(g,320,0,0,144,['#9a7450','#7a5838','#5a3e26']);g.fill();
-  clipTo(g,()=>poly(g,F),()=>{for(let i=0;i<260;i++){const y0=r()*144,x=r()*320-40,l=30+r()*120,ph=r()*6,q=[];for(let u=0;u<=l;u+=4)q.push(x+u,y0+.6*Math.sin(u/37+ph)+.3*Math.sin(u/11+ph*2));
-      stroke(g,q,r()<.6?`rgba(52,30,14,${(.08+r()*.12).toFixed(2)})`:`rgba(255,226,180,${(.04+r()*.07).toFixed(2)})`,.5)}
-    tex(g,'grain',.12,0,0,320,144,'overlay',.4);
-    R(g,1,1,318,.6,'rgba(255,226,180,.35)');R(g,1,1,.6,142,'rgba(255,226,180,.2)');R(g,1,142.4,318,.6,'rgba(20,10,4,.5)');R(g,318.4,1,.6,142,'rgba(20,10,4,.35)')});
-  R(g,x0-1.2,y0-1.2,x1-x0+2.4,y1-y0+2.4,'#3a2616');R(g,x0-1.2,y1,x1-x0+2.4,1.2,'#b08a5c');R(g,x1,y0-1.2,1.2,y1-y0+2.4,'#a07c52');
-  g.fillStyle=lg(g,x1,y0,x0,y1,['#3a2c1e','#2a1f15','#1e160e']);g.fillRect(x0,y0,x1-x0,y1-y0);
-  clipTo(g,()=>{g.beginPath();g.rect(x0,y0,x1-x0,y1-y0)},()=>{tex(g,'mott',.5,x0,y0,x1-x0,y1-y0,'overlay',1);tex(g,'grain',.18,x0,y0,x1-x0,y1-y0,'overlay',.5);
-    for(let i=0;i<14;i++)pool(g,x0+r()*(x1-x0),y0+r()*(y1-y0),30+r()*50,8+r()*10,r()<.5?'#5a4430':'#0e0906',.25+r()*.2,'source-over');
-    comp(g,'screen',.1,()=>{g.fillStyle=lg(g,x1,y0,x0+80,y1,['#ffc880','rgba(0,0,0,0)']);g.fillRect(x0,y0,x1-x0,y1-y0)});
-    ao(g,x0,y0,x1-x0,4,'t',.55,'#0a0604');ao(g,x0,y0,4,y1-y0,'l',.4,'#0a0604')});
-  const Y=x=>136.4-(x-168)*.012,a=168,b=296;
-  comp(g,'multiply',.45,()=>poly(g,[a+3,Y(a)+2,b+1.5,Y(b)+2,b+1.5,Y(b)+3.4,a+3,Y(a)+3],'#2a1c14'));
-  poly(g,[a,Y(a)+.8,a+9,Y(a+9)-.1,b-9,Y(b-9)-.1,b-9,Y(b-9)+1.7,a+9,Y(a+9)+1.7],'#7a5c30');
-  R(g,a+9,Y(a+9)-.1,b-a-18,.6,'#e2c07e');R(g,a+9,Y(a+9)+1.2,b-a-18,.5,'#4a3418');
-  poly(g,[b-9,Y(b-9)-.6,b-6,Y(b-6)-.9,b-6,Y(b-6)+2.3,b-9,Y(b-9)+2],'#8a6a38');
-  poly(g,[b-6,Y(b-6)-1.4,b,Y(b)-1.6,b,Y(b)+2.6,b-6,Y(b-6)+2.8],'#7a5a30');R(g,b-6,Y(b-6)-1.4,6,.6,'#ecca88');R(g,b-6,Y(b-6)+2.3,6,.5,'#3a2814')}
-/* Luke's scratches: SHARED.tablets (shared/tablets.js, Chapter Twenty-Two) once it has them; until then the same painters here */
-const LUKE23={c:'#d2bf94',dk:'#140a04'};
-function scratchTB23(g,pts,o){o=o||{};const r=rng(o.seed||2271),c=o.c||LUKE23.c,dk=o.dk||LUKE23.dk,a=o.a==null?1:o.a,q=[];
-  for(let i=0;i<pts.length-2;i+=2){const x0=pts[i],y0=pts[i+1],x1=pts[i+2],y1=pts[i+3],L=Math.hypot(x1-x0,y1-y0),n=Math.max(1,Math.round(L/3)),nx=-(y1-y0)/(L||1),ny=(x1-x0)/(L||1);
-    for(let j=i?1:0;j<=n;j++){const t=j/n,w=j&&j<n?(r()-.5)*.35:0;q.push(x0+(x1-x0)*t+nx*w,y0+(y1-y0)*t+ny*w)}}
-  g.save();g.globalAlpha=a*.6;stroke(g,q.map(v=>v+.5),dk,.6);g.globalAlpha=a;stroke(g,q,c,.55);g.restore()}
-function lukeLineTB23(g,x,y,kinds,o){o=o||{};const k=o.k||1,s=o.seed||2280;let px=x,py=y,run=[px,py];
-  const dot=(x,y,w)=>{R(g,x-w/2+.5,y-w/2+.5,w,w,rgba(LUKE23.dk,.6));R(g,x-w/2,y-w/2,w,w,LUKE23.c)};
-  dot(px,py,2*k);
-  kinds.forEach((m,i)=>{if(!m){if(run.length>2)scratchTB23(g,run,{seed:s+i});px-=14*k;dot(px+7*k,py,1.5*k);run=[px,py];return}
-    px-=30*k;py+=m===1?7*k:m===3?-7*k:0;run.push(px,py)});
-  if(run.length>2)scratchTB23(g,run,{seed:s+99});return[px,py]}
-const tabC23=()=>{const T=SHARED.tablets;return T&&T.lukeLine&&T.scratch?T:{scratch:scratchTB23,lukeLine:lukeLineTB23}};
+/* the tablet itself (board, wax and stylus) and Luke's scratches: SHARED.tablets, the same painters as Chapter Twenty-Two's, so that the two
+   chapters show one tablet */
+function paintTabletC23(g){SHARED.tablets.lukeTablet(g)}
+const tabC23=()=>SHARED.tablets;
 /* Greek capitals as Luke scratches them, one stroke at a time: each letter a few polylines in a box seven units high (a unit is sc room
    pixels); round letters are drawn as short straight pieces, the way a stylus goes in wax. The stigma (six) is a final sigma with a
    flat top, drawn here because a font may not have it. */
@@ -1402,8 +1375,12 @@ const wet23=()=>{const p=phase23();return p==='planks'||p==='surf'||p==='count'|
 /* the room Luke's tablet goes back to */
 const lukeRoom23=()=>{const p=phase23();return p==='sound'?'stern23':p==='estate'?'estate23':'beach23'};
 function setPC23(a){if(G.pc!==a){G.pc=a;G.inv=G.invs[a.id]||(G.invs[a.id]=[])}}
-function show23(room,x,y,dir){place23(room);dealInv(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);drawInv();codeBtn()}
-async function goto23(room,x,y,dir){await fade(1,300);show23(room,x,y,dir);await fade(0,300)}
+/* a code is kept only at a point the script resumes from: never in a told picture (bay23, sick23), which has nothing to do, and never
+   where a script only passes through a room or changes it before the told line that belongs to it (quiet): there the code is kept after
+   the line (CONTRIBUTING section 5: a code is a promise, and a restored code never skips a verse) */
+const QUIET=1,TOLDPIC23=['bay23','sick23'];
+function show23(room,x,y,dir,quiet){place23(room);dealInv(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);drawInv();if(!quiet&&!TOLDPIC23.includes(room))codeBtn()}
+async function goto23(room,x,y,dir,quiet){await fade(1,300);show23(room,x,y,dir,quiet);await fade(0,300)}
 const tw=ms=>wait(fast()?Math.min(40,ms):ms);
 async function go23(a,x,y,sp){a.speed=fast()?400:sp||0;a.free=1;await walk(a,x,y);a.speed=0;a.free=0}
 const TL={thought:1,color:'#d0e8e0'};   /* Luke's thoughts */
@@ -1440,15 +1417,16 @@ async function lead23(){const L=ld23(),s=SOUND23[L.n];if(L.bottom)return say(LK,
   if(!L.tallow)return say(LK,'luke_first_the_tallow',TL);L.bottom=1;SFX.click();await say(LK,s.bottom,TL);return written23()}
 async function tallow23(){const L=ld23();L.tallow=1;return say(LK,SOUND23[L.n].tallow,TL)}
 async function written23(){const L=ld23();if(!L.depth||!L.bottom)return;SFX.good();
-  if(!L.n){F.lead1=1;G.ld23=null;await goto23('stern23',138,126,-1);await say(SA1,'leadsman_twenty_and_sand',{to:LK});await say(SA1,'leadsman_again_in_a_while',{to:LK});return codeBtn()}
-  F.lead2=1;G.ld23=null;await goto23('stern23',138,126,-1);
+  if(!L.n){F.lead1=1;G.ld23=null;await goto23('stern23',120,128,-1);await say(SA1,'leadsman_twenty_and_sand',{to:LK});await say(SA1,'leadsman_again_in_a_while',{to:LK});return codeBtn()}
+  /* after the second sounding Luke stands at the port quarter, clear of the swan's loop and of the cables that are about to run out */
+  F.lead2=1;G.ld23=null;await goto23('stern23',54,134,1,QUIET);
   await tell('n28');await say(SA1,'leadsman_fifteen_and_stones',{to:PI});await say(PI,'pilot_land_is_close',{to:SA1});
   /* 27:29: four cables run out over the stern; no anchor is seen. They long for day. */
   place(SA2,'stern23',196,117,-1);place(SA3,'stern23',78,124,1);SA2.pose=SA3.pose='payout';
   await Promise.all([tween(fast()?120:2600,k=>{G.cab23=k;SA2.pk=SA3.pk=((k*6)|0)%2}),tell('n29')]);G.cab23=0;
   return toBow23()}
 /* ---- an anchor from the bow (27:30-32): Paul ---- */
-async function toBow23(){await fade(1,600);F.anchors=1;G.skiffT=performance.now();show23('bow23');await fade(0,600);
+async function toBow23(){await fade(1,600);F.anchors=1;G.skiffT=performance.now();show23('bow23',null,null,null,QUIET);await fade(0,600);
   await tell('n30');await say(P,'paul_the_skiff_at_this_hour',TP);codeBtn()}
 const seen23=()=>F.sawSkiff&&F.sawMen&&F.sawAnchors;
 async function sawBow23(f,k){await say(P,k,TP);if(!F[f]){F[f]=1;codeBtn()}}
@@ -1462,7 +1440,7 @@ async function julius23(){if(phase23()!=='bow')return say(JU,'not_now_paul_said'
   for(const a of[SA1,SA2,SA3,SA4])a.pose=0;await say(P,'paul_now_they_stay',TP);
   return toHold23()}
 /* ---- before them all (27:33-38): Paul ---- */
-async function toHold23(){await fade(1,600);show23('hold23');await fade(0,600);await tell('n33');codeBtn()}
+async function toHold23(){await fade(1,600);show23('hold23',null,null,null,QUIET);await fade(0,600);await tell('n33');codeBtn()}
 const ONE23={prisoner23a:'prisoner_i_couldnt_keep_it_down',prisoner23b:'prisoner_what_for',merchant23:'merchant_what_good_is_food_now',boy23:'boy_nobody_else_is_eating',
   oldman23:'old_leave_me_be',soldier23a:'not_now18',julius23:'not_now_paul_said',luke23:'luke_later',aristarchus23:'aristarchus_in_a_while',sailor23c:'sailor_eat_down_here'};
 async function one23(a){if(F.stood&&!F.spoke)return speech23();if(F.spoke)return say(P,'paul_now_the_bread',TP);
@@ -1483,7 +1461,7 @@ async function meal23(){P.dir=-1;await tell('n35');await tell('n36');await tell(
   await tell('n39');await Promise.all([tween(fast()?100:3800,k=>{G.bay23=k*.35}),tell('n40')]);
   await Promise.all([tween(fast()?100:3800,k=>{G.bay23=.35+k*.65}),tell('n41')]);
   /* the wreck: 27:42, 43 told; the swimmers jump first and are gone */
-  await fade(1,600);F.bread=1;show23('wreck23');for(const a of[SA1,SA2,SA4])place(a,'wreck23',250+(a===SA2?18:a===SA4?36:0),118+(a===SA4?8:0),1);await fade(0,600);
+  await fade(1,600);F.bread=1;show23('wreck23',null,null,null,QUIET);for(const a of[SA1,SA2,SA4])place(a,'wreck23',250+(a===SA2?18:a===SA4?36:0),118+(a===SA4?8:0),1);await fade(0,600);
   await tell('n42');await Promise.all([tell('n43'),...[SA1,SA2,SA4].map((a,i)=>tw(400+i*500).then(()=>go23(a,340,a.y,48)))]);for(const a of[SA1,SA2,SA4])a.room=null;
   await say(P,'paul_four_here_cannot_swim',TP);codeBtn()}
 /* ---- everyone has a plank (27:44): Paul ---- */
@@ -1534,8 +1512,8 @@ async function talk23(){if(F.malta)return say(LK,'luke_one_word_and_no_more',TL)
     await say(EL,'malta_the_name',{to:LK});await say(LK,'malta_luke_says_it_after_him',{to:EL});G.ex23=0;return named23()}}
 async function named23(){await tell('m1');
   /* Luke scratches the name at the end of his line */
-  await fade(1,300);G.from23='beach23';show23('tablet23');G.scratch23=0;await fade(0,300);await tween(fast()?120:2400,k=>{G.scratch23=k});F.malta=1;G.scratch23=0;
-  await say(LK,'luke_the_name_on_my_tablet',TL);await goto23('beach23');await tell('m2');codeBtn()}
+  await fade(1,300);G.from23='beach23';show23('tablet23',null,null,null,QUIET);G.scratch23=0;await fade(0,300);await tween(fast()?120:2400,k=>{G.scratch23=k});F.malta=1;G.scratch23=0;
+  await say(LK,'luke_the_name_on_my_tablet',TL);await goto23('beach23',null,null,null,QUIET);await tell('m2');codeBtn()}
 /* ---- by the fire: the viper (28:3-6), a cutscene that is not played; Luke watches ---- */
 async function viper23scene(){if(phase23()!=='fire')return;
   /* Paul brings a bundle of sticks and lays it on the fire */
@@ -1552,7 +1530,7 @@ async function viper23scene(){if(phase23()!=='fire')return;
   P.pose='warm';P.pk=0;await tell('m5');
   /* 28:6: the long wait, the light going over; then they call him a god, and nothing is shown */
   await Promise.all([tween(fast()?100:5200,k=>{G.lw23=k}),tell('m6')]);
-  F.viper=1;await fade(1,800);G.lw23=0;P.pose=0;show23('estate23');await fade(0,700);await tell('m7');codeBtn()}
+  F.viper=1;await fade(1,800);G.lw23=0;P.pose=0;show23('estate23',null,null,null,QUIET);await fade(0,700);await tell('m7');codeBtn()}
 /* ---- the estate of Publius (28:7-10): Luke ---- */
 async function paul23(){const ph=phase23();
   if(ph==='sound')return say(P,'paul_land_or_no_land',{to:LK});
@@ -1564,7 +1542,7 @@ async function publius23(){if(F.healed)return say(PU,'publius_my_father_is_on_hi
   await say(PU,'publius_my_father_is_ill',{to:LK});await say(P,'paul_may_i_go_in_to_him',{to:PU});await say(PU,'publius_please',{to:P});
   /* 28:8, told over one picture of the room: the old man in bed, Paul's far hand laid on him; no light and no effect */
   await fade(1,600);G.scene=null;show23('sick23');await fade(0,600);await tell('m8');
-  await fade(1,600);F.healed=1;G.gifts23=0;show23('estate23');await fade(0,600);await say(FA,'father_i_am_up',{to:PU});
+  await fade(1,600);F.healed=1;G.gifts23=0;show23('estate23',null,null,null,QUIET);await fade(0,600);await say(FA,'father_i_am_up',{to:PU});
   /* 28:10: the gifts are brought into the court while it is told, a few at a time (ART.estate23 draws as many as G.gifts23 says) */
   await tell('m9');const gifts=tween(fast()?60:5200,k=>{G.gifts23=k});await tell('m10');await gifts;return end23()}
 /* the hidden treasure: the stone at the gate, with one word cut in it, which Luke copies */
@@ -1588,7 +1566,7 @@ async function closeTablet23(){await goto23(G.from23&&G.from23!=='tablet23'&&ROO
 /* A room's hotspots are listed from the back to the front: where two overlap, the later one is meant. */
 const NOW=[160,160,236,236];   /* a close view: whoever is played stands below the picture, and takes no step */
 const atP=o=>Object.defineProperties(o,{wx:{get(){return P.x},enumerable:true},wy:{get(){return P.y},enumerable:true}});   /* acted on where Paul is, with no step (the surf) */
-ROOMS.stern23={space:.6,walk:[30,270,113,138],mood:'night',amb:AMB.stern23,block:[[60,112,24,8],[30,113,18,5],[236,113,34,5],[250,118,20,6],[262,124,8,4],[140,113,36,13]],hs:[
+ROOMS.stern23={space:.6,walk:[30,270,113,138],mood:'night',amb:AMB.stern23,block:[[60,112,24,8],[30,113,18,5],[236,113,34,5],[250,118,20,6],[262,124,8,4],[128,113,36,13]],hs:[
   {name:'sky_without_stars',x:0,y:0,w:320,h:58,wx:150,wy:124,look:'sky_without_stars_look'},
   {name:'dark_sea',x:0,y:58,w:320,h:26,wx:160,wy:124,look:'dark_sea_look'},
   {name:'lantern',x:LAMP_STERN23[0]-10,y:LAMP_STERN23[1]-14,w:20,h:22,wx:LAMP_STERN23[0]-6,wy:124,look:'lantern23_look'},
@@ -1601,7 +1579,7 @@ ROOMS.lead23={space:.6,walk:NOW,mood:'night',amb:AMB.lead23,hs:[
   {name:'dry_line',get x(){return TAGX23[SOUND23[F.lead1?1:0].tag]+14},y:76,get w(){return 318-this.x},h:18,wx:160,wy:236,look:'dry_line_look'},
   {name:'the_lead',x:10,y:72,w:42,h:34,wx:160,wy:236,def:'look',look:()=>tallow23(),use:()=>lead23(),useWith:it=>it==='tablet23'?lead23():false},
   ...TAGS23.map((tg,i)=>({name:tg.name,x:TAGX23[i]-10,y:lineY23(TAGX23[i])+1,w:22,h:16,wx:160,wy:236,def:'use',look:tg.look,use:()=>tag23(i),useWith:it=>it==='tablet23'?tag23(i):false})),
-  {name:'back_to_the_deck',x:0,y:128,w:96,h:16,wx:160,wy:236,exit:()=>goto23('stern23',138,126,-1),look:'back_to_the_deck_look'}]};
+  {name:'back_to_the_deck',x:0,y:128,w:96,h:16,wx:160,wy:236,exit:()=>goto23('stern23',120,128,-1),look:'back_to_the_deck_look'}]};
 ROOMS.bow23={space:.6,walk:[20,296,114,138],block:[[286,114,10,3]],get mood(){return'tense'},amb:AMB.bow23,hs:[
   {name:'dark_sea',x:0,y:20,w:320,h:40,wx:160,wy:120,look:'dark_sea_look'},
   {name:'lantern',x:LAMP_BOW23[0]-10,y:LAMP_BOW23[1]-14,w:20,h:24,wx:LAMP_BOW23[0],wy:120,look:'lantern23_look'},
@@ -1662,7 +1640,7 @@ const inRoom=r=>G.room===r;
 const FOREIGN23={'*':()=>say(PC(),'luke_he_looks_at_it_and_hands_it_back',TH())};
 who(LK,{look:'luke_look23',talk:()=>inRoom('hold23')?one23(LK):say(LK,'luke_later',{to:P}),useWith:it=>it==='bread23'?bread23('all'):false,give:it=>it==='bread23'?bread23(LK):false});
 who(AR,{look:'aristarchus_look23',talk:()=>inRoom('hold23')?one23(AR):say(AR,inRoom('estate23')?'aristarchus_a_roof_and_dry_clothes':'aristarchus_im_all_right',{to:PC()}),useWith:it=>it==='bread23'?bread23('all'):false,give:it=>it==='bread23'?bread23(AR):false});
-who(JU,{look:'julius_look23',talk:()=>inRoom('bow23')?julius23():inRoom('hold23')?one23(JU):say(JU,inRoom('beach23')?'julius_everyone_ashore':'not_now_paul_said',{to:PC()}),useWith:it=>it==='bread23'?bread23('all'):false,give:it=>it==='bread23'?bread23(JU):false});
+who(JU,{look:'julius_look23',talk:()=>inRoom('bow23')?julius23():inRoom('hold23')?one23(JU):say(JU,inRoom('beach23')?(F.found?'julius_everyone_ashore':'julius_my_prisoners_to_see_to'):'not_now_paul_said',{to:PC()}),useWith:it=>it==='bread23'?bread23('all'):false,give:it=>it==='bread23'?bread23(JU):false});
 who(SO1,{look:()=>say(PC(),F.mailOff?'soldier_without_his_mail_look':'soldier_in_mail_look',TH()),talk:()=>inRoom('hold23')?one23(SO1):inRoom('wreck23')||inRoom('planks23')?mail23():say(SO1,'not_now18',{to:PC()}),useWith:it=>it==='bread23'?bread23('all'):false,give:it=>it==='bread23'?bread23(SO1):false});
 who(SO2,{look:'soldier_look23',talk:()=>say(SO2,inRoom('bow23')?'soldier_ask_the_officer':'not_now18',{to:PC()})});
 for(const a of[SA1,SA2,SA3,SA4])who(a,{look:()=>inRoom('bow23')?sawBow23('sawMen','sailors_at_the_skiff_look'):say(PC(),a===SA1&&inRoom('stern23')?'leadsman_look':'sailor_look23',TH()),
@@ -1670,7 +1648,7 @@ for(const a of[SA1,SA2,SA3,SA4])who(a,{look:()=>inRoom('bow23')?sawBow23('sawMen
 async function pretext23(a){await say(P,'paul_whats_the_skiff_for',{to:a});await say(a,'sailor_anchors_from_the_bow',{to:P})}
 who(PI,{look:'pilot_look23',talk:()=>say(PI,'pilot_no_bearing_tonight',{to:PC()})});
 for(const a of[PR1,PR2,ME,BOY,OLD])who(a,{look:a===OLD?'old_prisoner_look':a===BOY?'ship_boy_look':a===ME?'merchant_look':'prisoner_look23',
-  talk:()=>inRoom('hold23')?one23(a):inRoom('wreck23')?say(a,PEOPLE23.find(p=>p.a()===a).says,{to:P}):a===OLD&&inRoom('beach23')?say(OLD,'old_forbade_it',{to:PC()}):say(a,'not_now18',{to:PC()}),
+  talk:()=>inRoom('hold23')?one23(a):inRoom('wreck23')?say(a,PEOPLE23.find(p=>p.a()===a).says,{to:P}):a===OLD&&inRoom('beach23')?say(OLD,F.found?'old_ill_stay_by_the_fire':'old_forbade_it',{to:PC()}):say(a,'not_now18',{to:PC()}),
   useWith:it=>it==='bread23'?bread23('all'):false,give:it=>it==='bread23'?bread23(a):false});
 const OLDHS=OLD.hs;
 who(EL,{look:'islander_elder_look',talk:()=>talk23(),show:FOREIGN23});
@@ -1701,7 +1679,8 @@ const TABLETS={
   scripture:[]};
 
 /* ============ PLACING THE CAST, SETUP ============ */
-const ENT={stern23:[150,128,1],lead23:[160,236,1],bow23:[70,128,1],get hold23(){return F.stood?[SPOT23[0],SPOT23[1],-1]:[44,127,1]},bay23:[160,236,1],
+/* Luke stands clear of the swan's neck: no head under its loop (CONTRIBUTING section 3) */
+const ENT={stern23:[120,128,1],lead23:[160,236,1],bow23:[70,128,1],get hold23(){return F.stood?[SPOT23[0],SPOT23[1],-1]:[44,127,1]},bay23:[160,236,1],
   wreck23:[62,126,1],planks23:[160,236,1],get surf23(){return[HOLDX23[Math.min(3,G.at23||0)],WATER23,1]},
   get beach23(){const p=phase23();return p==='count'?[200,128,1]:p==='talk'?[268,128,1]:[196,130,-1]},estate23:[70,126,1],sick23:[160,236,1],tablet23:[160,236,1]};
 /* place23: everyone where the story has him, from the flags; whoever is played is set by the scene */
@@ -1724,7 +1703,7 @@ function place23(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
     OLD.hs=ph==='count'&&!F.found?null:OLDHS;
     if(ph==='talk')pl(EL,'beach23',296,126,-1);if(ph==='fire')pl(EL,'beach23',FIRE23[0]+90,FIRE23[1]+4,-1)}
   if(ph==='estate'){pl(P,'estate23',150,124,1);pl(AR,'estate23',122,130,1);pl(PU,'estate23',206,122,-1);pl(HH,'estate23',248,118,-1);if(F.healed)pl(FA,'estate23',228,128,-1)}
-  if(room==='sick23'){pl(FA,'sick23',BED23[0],BED23[1],1,'lie');pl(P,'sick23',BED23[0]+1,124,-1,'lay')}
+  if(room==='sick23'){pl(FA,'sick23',BED23[0],BED23[1],1,'lie');pl(P,'sick23',BED23[0]-3,124,-1,'lay')}
   P.hs=lukePlays()?PAULHS:null;P.party=LK.party=0}
 function setup23(){P.hs=null;P.called='Paul';LK.called='Luke';G.pk23=null;G.ld23=null;G.ex23=0;G.at23=0;G.heave23=0;G.mailSaid=0;G.fed23=0;G.dry23=0;G.vip23=null;G.lw23=0;G.cab23=0;G.num23=0;G.scratch23=0;G.caps23=[];
   G.invs={paul:['tablets'],luke23:['tablet23']};G.inv=G.invs.paul;drawInv()}

@@ -487,7 +487,7 @@ function drawDeck22(g,t){if(SDeck22)SDeck22.draw(g,t);pennantDeck22(g,t);if(F.fh
    mast, and the lee rail to starboard, past the mast. The sea comes over the port side, at the left (the rain slants down to the right).
    The sailor who calls stands aft by the lee rail, his hand on the mast, where every hold can be seen. In the lee of Cauda (27:16) the
    skiff comes up over the port rail at the left on the men's rope, full of water; the sea is a little lower there. By night (27:20) one
-   lantern hangs under the cabin's eave by two cords that part upward; its light lies long and low. Lightning far off (lightning:true),
+   lantern hangs under the cabin's eave by two cords that part upward (the third and the sixth of Luke's days are nights); its light lies long and low. Lightning far off (lightning:true),
    never over the swan's neck or the mast.
    Called from outside: ART.storm22, STORM22 (holds, way, walk). Reads phase22(), nightNow22(), G.beat, G.sk22 (0..4), G.pull22, G.over22. */
 const STORM22={walk:DECK22.walk.slice(),
@@ -498,7 +498,9 @@ const STORM22={walk:DECK22.walk.slice(),
      the mast; where
      he stands beside the one he walks across, at each hold */
   home:[284,116],gate:[232,120],side:[[14,4],[14,4],[14,3],[-16,8]]};
-const nightNow22=()=>phase22()==='tablet';
+/* Luke's six days (27:20): the third and the sixth are nights, the others days, so that what he says of the sky stands over the sky
+   that is painted (no sun by day, not one star by night); the lantern hangs there only by night */
+const nightNow22=()=>phase22()==='tablet'&&(today22()===3||today22()===6);
 /* the deck's geometry (shared/grainship.js), and the water cask: upright, its middle at x, z (metres), r its radius, h its height */
 let GD22=null;const gd22=()=>GD22||(GD22=SHARED.grainship.geoDeck({cabin:DECK22.cabin}));
 const CASK22={x:2.68,z:6,r:.38,h:1.15};
@@ -507,8 +509,13 @@ const LANT22={x:1.25,y:1.45,z:11.15,c0:1.0,c1:1.5};
 const lant22=()=>{const D=gd22(),y0=D.s(11.3);return{p:D.P(LANT22.x,y0+LANT22.y,LANT22.z),a:D.P(LANT22.c0,y0+1.87,LANT22.z),b:D.P(LANT22.c1,y0+1.87,LANT22.z),floor:D.P(LANT22.x,y0,11.3)}};
 /* the storm sea for each picture: by day, a little lower in the lee of Cauda; by night, the dark one, the lantern's light in its rain */
 const DS22={};
+/* the uprights that stand against the sea, on the screen: the swan's neck and the mast, [middle, half width with a margin for the sway,
+   how far the seas' outline falls across it] */
+const POSTS22=[[152,11,7],[271,16,9]];
 const ds22=v=>DS22[v]||(DS22[v]=SHARED.storm.deckSea({pal:v==='n'?'night':'day',dx:1,slant:.9,rail:70,deck0:82,height:v==='s'?.72:1,seed:2209,
-  lightning:true,clear:[132,300],lamp:v==='n'?[lant22().p[0],lant22().p[1]+4,34]:undefined}));
+  lightning:true,clear:[132,300],lamp:v==='n'?[lant22().p[0],lant22().p[1]+4,34]:undefined,
+  /* the swan's neck and the mast stand against the seas: there every outline runs down a flank, never level behind them */
+  posts:POSTS22}));
 /* the moment in the sea: the beat's own phase when it runs here (its whole part counts the seas, so that each is a little different), else
    a clock of six seconds */
 const e22=t=>{const b=G.beat;return b&&b.room==='storm22'?(t-b.t0)/b.period:t/6000};
@@ -625,7 +632,7 @@ function pennant22(g,t,N){const[hx,hy]=SHARED.grainship.staffOf(gd22()).head,n=9
    of water: grey-green to the brim, with foam in it, spilling over her near gunwale and falling away outboard. Her near side is planked in strakes that run along her; no thwart and no oar across her. Only what is above the rail is
    seen: the rest of her is outboard, behind it. The rope from her stem goes over the rail just beyond it, so that it crosses nothing of
    her, and down to the men's fists, slanting. */
-const SKIFF22={z0:5.5,z1:9.3,off:.95,hb:.62,lift:[-.7,-.02,.28,.52,.7]};
+const SKIFF22={z0:5.5,z1:9.3,off:.95,hb:.62,lift:[-.12,-.02,.28,.52,.7]};
 function skiff22(g,t,e){const D=gd22(),S=SKIFF22,n=G.sk22||0,ph=(((e%1)+1)%1),pause=Math.sin(Math.PI*clamp((ph-.24)/.5,0,1)),
     base=S.lift[Math.min(4,n)]+.07*pause+.04*Math.sin(t/700),xc=z=>-(D.b(z)+S.off),
     hg=z=>D.s(z)+1.15+base+.16*Math.pow((z-S.z0)/(S.z1-S.z0),1.5)+.05*Math.pow((S.z1-z)/(S.z1-S.z0),2),
@@ -670,11 +677,11 @@ function skiff22(g,t,e){const D=gd22(),S=SKIFF22,n=G.sk22||0,ph=(((e%1)+1)%1),pa
    light:null, walk NOW (Luke stands below the picture).
    Called from outside: ART.tablet22, DAYS22. Reads the flags t1..t6 and m1a..m6b. */
 const DAYS22=Array.from({length:6},(_,i)=>[44+i*46,26]);
-const TAB22={wax:[16,12,304,130],mark:32,line:[286,100],k:.7,names:['Caesarea','Sidon','Myra','Cnidus','fair_havens','Cauda']};
+const TAB22={mark:32,line:[286,100],k:.7,names:['Caesarea','Sidon','Myra','Cnidus','fair_havens','Cauda']};
 ART.tablet22={w:320,q:12,paint(g){paintTablet22(g)},light:null,
   draw(g){const TB=SHARED.tablets,[cx0]=DAYS22[0];
-    /* today's column: a soft wash where the mark will go */
-    const n=today22();if(n<=6&&lukePlays()){const[cx,cy]=DAYS22[n-1];comp(g,'screen',.1,()=>{for(const[d,a]of[[0,.5],[2,.35],[4,.2]]){g.globalAlpha=a;poly(g,[cx-18+d,cy-6,cx+18-d,cy-6,cx+18,cy-6+d,cx+18,cy+42-d,cx+18-d,cy+42,cx-18+d,cy+42,cx-18,cy+42-d,cx-18,cy-6+d],'#e8d4a8')}})}
+    /* today's column: a soft wash where the mark will go, below the names at the head (each pass's alpha multiplies the wash's .1) */
+    const n=today22();if(n<=6&&lukePlays()){const[cx,cy]=DAYS22[n-1];comp(g,'screen',.1,()=>{for(const[d,a]of[[0,.5],[2,.35],[4,.2]]){g.globalAlpha=.1*a;poly(g,[cx-18+d,cy-2,cx+18-d,cy-2,cx+18,cy-2+d,cx+18,cy+42-d,cx+18-d,cy+42,cx-18+d,cy+42,cx-18,cy+42-d,cx-18,cy-2+d],'#e8d4a8')}})}
     names22(g);
     const kinds=[];
     for(let n=1;n<=6;n++){const[cx,cy]=DAYS22[n-1];if(!F['t'+n])continue;
@@ -690,34 +697,8 @@ function names22(g){const TB=SHARED.tablets,r=rng(2295),L=TAB22.names.map(k=>T(k
   const gap=7,w=L.reduce((s,t)=>s+g.measureText(t).width,0)+gap*(L.length-1);let x=160-w/2;
   L.forEach((t,i)=>{for(const ch of t){const dy=(r()-.5)*.5;g.fillStyle='rgba(20,10,4,.6)';g.fillText(ch,x+.5,y+dy+.5);g.fillStyle='#cdb98e';g.fillText(ch,x,y+dy);x+=g.measureText(ch).width}
     if(i<L.length-1){R(g,x+gap/2-.5,y-.2,1,1,'#b8a47c');x+=gap}});g.restore()}
-function paintTablet22(g){const r=rng(2205),[x0,y0,x1,y1]=TAB22.wax;
-  /* behind the tablet, the dark of the deck by night at the corners */
-  R(g,0,0,320,144,'#120e0c');
-  /* the frame: fine-grained wood, warm where the lantern falls on it (upper right), darker away from it; its corners rounded a little */
-  const F=[3,1,317,1,319,3,319,141,317,143,3,143,1,141,1,3];poly(g,F);g.fillStyle=lg(g,320,0,0,144,['#9a7450','#7a5838','#5a3e26']);g.fill();
-  /* one board, its grain running along it, fine and quiet: long hairlines that wander a little, a few darker, a few lighter */
-  clipTo(g,()=>poly(g,F),()=>{for(let i=0;i<260;i++){const y0=r()*144,x=r()*320-40,l=30+r()*120,ph=r()*6,q=[];for(let u=0;u<=l;u+=4)q.push(x+u,y0+.6*Math.sin(u/37+ph)+.3*Math.sin(u/11+ph*2));
-      stroke(g,q,r()<.6?`rgba(52,30,14,${(.08+r()*.12).toFixed(2)})`:`rgba(255,226,180,${(.04+r()*.07).toFixed(2)})`,.5)}
-    tex(g,'grain',.12,0,0,320,144,'overlay',.4);
-    /* worn paler along its outer edge, a soft darker band inside it */
-    R(g,1,1,318,.6,'rgba(255,226,180,.35)');R(g,1,1,.6,142,'rgba(255,226,180,.2)');R(g,1,142.4,318,.6,'rgba(20,10,4,.5)');R(g,318.4,1,.6,142,'rgba(20,10,4,.35)')});
-  /* the wax, sunk into the frame: the frame's inner edge lit where the light falls on it, its shadow lying on the wax at the top and left */
-  R(g,x0-1.2,y0-1.2,x1-x0+2.4,y1-y0+2.4,'#3a2616');R(g,x0-1.2,y1,x1-x0+2.4,1.2,'#b08a5c');R(g,x1,y0-1.2,1.2,y1-y0+2.4,'#a07c52');
-  g.fillStyle=lg(g,x1,y0,x0,y1,['#3a2c1e','#2a1f15','#1e160e']);g.fillRect(x0,y0,x1-x0,y1-y0);
-  clipTo(g,()=>{g.beginPath();g.rect(x0,y0,x1-x0,y1-y0)},()=>{tex(g,'mott',.5,x0,y0,x1-x0,y1-y0,'overlay',1);tex(g,'grain',.18,x0,y0,x1-x0,y1-y0,'overlay',.5);
-    /* where it has been smoothed again and again: soft patches a shade lighter or darker, long and low */
-    for(let i=0;i<14;i++)pool(g,x0+r()*(x1-x0),y0+r()*(y1-y0),30+r()*50,8+r()*10,r()<.5?'#5a4430':'#0e0906',.25+r()*.2,'source-over');
-    /* the lantern's light lying across the wax from the upper right, soft */
-    comp(g,'screen',.1,()=>{g.fillStyle=lg(g,x1,y0,x0+80,y1,['#ffc880','rgba(0,0,0,0)']);g.fillRect(x0,y0,x1-x0,y1-y0)});
-    ao(g,x0,y0,x1-x0,4,'t',.55,'#0a0604');ao(g,x0,y0,4,y1-y0,'l',.4,'#0a0604')});
-  /* the stylus on the frame below the wax: a slim bronze rod, its point to the left, its flat end for smoothing the wax to the right */
-  const Y=x=>136.4-(x-168)*.012,a=168,b=296;
-  comp(g,'multiply',.45,()=>poly(g,[a+3,Y(a)+2,b+1.5,Y(b)+2,b+1.5,Y(b)+3.4,a+3,Y(a)+3],'#2a1c14'));
-  /* the rod: a point at the left, a round shank, a swelling, the flat end */
-  poly(g,[a,Y(a)+.8,a+9,Y(a+9)-.1,b-9,Y(b-9)-.1,b-9,Y(b-9)+1.7,a+9,Y(a+9)+1.7],'#7a5c30');
-  R(g,a+9,Y(a+9)-.1,b-a-18,.6,'#e2c07e');R(g,a+9,Y(a+9)+1.2,b-a-18,.5,'#4a3418');
-  poly(g,[b-9,Y(b-9)-.6,b-6,Y(b-6)-.9,b-6,Y(b-6)+2.3,b-9,Y(b-9)+2],'#8a6a38');
-  poly(g,[b-6,Y(b-6)-1.4,b,Y(b)-1.6,b,Y(b)+2.6,b-6,Y(b-6)+2.8],'#7a5a30');R(g,b-6,Y(b-6)-1.4,6,.6,'#ecca88');R(g,b-6,Y(b-6)+2.3,6,.5,'#3a2814')}
+/* the tablet itself (board, wax and stylus): SHARED.tablets.lukeTablet, the same tablet that Chapter Twenty-Three finds carried in */
+function paintTablet22(g){SHARED.tablets.lukeTablet(g)}
 /* ==== ART tablet22: end ==== */
 
 /* ==== ART girded22: begin ==== */
@@ -805,7 +786,8 @@ const LK=actor('luke22','Luke','#d0e8e0',112),AR=actor('aris22','Aristarchus','#
   SC=actor('sail22c','sailor','#e0e0d0',124),SD=actor('sail22d','sailor','#d0d8e0',94),PI=actor('pilot22','pilot','#d8d8f0',88),OW=actor('owner22','shipowner','#e8d8f0',106);
 const PRISONERS=[PR1,PR2,PR3];
 /* the men on the skiff's rope, each with his place and his pose's own frame (see drawStorm22) */
-const HAUL22=[{a:SA,x:106,y:122},{a:LK,x:126,y:124},{a:AR,x:146,y:128},{a:SD,x:166,y:126}];
+/* the haulers stand to either side of the line below the swan's neck, so that no head stands under its loop (CONTRIBUTING section 3) */
+const HAUL22=[{a:SA,x:100,y:122},{a:LK,x:120,y:124},{a:AR,x:139,y:128},{a:SD,x:173,y:126}];
 const PULLS22=4;
 /* the sailor who calls the moment, in the act that is being played */
 const caller22=()=>phase22()==='skiff'?SA:phase22()==='load'?SD:null;
@@ -862,9 +844,12 @@ const FLAGS=['out','aboard','pouch','pierced','threaded','mended','cord','shelte
 
 /* ============ HELPERS ============ */
 function setPC22(a){if(G.pc!==a){G.pc=a;G.inv=G.invs[a.id]||(G.invs[a.id]=[])}}
-/* a told picture (girded22) is never a point a code is kept at: it has nothing to do, and a code there would lead nowhere */
-function show22(room,x,y,dir){place22(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);if(room!=='girded22')codeBtn()}
-async function goto22(room,x,y,dir){await fade(1,300);show22(room,x,y,dir);await fade(0,300)}
+/* a told picture (girded22) is never a point a code is kept at: it has nothing to do, and a code there would lead nowhere. quiet: a script
+   that changes the room before the told line that belongs to it keeps no code there either; it keeps one after the line (CONTRIBUTING
+   section 5: a restored code never skips a verse) */
+const QUIET=1;
+function show22(room,x,y,dir,quiet){place22(room);const e=ENT[room];enterRoom(room,x!=null?x:e[0],y!=null?y:e[1],dir||e[2]);if(room!=='girded22'&&!quiet)codeBtn()}
+async function goto22(room,x,y,dir,quiet){await fade(1,300);show22(room,x,y,dir,quiet);await fade(0,300)}
 async function go22(a,x,y,sp){a.speed=fast()?400:sp||0;a.free=1;await walk(a,x,y);a.speed=0;a.free=0}
 const spoke=(a,k)=>say(a,k,{to:PC()});
 /* the beat runs in the two timed acts, in storm22 (shared/beat.js): started by the room's draw when it is missing, so that a code restored
@@ -916,7 +901,7 @@ async function pickMyra22(){const M=SHARED.map,id=++PK22,gone=()=>PK22!==id||G.c
       await cut(async()=>{await say(P,OUT22.say[k],THL);if(k==='tarsus')treasure()})}}
   finally{clearInterval(watch)}}
 /* Myra: the brothers' bundle, the grain ship (27:6) */
-async function arriveMyra22(){F.out=1;await fade(1,500);G.scene=null;setScore(MUSIC);show22('myra22');
+async function arriveMyra22(){F.out=1;await fade(1,500);G.scene=null;setScore(MUSIC);show22('myra22',null,null,null,QUIET);
   for(const it of['bedding22','bread22','sail22'])addItem(it);
   await fade(0,600);await tell('v6');await say(P,'paul_the_brothers_bundle',TH);codeBtn()}
 /* aboard the grain ship: the evening at Myra */
@@ -960,7 +945,7 @@ async function sleep22(){if(!F.shelter)return;await say(P,'paul_time_to_rest',TH
   await tell('v7',0,{low:1});
   await M.go('salmone','fairhavens');
   await tell('v8',0,{low:1});
-  await fade(1,500);G.scene=null;setScore(MUSIC);F.fh=1;show22('deck22');await fade(0,600);
+  await fade(1,500);G.scene=null;setScore(MUSIC);F.fh=1;show22('deck22',null,null,null,QUIET);await fade(0,600);
   await tell('v9');await say(P,'paul_before_i_say_anything',TH);codeBtn()}
 
 /* ---- Fair Havens: not listened to ---- */
@@ -979,7 +964,7 @@ async function advise22(){if(known22()<4)return say(P,'paul_not_yet_julius',TH);
   const w=tween(fast()?200:5000,k=>{G.cable22=1-k});await tell('v13');await w;
   /* 27:14, 15: the wind comes down off the mountains; the deck in the storm */
   await tell('v14');
-  await fade(1,500);G.cable22=null;show22('storm22');await fade(0,500);
+  await fade(1,500);G.cable22=null;show22('storm22',null,null,null,QUIET);await fade(0,500);
   await tell('v15');await tell('v16');
   await say(LK,'luke_shes_full_of_water',TH);codeBtn()}
 
@@ -999,7 +984,7 @@ async function skiffIn22(){F.skiff=1;G.sk22=0;G.pull22=0;if(SHARED.beat)SHARED.b
   const M=await need('map');
   await M.journey([...LEGS22.slice(2),['fairhavens','cauda','new sea']],{view:'adria',regions:['the_syrtis']});
   await say(LK,'luke_the_syrtis',THL);
-  await fade(1,500);G.scene=null;setScore(MUSIC);show22('storm22');await fade(0,500);
+  await fade(1,500);G.scene=null;setScore(MUSIC);show22('storm22',null,null,null,QUIET);await fade(0,500);
   await tell('v18');await say(P,'paul_whatever_is_in_these_bales',TH);codeBtn()}
 
 /* ---- the next day: between two waves (Paul) ---- */
@@ -1048,7 +1033,7 @@ async function mark22(){if(!lukePlays()||F.t6)return say(LK,'luke_six_days_six_s
   F['t'+n]=1;setMark(n,i);SFX.click();await say(LK,MARKSAY22[i],TH);
   if(n<6){await fade(1,500);show22('storm22');await fade(0,500);await say(LK,DAYSAY22[n],TH);codeBtn();return}
   /* the sixth day: 27:20, from the narrator's scroll; then Paul stands up among them (27:21) */
-  await tw(400);await fade(1,700);await tell('v20');G.scene=null;show22('storm22');await fade(0,700);
+  await tw(400);await fade(1,700);await tell('v20');G.scene=null;show22('storm22',null,null,null,QUIET);await fade(0,700);
   await tell('v21');await say(P,'paul_they_need_to_hear_it',TH);codeBtn()}
 
 /* ---- in their midst (Paul) ---- */
@@ -1187,7 +1172,7 @@ function place22(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
     pl(GU,'quay22',176,132,-1);pl(GU2,'quay22',262,126,-1);pl(PR1,'quay22',240,120,-1);pl(PR2,'quay22',284,128,-1);pl(PR3,'quay22',300,118,-1);pl(CS,'quay22',226,116,-1)}
   if(ph==='myra'){pl(P,'myra22',470,126,-1);pl(LK,'myra22',500,122,-1);pl(AR,'myra22',522,130,-1);pl(JU,'myra22',388,122,1);
     pl(GU,'myra22',446,132,-1);pl(PR1,'myra22',280,118,1);pl(PR2,'myra22',258,130,1);pl(PR3,'myra22',544,118,-1);pl(SA,'myra22',318,124,1)}
-  if(ph==='shelter'){pl(P,'deck22',120,128,1);pl(LK,'deck22',60,122,1);pl(AR,'deck22',36,128,1);pl(GU,'deck22',96,134,1);pl(SB,'deck22',238,134,-1);pl(PR2,'deck22',146,110,-1)}
+  if(ph==='shelter'){pl(P,'deck22',120,128,1);pl(LK,'deck22',60,122,1);pl(AR,'deck22',36,128,1);pl(GU,'deck22',96,134,1);pl(SB,'deck22',238,134,-1);pl(PR2,'deck22',176,108,-1)}
   if(ph==='havens'){pl(P,'deck22',130,126,1);pl(LK,'deck22',30,128,1);pl(AR,'deck22',170,134,-1);pl(GU,'deck22',104,132,1);pl(SC,'deck22',58,120,1);
     pl(JU,'deck22',214,124,-1);pl(PI,'deck22',240,112,-1);pl(OW,'deck22',298,132,-1)}
   /* in the storm (storm22): whoever holds on has his far hand on a thing of the ship (STORM22: the holds of the crossing, the port rail) */

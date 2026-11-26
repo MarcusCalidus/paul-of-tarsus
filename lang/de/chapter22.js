@@ -95,7 +95,7 @@ TEXTS('de',22,{
   "pennant":["Wimpel","1f2kfmz"],
   "pennant_look22":["Der Wimpel weht nach links aus. Der Wind kommt also von rechts.","0be0kbp"],
   "deckhouse":["Deckshaus","0tli1rw"],
-  "deckhouse_look22":["Ein kleines Deckshaus an der Reling. Es ist für die Mannschaft.","1o2rk3v"],
+  "deckhouse_look22":["Ein kleines Deckshaus am Heck. Es ist für die Mannschaft.","0g3jgsa"],
   "lee_of_the_deckhouse":["Deck links vom Deckshaus","0eokg2m"],
   "free_deck_left_look":["Freies Deck links vom Deckshaus. Hier ist Platz für einen Unterstand.","088qfdu"],
   "beside_the_deckhouse":["Deck rechts vom Deckshaus","06f0fq3"],
@@ -154,7 +154,7 @@ TEXTS('de',22,{
   "paul_before_i_say_anything":["Bevor ich etwas sage, will ich mir sicher sein, was ich gesehen habe.","17byobn"],
   "fair_havens_look":["Schönhafen: eine kleine Bucht, von Inseln geschützt.","03ardz9"],
   "open_sea":["Meer (offen)","1w9kqua"],
-  "paul_three_times_shipwrecked":["Dreimal habe ich Schiffbruch erlitten. Ich weiß, was das Meer so spät im Jahr anrichten kann.","0qkkopt"],
+  "paul_three_times_shipwrecked":["Dreimal habe ich Schiffbruch erlitten. Ich weiß, was das Meer anrichten kann.","1mmluaa"],
   "paul_the_wind_against_us_since_sidon":["Wir haben wieder Gegenwind, wie schon die ganze Zeit seit Sidon.","01dp6uv"],
   "luke_weve_lost_weeks":["Laut meiner Tafel haben wir Wochen verloren. Schon bis Knidos hat es viele Tage gedauert.","1r0bnpt"],
   "sailor_late_in_the_year":["Es ist spät im Jahr. Ab jetzt fährt nur noch raus, wer muss.","1jritd4"],
@@ -194,7 +194,7 @@ TEXTS('de',22,{
   "mast_step":["Mast","1qa4iuc"],
   "mast_look22":["Der Mast. Daran kann man sich festhalten.","0enu7xd"],
   "cask":["Fass","15drqdb"],
-  "cask_look22":["Ein Fass, festgezurrt. Das rutscht nirgendwohin.","1u4onju"],
+  "cask_look22":["Ein Fass, fest verzurrt.","0iokbjh"],
   "lee_rail":["Reling (Lee)","129kqr3"],
   "lee_rail_look22":["Die Reling auf der Seite, die vom Wind abgewandt ist. Über sie gehen die Ballen ins Meer.","01n2not"],
   "hatch_look22":["Die Ladeluke. Von hier kommen die Ballen herauf.","094tz5n"],
@@ -228,7 +228,7 @@ TEXTS('de',22,{
   "mark_west":["West","0tpmvgu"],
   "mark_north_west":["Nordwest","0vyqxeb"],
   "leave_it_for_now":["Fürs Erste lassen.","1fngp20"],
-  "luke_only_the_day":["Nur der Strich für den Tag. Was ich nicht weiß, schreibe ich nicht hin.","0w76ll9"],
+  "luke_only_the_day":["Nur der Strich für den Tag. Heute kann ich nicht einmal raten.","05yrvtq"],
   "luke_south_west_then":["Südwest. Dorthin würde uns dieser Wind treiben, wenn er so bleibt.","1uekc1n"],
   "luke_west_as_near_as_i_can":["West. Genauer kann ich es nicht schätzen.","0vr9u86"],
   "luke_north_west_a_guess":["Nordwest. Vielleicht liegt das Schiff dichter am Wind, als ich denke. Das ist geraten.","01rmvh5"],
@@ -305,7 +305,7 @@ TEXTS('de',22,{
 
   /* ---- the end screen ---- */
   "euroaquilo_end":["Paulus segelte unter Bewachung nach Italien, mit Lukas und Aristarchus. In Schönhafen warnte er, dass die Reise Schaden und großen Verlust bringen würde, doch der Offizier richtete sich nach dem Steuermann und dem Schiffseigentümer. Dann kam der Wind herab, den man Euroaquilo nennt, und trieb das Schiff viele Tage lang vor sich her, ohne Sonne und Sterne. Als die Hoffnung schwand, erhob sich Paulus mitten unter ihnen: Nur das Schiff würde verloren gehen, denn Gott hatte ihm alle geschenkt, die mit ihm fuhren. Vor ihnen lag eine Insel, an der sie stranden würden.","0azd75x"],
-  "based_on_acts_27_1_26":["Nach Apostelgeschichte 27:1-26. Nebenfiguren, Dialoge und Rätsel sind für diese Darstellung erfunden; die Ereignisse des Berichts werden hier mit eigenen Worten erzählt. Erfunden sind der Unterstand an Deck und dass Paulus ihn gebaut hat, das Deckshaus, was die Brüder in Sidon ihm mitgaben, die Gründe, die der Steuermann und der Schiffseigentümer nennen, die Ballen, die Paulus trägt, als das Schiff leichter gemacht wird, und die Tafel von Lukas mit ihren Zeichen; laut „Legt gründlich Zeugnis ab für Gottes Königreich“ ist es gut möglich, dass Lukas unterwegs Notizen gemacht hat. Die Apostelgeschichte sagt nicht, wie Paulus an Bord bewacht wurde, wie Lukas und Aristarchus dazu kamen, mit ihm zu reisen, warum Schönhafen sich nicht zum Überwintern eignete und was die Ausrüstung war, die sie herunterließen.","06dii0c"],
+  "based_on_acts_27_1_26":["Nach Apostelgeschichte 27:1-26. Nebenfiguren, Dialoge und Rätsel sind für diese Darstellung erfunden; die Ereignisse des Berichts werden hier mit eigenen Worten erzählt. Erfunden sind der Unterstand an Deck und dass Paulus ihn gebaut hat, das Deckshaus, was die Brüder in Sidon ihm mitgaben, die Gründe, die der Steuermann und der Schiffseigentümer nennen, die Ballen, die Paulus trägt, als das Schiff leichter gemacht wird, und die Tafel von Lukas mit ihren Zeichen; laut „Legt gründlich Zeugnis ab für Gottes Königreich“ ist es gut möglich, dass Lukas unterwegs Notizen gemacht hat. Die Apostelgeschichte sagt nicht, wie Paulus an Bord bewacht wurde, wie Lukas und Aristarchus dazu kamen, mit ihm zu reisen, warum Schönhafen sich nicht zum Überwintern eignete und was die Ausrüstung war, die sie herunterließen. Von Blitzen in diesem Sturm berichtet sie nichts.","15hlo1s"],
   "click_to_continue_to_chapter_twenty_three":["Klicken, um mit dem dreiundzwanzigsten Kapitel weiterzumachen","108sw6t"],
   "chapter_twenty_three_code_code":["Code für das dreiundzwanzigste Kapitel: {code}","10wtigy"]
 });

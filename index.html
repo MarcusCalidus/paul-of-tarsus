@@ -1722,7 +1722,10 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz,ps){
       limb(12-nw,yS+9,FH[0]-1,FH[1]+1,RF);flat(FH[0],FH[1]+1);limb(ax+3,yS+9,NH[0]-1,NH[1]+1,RN,1);flat(NH[0],NH[1]+1,1);foam([[-14,-8],[x1-2,x1+3]],W0)}
     else if(n==='swim'){const W0=yS+PQ.water(PK),E=PK?[14-nw,yS-6]:[15-nw,yS-3];limb(11-nw,yS+3,E[0],E[1],RF);limb(E[0],E[1],FH[0]-1,FH[1],RF);
       if(PK)fist(FH[0],FH[1]);else flat(FH[0],FH[1]);foam(PK?[[-17,-12],[12-nw,17-nw]]:[[-17,-12],[12-nw,17-nw],[FH[0]+4,FH[0]+9]],W0)}
-    else if(n==='lay'||n==='warm'){toFar(FH);flat(FH[0],FH[1]);if(NH){toNear(NH);flat(NH[0],NH[1],1)}}
+    /* lay: the far arm bent at the elbow, the upper arm down at the side and the forearm slanting forward and down to the open hand,
+       never one straight line from the shoulder */
+    else if(n==='lay'){const E=[13-nw,yS+(PK?16:19)];limb(12-nw,yS+12,E[0],E[1],RF);limb(E[0],E[1],FH[0]-1,FH[1],RF);flat(FH[0],FH[1])}
+    else if(n==='warm'){toFar(FH);flat(FH[0],FH[1]);if(NH){toNear(NH);flat(NH[0],NH[1],1)}}
     else if(n==='warmSit'){toFar(FH);flat(FH[0],FH[1]);toNear(NH);fist(NH[0],NH[1],1)}
     else if(n==='shake'){toFar(FH);if(PK)drop(FH[0],FH[1]);else fist(FH[0],FH[1])}
     else if(n==='heave'||n==='payout'){toFar(FH);fist(FH[0],FH[1]);toNear(NH);coil(NH);fist(NH[0],NH[1],1)}
