@@ -38,6 +38,9 @@ Object.assign(LOOK,{
 
 /* ---------- Pictures 4 & 7: The road near Damascus at midday ---------- */
 ART.pro_road={w:320,q:12,
+  /* the sun of midday, high and a little to the left, in front of us: the stones and bushes throw short shadows to the right and toward
+     us, and so do the men on the road. The blind walk of Picture 7 is under the same sun. */
+  light:{amb:'#ffffff',wallY:90,sun:[5,4,.4]},
   paint(g){const{earth,shadow:softShadow}=SHARED.materials,r=rng(544),SH='#8f95c4';
     /* bright midday sky and heat haze to one horizon at y=84; its blue and the far range drawn a little toward grey (earth) */
     sky(g,320,84,['#4c80c2','#7aa6da','#b2cee8','#e6e4d2'].map(c=>earth(c,.16)));

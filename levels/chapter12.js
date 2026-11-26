@@ -265,7 +265,9 @@ ART.street12={w:640,q:12,variant:SEAS,
   else sun12(g,640,32,'#dcd4d2',l=>{pool(l,330,58,330,56,'#ffffff',.8);pool(l,90,70,70,40,'#fff8ec',.4);pool(l,320,114,330,14,'#fff4e0',.55);
     pool(l,330,100,250,6,'#fff0d8',.35);pool(l,600,80,50,30,'#ffffff',.5)});
   haze(g,640,103,v);if(v!=='w')pool(g,300,0,340,150,WARM[v],.1,'screen')},
- light:()=>SEAS()==='w'?{amb:'#c9cdd8'}:null,
+ /* the sun stands in the south, behind us, high and to the left (the beam ends and the sills throw their shade down to the right): shadows
+    fall back toward the fronts and to the right, shorter in summer. In winter the sky is grey and even, and only the contact shadow stays. */
+ light:()=>SEAS()==='w'?{amb:'#c9cdd8'}:SEAS()==='u'?{amb:'#ffffff',sun:[7,-7,.42],wallY:104}:{amb:'#ffffff',sun:[9,-9,.38],wallY:104},
  /* rain, in the winter; the water of the spring; and whoever is in the street in this season */
  draw(g,t){for(let i=0;i<3;i++){const k=((t/700+i*.33)%1);R(g,341.7,84+k*10,1.3,1.4,`rgba(230,246,250,${.7*(1-k)})`)}
   const f=streetFolk12();if(f.length)cast(g,f)},
@@ -322,7 +324,9 @@ ART.shop12={w:320,q:12,variant:()=>NIGHT()?'n':SEAS()==='w'?'w':'d',
   else lightmap(g,320,v==='w'?'#9a98a4':'#b0a69c',l=>{pool(l,50,74,84,74,v==='w'?'#e8ecf2':'#fff4d8',.95);pool(l,120,122,170,36,v==='w'?'#dfe3ea':'#ffeecc',.6);
     pool(l,160,94,90,16,v==='w'?'#d8dce4':'#f4e6cc',.35);pool(l,96,108,40,8,v==='w'?'#eef0f4':'#fff4dc',.4);
     comp(l,'multiply',1,()=>{ao(l,0,0,320,26,'t',.3,'#3a3048');ao(l,250,0,70,144,'r',.3,'#3a3048');ao(l,0,130,320,14,'b',.25,'#3a3048')})})},
- light:()=>NIGHT()?{amb:'#8a84a8',wallY:103,wall:[[0,18,103,12],[84,296,103,12],[296,320,103,46]],lamps:[[226,70,90,'#7a5a30',103,47]]}:{amb:SEAS()==='w'?'#d4d2da':'#e6dcd4',wallY:103},
+ /* by night the lamp on its shelf; by day the street's light through the opening at the left, falling in and toward us, so that shadows
+    run to the right and forward. In winter that light is the rain's grey, soft and even, and only the contact shadow stays. */
+ light:()=>NIGHT()?{amb:'#8a84a8',wallY:103,wall:[[0,18,103,12],[84,296,103,12],[296,320,103,46]],lamps:[[226,70,90,'#7a5a30',103,47]]}:SEAS()==='w'?{amb:'#d4d2da',wallY:103}:{amb:'#e6dcd4',wallY:103,sun:[16,6,.26]},
  draw(g,t){benchTop(g);if(NIGHT())flame(g,230,47,t)},front(){}};
 
 /* ---------- The court of Titius Justus ---------- */
@@ -359,7 +363,9 @@ ART.court12={w:320,q:12,variant:CV,
   if(wet)sun12(g,320,24,'#e4e4e8',l=>{pool(l,160,66,170,46,'#ffffff',.55);pool(l,170,120,170,20,'#f4f4f8',.4)});
   else sun12(g,320,24,'#dcd4d2',l=>{pool(l,170,62,160,46,'#ffffff',.8);pool(l,190,114,170,14,'#fff4e0',.55);pool(l,170,101,130,5,'#fff0d8',.35);pool(l,300,70,30,50,'#fff8f0',.35)});
   haze(g,320,103,v);if(!wet)pool(g,200,0,220,150,WARM[v],.1,'screen')},
- light:()=>CV()==='w'?{amb:'#c9cdd8'}:null,
+ /* the sun stands over the synagogue's wall at the left: its shade lies on the left of the floor, and shadows fall to the right. In
+    winter the sky is grey and even, and only the contact shadow stays. Whoever stands in the wall's shade on the left (x < 70) casts none. */
+ light:()=>CV()==='w'?{amb:'#c9cdd8'}:{amb:'#ffffff',sun:[24,2,.38],wallY:104,shade:[[-40,76,'#d0d2e7']]},
  /* the rope from wall to wall, and the cloth on it, as it was last set */
  draw(g,t){const st=awn(),Y=[40,50,60],y0=Y[st.l],y1=Y[st.r],B=bays(st),yy=x=>y0+(y1-y0)*(x-30)/260;
   depth(104,()=>{stroke(g,[24,y0+1.5,30,y0,290,y1,296,y1+1.5],'#6a5438',.9);
@@ -475,7 +481,7 @@ ART.awn12={w:320,q:12,variant:()=>roundNo()===1?'a':roundNo()===2?'w':'u',
     else{const rw=rng(1299);shadow12(g,(READ[0]+READ[1])/2+1,AFL,(READ[1]-READ[0])/2+1,1,.36,'#1e1828');plank12(g,READ[0]+1,104,READ[1]-READ[0]-2,14,'#8a683a',rw,1);ao(g,READ[0]+1,104.4,READ[1]-READ[0]-2,2.4,'t',.35,'#1e1828');
       board12(g,READ[0],102,READ[1]-READ[0],2.4,'#a88048',rw);R(g,READ[0],102,READ[1]-READ[0],.6,'#d8b078')}}
   if(v==='w')comp(g,'multiply',.3,()=>R(g,0,0,320,144,'#a9afbd'))},
- light:{amb:'#ffffff'},
+ light:null,   /* a close view: nobody stands in it, and the listeners of the third round carry their own light and no shadow */
  draw(g,t){const st=awn(),n=st.n,k=ROUND_K[n],B=bays(st),c0=n===2?GOAT:LIN;
   /* the light, on the far wall and on the floor */
   if(n!==2){const LF=lightField(st);for(let i=0;i<2;i++){g.save();g.globalCompositeOperation='soft-light';g.drawImage(LF,AX0,28,AX1-AX0,AFL-28);g.restore()}comp(g,'screen',.5,()=>g.drawImage(LF,AX0,28,AX1-AX0,AFL-28));
@@ -527,7 +533,8 @@ ART.syn12={w:320,q:12,
   lightmap(g,320,'#a8a0ac',l=>{pool(l,157,34,110,18,'#eef0f4',.8);for(const x of[103,157,211])pool(l,x+14,124,36,8,'#f4f2ec',.6);pool(l,160,116,190,40,'#f4eede',.45);
     pool(l,141,90,50,10,'#f0ece4',.35);pool(l,49,92,40,8,'#e8e4e0',.3);pool(l,227,92,40,8,'#e8e4e0',.3);
     comp(l,'multiply',1,()=>{ao(l,0,0,60,144,'l',.25,'#3a3048');ao(l,260,0,60,144,'r',.25,'#3a3048');ao(l,0,130,320,14,'b',.25,'#3a3048')})})},
- light:{amb:'#dcd6d8'},draw(g){cast(g,synFolk12(),lightAt('syn12',200,120))},front(){}};
+ /* the day from the three high windows falls in and down, a little to the right: weak shadows toward us */
+ light:{amb:'#dcd6d8',sun:[4,9,.2]},draw(g){cast(g,synFolk12(),lightAt('syn12',200,120))},front(){}};
 
 /* ---------- The neck of land, from above ---------- */
 /* A picture, not a room: Corinth below its rock, a gulf on either side, and a harbor on each. Lechaeum, to the west, was the harbor
@@ -607,7 +614,7 @@ ART.isth12={w:320,q:12,variant:()=>SEAS()==='w'?'w':'d',
   else for(const[x,y,a]of[[70,30,.2],[98,40,-.4],[150,18,.1],[30,44,.3],[250,70,.5],[272,96,-.3],[296,60,.2],[244,112,1],[209,23,1]])ship(x,y,a);
   ao(g,0,0,320,14,'t',.3,'#0a1428');ao(g,0,130,320,14,'b',.3,'#0a1428');ao(g,0,0,16,144,'l',.3,'#0a1428');ao(g,304,0,16,144,'r',.25,'#0a1428');
   if(v==='w')comp(g,'multiply',.28,()=>R(g,0,0,320,144,'#a9afbd'))},
- light:{amb:'#ffffff'},draw(){},front(){}};
+ light:null,   /* a map: nobody stands in it */draw(){},front(){}};
 
 /* ---------- Cenchreae ---------- */
 /* The eastern harbor: two piers that reached into the sea like a horseshoe, and room for ships 40 meters long (The Watchtower,
@@ -700,7 +707,9 @@ ART.cen12={w:320,q:12,variant:()=>F.cen?'f':F.summer?'u':'w',
   if(wet)sun12(g,320,60,'#e4e4e8',l=>{pool(l,170,90,190,40,'#ffffff',.5);pool(l,160,122,180,20,'#f4f4f8',.4)});
   else sun12(g,320,60,'#dcd4d2',l=>{pool(l,64,70,90,30,'#ffffff',.75);pool(l,260,84,90,24,'#ffffff',.7);pool(l,180,114,190,14,'#fff4e0',.55);pool(l,64,101,80,5,'#fff0d8',.35)});
   haze(g,320,103,v);if(!wet)pool(g,180,0,240,150,WARM[v],.1,'screen')},
- light:()=>F.summer||F.cen?null:{amb:'#c9cdd8'},draw(){},front(g,t){if(!F.summer&&!F.cen)rain(g,t,320,144,{puddles:PUD_CN,splashY:[108,140]})}};
+ /* the sun high on the left and behind us (the stern takes it on its left): shadows fall to the right and back toward the sheds. In
+    winter it rains, the sky is grey and even, and only the contact shadow stays. */
+ light:()=>F.summer||F.cen?{amb:'#ffffff',sun:[9,-6,.38],wallY:104}:{amb:'#c9cdd8'},draw(){},front(g,t){if(!F.summer&&!F.cen)rain(g,t,320,144,{puddles:PUD_CN,splashY:[108,140]})}};
 
 /* ---------- The marketplace, and the judgment seat ---------- */
 /* The marketplace, lined with colonnades and rows of shops (Insight, "Corinth"), seen toward the south, with the rock over it. Near its
@@ -795,7 +804,9 @@ ART.agora12={w:480,q:12,variant:()=>SEAS()+(HEARING()?'h':''),
   if(v==='w')sun12(g,480,60,'#e4e4e8',l=>{pool(l,250,90,260,40,'#ffffff',.55);pool(l,240,122,260,20,'#f4f4f8',.4)});
   else sun12(g,480,60,'#dcd4d2',l=>{pool(l,258,86,120,30,'#ffffff',.85);pool(l,240,70,260,20,'#ffffff',.5);pool(l,240,114,250,14,'#fff4e0',.55);pool(l,240,101,220,5,'#fff0d8',.35)});
   haze(g,480,103,v);pool(g,240,0,300,150,WARM[v]||WARM.u,.1,'screen')},
- light:null,
+ /* seen toward the south, the sun high before us and to the left (the panels are lit along their top and left, and the colonnade lays
+    its shade forward on the paving): shadows fall toward us and to the right. In winter the light is grey and even: the contact shadow only. */
+ light:()=>SEAS()==='w'?{amb:'#c9cdd8',wallY:104}:{amb:'#ffffff',sun:[6,9,.38],wallY:104},
  draw(g,t){const h=HEARING();if(h){/* the proconsul on the seat: seen to the waist, behind the cloth of the chair */
     depth(100,()=>{g.save();g.beginPath();g.rect(230,20,60,48);g.clip();man(g,259,92,'gal12',1,0,null,G.g12&&G.g12.say?1:0,0);g.restore();cast(g,[['lic12',214,80,1,{sw:0}],['lic12b',304,80,-1,{sw:0}]])})}
   const f=agoraFolk12();if(f.length)cast(g,f)},front(){}};
@@ -821,7 +832,8 @@ ART.wait12={w:320,q:12,
      wall it fades, and nothing round lies where a head comes. The ceiling and the far corner lie in the room's own shade, a warm grey of the earth, as the rest of the city's walls. */
   lightmap(g,320,'#b0a698',l=>{pool(l,37,64,28,44,'#fff4d8',.95);pool(l,66,100,30,7,'#fff0d4',.45);pool(l,96,118,110,18,'#ffeecc',.75);pool(l,150,126,170,30,'#ffeecc',.4);pool(l,104,92,44,8,'#fff0d4',.35);
     comp(l,'multiply',1,()=>{ao(l,0,0,320,20,'t',.25,'#3e3228');ao(l,240,0,80,144,'r',.25,'#3e3228');ao(l,0,132,320,12,'b',.2,'#3e3228')})})},
- light:{amb:'#e0dace'},draw(){},front(){}};
+ /* the day through the doorway at the left, long and low across the floor: long shadows to the right and a little toward us */
+ light:{amb:'#e0dace',sun:[22,5,.3]},draw(){},front(){}};
 
 /* ---------- Ephesus ---------- */
 /* A quay, and a street that climbs from it to the door of a synagogue (Acts 18:19). The temple of the city is not in this picture:
@@ -861,7 +873,8 @@ ART.eph12={w:320,q:12,
   /* the day's light: the sun on the house fronts, the ship and the open quay; the near quay in the day's shade */
   sun12(g,320,60,'#dcd4d2',l=>{pool(l,230,70,110,40,'#ffffff',.8);pool(l,50,84,70,24,'#ffffff',.7);pool(l,180,114,190,14,'#fff4e0',.55);pool(l,224,101,110,5,'#fff0d8',.35)});
   haze(g,320,103,'f');pool(g,160,0,220,150,WARM.f,.1,'screen')},
- light:null,draw(g){cast(g,ephFolk12())},front(){}};
+ /* the sun on the right, before the house fronts (the ship and its gangplank take it on their right): shadows fall to the left and back */
+ light:{amb:'#ffffff',sun:[-9,-6,.38],wallY:104},draw(g){cast(g,ephFolk12())},front(){}};
 
 /* ---------- Antioch ---------- */
 /* The court in Antioch of Syria where the journey began (Acts 15:35, 40), painted anew, in the light of evening. */
@@ -936,7 +949,8 @@ ART.ant12={w:320,q:12,
   /* the light of evening, low from the west: warm on the wall and the open paving, the gateway and the near paving in shade */
   sun12(g,320,36,'#d8ccca',l=>{pool(l,150,66,190,40,'#fff2e0',.75);pool(l,160,114,200,14,'#ffeedc',.5);pool(l,180,101,150,5,'#ffe8d0',.3)});
   comp(g,'soft-light',.5,()=>{g.fillStyle=lg(g,0,0,0,144,['rgba(255,214,150,.5)','rgba(255,200,140,.9)']);g.fillRect(0,0,320,144)});pool(g,160,60,200,90,'#ffd8a0',.14,'screen')},
- light:{amb:'#f4e2cc'},draw(g){cast(g,antFolk12(),'#f4e2cc')},front(){}};
+ /* the evening sun, low in the west at the left: long shadows to the right, as the olive's runs along the paving */
+ light:{amb:'#f4e2cc',sun:[28,3,.36]},draw(g){cast(g,antFolk12(),'#f4e2cc')},front(){}};
 
 /* ---------- The letter, seen close ---------- */
 /* A sheet of papyrus on the bench: its fibers run one way, the lines of writing are short strokes of uneven length that stop short of

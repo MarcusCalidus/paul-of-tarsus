@@ -227,7 +227,7 @@ const foot17=(g,x,y,rx,ry)=>oval(g,x,y,rx,ry||1.4,'rgba(30,24,40,.28)');
 const HZPatara17=62,EDGEPatara17=100;
 let OPatara17=null,SPatara17=null;
 const oPatara17=()=>OPatara17||(OPatara17={w:320,hz:HZPatara17,hour:'morning',sun:[-40,10],cloud:.2,wind:SHARED.weather.wind({from:'nw',force:2,view:'s'}),seed:1701,y1:EDGEPatara17});
-ART.patara17={w:320,q:12,paint(g){paintPatara17(g)},light:{amb:'#f6ead6',sun:[.6,.2,.4]},draw(g,t){if(SPatara17)SPatara17.draw(g,t)},front(){},
+ART.patara17={w:320,q:12,paint(g){paintPatara17(g)},light:{amb:'#f6ead6',sun:[20,5,.4]},draw(g,t){if(SPatara17)SPatara17.draw(g,t)},front(){},
   props:[{y:132,shape(g){chestPatara17(g,1)},foot:[[46,126,26,6]]},{y:119,shape(g){stonePatara17(g,1)},foot:[[143,116,18,4]],seat:1},
     {y:117,shape(g){jarsPatara17(g,1)},foot:[[206,112,22,5]]}]};
 /* curvePatara17: a ridge through control points [x,y], eased between them, with a little roughness of its own */
@@ -490,7 +490,7 @@ function jarsPatara17(g,cut){for(const[x,y,h]of[[209,117,8.6],[215,118,9.6],[221
 const HZTyre17=60,EDGETyre17=100,SXTyre17=22;
 let OTyre17=null,PTyre17={};const SHIPTyre17=[];
 const oTyre17=()=>OTyre17||(OTyre17={w:320,hz:HZTyre17,hour:'midday',light:1,cloud:.22,wind:SHARED.weather.wind({from:'w',force:1,view:'e'}),seed:1711,y1:EDGETyre17});
-ART.tyre17={w:320,q:12,variant:()=>F.keel?'k':'',paint(g,v){paintTyre17(g,v)},light:{amb:'#fff0da',sun:[-.5,.3,.4]},draw(g,t){drawTyre17(g,t)},front(){},
+ART.tyre17={w:320,q:12,variant:()=>F.keel?'k':'',paint(g,v){paintTyre17(g,v)},light:{amb:'#fff0da',sun:[-8,-14,.4],wallY:101},draw(g,t){drawTyre17(g,t)},front(){},
   props:[{y:118,shape(g){clothTyre17(g,1)},foot:[[194,114,44,4]]},{y:108,shape(g,v){if(v==='k')lotsTyre17(g,null,1)}}]};
 /* ashlarTyre17: dressed stone in courses: no joint of a course stands within a pixel and a half of a joint in the course above, so that
    no two joints meet across a bed as a cross; each block a little apart in tone, lit along its top and left edges */
@@ -693,7 +693,8 @@ function drawTyre17(g,t){const P=PTyre17,dy=Math.round(Math.sin(t/1600)*2)/2-2,X
    (G.k17.trim: plus is down by the stern), turning about the mast's foot at the waterline (PIVOTHold17); the water stays level.
    Called from outside: ART.hold17; boxHold17(id) gives where a lot lies (the hotspots use it). Reads G.k17 (keel17()). */
 const PIVOTHold17=[160,92],TILTHold17=.028,WLHold17=92;
-ART.hold17={w:320,q:12,paint(g){paintHold17(g)},light:{amb:'#e8dcc8'},draw(g,t){drawHold17(g,t)},front(g){frontHold17(g)}};
+/* a close view: nobody stands in it, so it has no light for figures */
+ART.hold17={w:320,q:12,paint(g){paintHold17(g)},light:null,draw(g,t){drawHold17(g,t)},front(g){frontHold17(g)}};
 /* the hull's outline (OUT), its hold (IN, the inside of her far side, from the underside of the deck down to her floor), in her own
    frame; and the height of her marks: where the water stands at the bow or the stern when she is trimmed three either way */
 const OUTHold17=(()=>{const p=new Path2D();p.moveTo(14,22);p.quadraticCurveTo(16,124,66,130);p.lineTo(254,130);p.quadraticCurveTo(304,124,306,22);
@@ -847,7 +848,7 @@ function frontHold17(g){const k=keel17();g.fillStyle=lg(g,0,0,0,13,['rgba(14,10,
    doorway 140,52,30,52 · the way out to the beach 0,100,14,44. Walk strip 16..304, 110..138. Actors (place17): Euanthe 196,118 · Phanias
    228,126 · Myrto 250,118 · Joezer 172,130 · Melitta 276,128 · Philinos 290,120 · Luke 64,126 · Timothy 88,134 · Aristarchus 40,118 ·
    Trophimus 112,120; Paul 140,124. The well is blocked (ROOMS.tyrecourt17.block: 238,108,40,3), at the curb's foot. */
-ART.tyrecourt17={w:320,q:12,paint(g){paintCourt17(g)},light:{amb:'#f4dcc0',sun:[.6,.4,.4],shade:[[0,120,'#b4aacc']]},draw(){},front(){}};
+ART.tyrecourt17={w:320,q:12,paint(g){paintCourt17(g)},light:{amb:'#f4dcc0',sun:[22,-8,.4],shade:[[0,120,'#b4aacc']],wallY:104,wall:[[24,140,104,14],[170,296,104,14]]},draw(){},front(){}};
 const BACKCourt17=104,TOPCourt17=14;
 function paintCourt17(g){const r=rng(1731),M=SHARED.materials,W='#dcc6a0',BK=BACKCourt17,TP=TOPCourt17;
   /* the evening sky over the roofs */
@@ -967,7 +968,7 @@ function lightCourt17(g){const BK=BACKCourt17;
 const HZBeach17=60;
 let SBeach17=null,WBeach17=null;
 const OBeach17={w:320,hz:HZBeach17,hour:'morning',light:-1,cloud:.18,streak:.25,seed:1741,y1:112,swell:-.3};
-ART.beach17={w:320,q:12,paint(g){paintBeach17(g)},light:{amb:'#fff2e0',sun:[.36,-.22,.4]},draw(g,t){if(SBeach17)SBeach17.draw(g,t);if(WBeach17)WBeach17.draw(g,t)},front(){},
+ART.beach17={w:320,q:12,paint(g){paintBeach17(g)},light:{amb:'#fff2e0',sun:[8,-15,.4],wallY:x=>edgeBeach17(x)+3},draw(g,t){if(SBeach17)SBeach17.draw(g,t);if(WBeach17)WBeach17.draw(g,t)},front(){},
   props:[{y:120,shape(g){heapBeach17(g,1)},foot:[[16,114,28,6]]},{y:121,shape(g){boatBeach17(g,1)},foot:[[290,115,14,5]]}]};
 /* the water's edge: straight across, coming nearer at the right, where the boat lies */
 const edgeBeach17=x=>94+1.2*Math.sin(x/13)+.7*Math.sin(x/5.3)+Math.max(0,x-236)*.2;
@@ -1049,7 +1050,8 @@ function boatBeach17(g,cut){const sh=x=>110.4-Math.pow(clamp((326-x)/36,0,1),2.2
 const HZPray17=44;
 let SPray17=null,WPray17=null;
 const OPray17={w:320,hz:HZPray17,hour:'morning',light:-1,cloud:.16,streak:.25,seed:1791,y1:104,eye:6,swell:-.3};
-ART.beachpray17={w:320,q:12,paint(g){paintPray17(g)},light:{amb:'#fff2e0'},draw(g,t){if(SPray17)SPray17.draw(g,t);if(WPray17)WPray17.draw(g,t)},front(){}};
+/* a told picture: its kneeling people are painted into it, and nobody stands in it, so it has no light for figures */
+ART.beachpray17={w:320,q:12,paint(g){paintPray17(g)},light:null,draw(g,t){if(SPray17)SPray17.draw(g,t);if(WPray17)WPray17.draw(g,t)},front(){}};
 ROOMS.beachpray17={space:.4,walk:[160,160,236,236],mood:'parting',amb:{waves:.5,wind:.3},hs:[]};
 const edgePray17=x=>89+1.4*Math.sin(x/17)+.8*Math.sin(x/6.1)+Math.max(0,x-250)*.12;
 function paintPray17(g){const K=SHARED.coast,CO=SHARED.country,O=OPray17,HZ=HZPray17;if(!O.wind)O.wind=SHARED.weather.wind({from:'w',force:1,view:'w'});const L=K.light(O);
@@ -1113,7 +1115,8 @@ function kneelBack17(g,x,y,kind,mantle,hair){const u=.5,child=kind==='b'||kind==
 const HZPtol17=66;
 const OPtol17={w:320,hz:HZPtol17,hour:'evening',sun:[298,40],cloud:.3,wind:SHARED.weather.wind({from:'w',force:4,view:'s'}),seed:1751};
 let SPtol17=null;
-ART.ptolemais17={w:320,q:12,paint(g){paintPtol17(g)},light:{amb:'#f4dcc0'},draw(g,t){drawPtol17(g,t)},front(){}};
+/* a told picture with nobody in it: no light for figures */
+ART.ptolemais17={w:320,q:12,paint(g){paintPtol17(g)},light:null,draw(g,t){drawPtol17(g,t)},front(){}};
 /* the ridge of Carmel, from inland at the left out to its cape in the sea; the hills inland behind the town */
 const carmelPtol17=x=>{const P=[[-12,62],[20,59.4],[54,56.2],[86,52.6],[114,49.2],[140,47.4],[162,46.8],[186,48.6],[212,52.4],[236,56.6],[256,61],[268,64.6],[275,66.6]];let i=0;
   while(i<P.length-2&&P[i+1][0]<x)i++;const[x0,y0]=P[i],[x1,y1]=P[i+1],k=clamp((x-x0)/((x1-x0)||1),0,1),e=(1-Math.cos(k*Math.PI))/2;
@@ -1183,7 +1186,7 @@ function drawPtol17(g,t){if(SPtol17)SPtol17.draw(g,t);
    props (seats). Heads come at y 64..92: behind them lies plaster without a window or a niche, and nothing round. */
 const HZPhilip17=74,OPhilip17={w:320,hz:HZPhilip17,hour:'evening',sun:[-90,4],cloud:.2,streak:.4,seed:1761,y1:84};
 let SPhilip17=null;
-ART.philip17={w:320,q:12,paint(g){paintPhilip17(g)},light:{amb:'#fff0d8',shade:[[-30,80,'#d4cadc']],sun:[.72,.2,.46]},draw(g,t){if(SPhilip17)SPhilip17.draw(g,t)},front(){},
+ART.philip17={w:320,q:12,paint(g){paintPhilip17(g)},light:{amb:'#fff0d8',shade:[[-30,80,'#d4cadc']],sun:[22,-6,.46],wallY:104,wall:[[-2,37,104,21],[67,268,104,21]]},draw(g,t){if(SPhilip17)SPhilip17.draw(g,t)},front(){},
   props:[{y:112,shape(g){benchPhilip17(g,1)},foot:[[200,106,56,5]],seat:1},{y:117,shape(g){stoolPhilip17(g,1)},foot:[[166,113,14,4]],seat:1}]};
 /* the frame of the vine: its two posts and its beam, and the shade's edge on the wall (sun from the left, low) */
 const PPhilip17=[186,265],BPhilip17=[35.5,41.5];
@@ -1324,7 +1327,7 @@ function lightPhilip17(g){shade(g,[-2,10,12,10,70,104,98,144,-2,144],'#b8b0d0',.
    Actors (place17): Aulus 230,120 · Benaiah 250,130 · Luke 120,126 · Timothy 96,132 · Aristarchus 74,118 · Trophimus 140,134; Paul
    170,124. Heads come at y 70..92: behind them lie the plain, the foothill's turf and the far hills, and nothing round. */
 const HZGate17=66,OGate17={w:320,hz:HZGate17,hour:'morning',sun:[-60,-44],cloud:.22,streak:.3,seed:1771};
-ART.gate17={w:320,q:12,paint(g){paintGate17(g)},light:{amb:'#fff0dc',sun:[.5,.3,.45]},draw(){},front(){}};
+ART.gate17={w:320,q:12,paint(g){paintGate17(g)},light:{amb:'#fff0dc',sun:[16,10,.45]},draw(){},front(){}};
 /* the foothill at the right that the road climbs: its brow, from the plain up out of the picture */
 const spurGate17=x=>x<206?999:104-Math.pow((x-206)/114,.78)*56+1.3*Math.sin(x/7.3)+.7*Math.sin(x/2.7);
 /* the city wall at the left, running away from us toward the vanishing point (x 168 on the horizon): its top, its foot, its far end */

@@ -38,6 +38,9 @@ function garmentsArt(g,x,y){
 
 /* ---------- Picture 1: Outside a wall of Jerusalem, by day ---------- */
 ART.pro_wall={w:320,q:12,
+  /* the sun stands in front of the wall, behind us, and the wall's shadow falls behind it: a figure's shadow would fall back, away from
+     us. Saul is drawn knees-up (scaledMan, feet below the picture), so nothing is cast here. */
+  light:{amb:'#ffffff',sun:[2,-10,.4]},
   paint(g){const r=rng(541),rb=rng(5411),SH='#8f95c4',ST='#d8caa8';
     /* the sky's blue and the far hills drawn a little toward grey, so that they sit with the limestone and the dust (earth) */
     sky(g,320,92,['#3a72bc','#669ad4','#9ec2e4','#dce6dc'].map(c=>earth(c,.16)));
@@ -83,6 +86,8 @@ ART.pro_wall={w:320,q:12,
 
 /* ---------- Picture 2: The same figure, nearer ---------- */
 ART.pro_near={w:320,q:12,
+  /* the same sun behind us; Saul, nearer, is drawn knees-up (scaledMan), so nothing is cast */
+  light:{amb:'#ffffff',sun:[2,-10,.4]},
   paint(g){const r=rng(542),rb=rng(5421),ST='#d8caa8';
     sky(g,320,92,['#3a72bc','#669ad4','#9ec2e4','#dce6dc'].map(c=>earth(c,.16)));
     cloud(g,250,22,56,9,r);
@@ -103,6 +108,8 @@ ART.pro_near={w:320,q:12,
 
 /* ---------- Picture 3: A street door in Jerusalem, shut, by evening light ---------- */
 ART.pro_door={w:320,q:12,
+  /* a shut street door: nobody stands in it */
+  light:null,
   paint(g){const r=rng(543),rb=rng(5431),rw=rng(5432),W='#d8c4a0',S='#c8b694';
     sky(g,320,42,['#283062','#54467c','#986274','#d89266'].map(c=>earth(c,.14)));
     /* house fronts closing the street */

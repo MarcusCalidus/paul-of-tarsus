@@ -96,6 +96,8 @@ function wagon(g,x,y,cov,load,pole){pole=pole==null?13:pole;shadow6(g,x+30,y+.6,
 /* ---------- Iconium: the saddlers' street, where two roads cross ---------- */
 const sultan6=x=>30+8*Math.sin(x/57+1)+4*Math.sin(x/21+2)+2*Math.sin(x/7);
 ART.iconium={w:480,fp:1.3,q:12,
+ /* the sun from the left and high (sunlight6): short shadows to the right and toward us, as the awning's and the walls' */
+ light:{amb:'#ffffff',sun:[9,5,.4]},
  paint(g){const r=rng(431),rw=rng(4311),rc=rng(4312),W='#e6d8b4',ST='#d8ccae';
   sky(g,480,72,SKY6(['#3c7ac8','#6ea4dc','#a8cae6','#e2e8dc']));cloud(g,236,12,60,7,r);cloud(g,360,22,40,5,r);cloud(g,70,8,40,5,r);
   /* beyond the fountain: the plateau, its orchards, and the mountains that close it in */
@@ -177,6 +179,8 @@ ART.iconium={w:480,fp:1.3,q:12,
 /* ---------- Lystra: the open place inside the gate, where the well is ---------- */
 const lyhill=x=>14+6*Math.sin(x/43+2)+3*Math.sin(x/17)+1.4*Math.sin(x/6);
 ART.lystra={w:480,fp:1.3,q:12,
+ /* the sun from the left and high (sunlight6): short shadows to the right and toward us, as the walls' */
+ light:{amb:'#ffffff',sun:[9,5,.4]},
  paint(g){const r=rng(443),rw=rng(4431),rc=rng(4432),ST='#c8b890',MB='#d8c49a',MB2='#cdb68a';
   sky(g,480,74,SKY6(['#4080c8','#74aadc','#b0cee6','#e8e8d4']));cloud(g,290,12,56,7,r);cloud(g,410,22,40,5,r);cloud(g,170,8,36,5,r);
   /* the valley beyond the wall: hills, fields, and the Taurus far to the south */
@@ -295,7 +299,8 @@ const STONES6=(()=>{const r=rng(1419),o=[],cols=['#8a7c7c','#968a80','#7c7078','
 ART.outside={w:320,q:12,
  /* the stones at the roadside that lie a little way out on the ground */
  props:[[82,113,7,4],[104,113,6,3.6],[61,113.4,6,3.4]].map(([x,y,w,h])=>({y,shape:g=>rock(g,x,y,w,h,'#7c7078'),foot:[x-w/2,y-2,w,2]})),
- light:()=>({amb:'#e8b49c'}),
+ /* the last of the evening light, low in the west at the left: long, soft shadows to the right and toward us */
+ light:()=>({amb:'#e8b49c',sun:[22,10,.28]}),
  paint(g){const r=rng(457);
   sky(g,320,86,SKY6(['#27356e','#5a4f8e','#b0667a','#e8905a','#f6c878']));pool(g,70,84,90,26,'#ffe0a0',.5,'screen');
   for(const[cx,cy,w]of[[210,22,60],[110,36,44],[280,44,34]])cloud(g,cx,cy,w,5,r,'#f0a888','#6a5a94');
@@ -340,6 +345,7 @@ function lowTable(g,day){const rt=rng(4621);board6(g,170,112,40,3,'#96703e',rt);
 ART.house6={w:320,q:12,
  variant:()=>F.back?'d':'n',
  props:[{y:123,shape:(g,v)=>lowTable(g,v==='d'),foot:[171,119,37,4]}],
+ /* by day only the soft light of the small window and the door (the contact shadow alone); by night the lamp and the hearth */
  light:()=>F.back?{amb:'#f0e8dc',wallY:103}:{amb:'#7c6f86',wallY:103,wall:[[0,52,103,11],[52,68,103,45],[68,320,103,11]],lamps:[[150,58,60,'#7a5420',103,59.4],[92,96,46,'#7a3c14',103,100]]},
  paint(g,v){const r=rng(461),rw=rng(4611),rc=rng(4612),W='#d8c8a4',day=v==='d';
   /* the plaster's random cracks are set by hand now, high on the wall where they run to no head; their draws are still taken */
@@ -388,6 +394,8 @@ ART.house6={w:320,q:12,
 /* ---------- Derbe: the east road, after the harvest ---------- */
 const taur6=x=>38+12*Math.sin(x/71+2.2)+6*Math.sin(x/27+1)+3*Math.sin(x/9);
 ART.derbe={w:320,q:12,
+ /* the sun from the left and high (sunlight6): short shadows to the right and toward us, as the town wall's */
+ light:{amb:'#ffffff',sun:[10,5,.4]},
  paint(g){const r=rng(467),ST='#d2c4a0';
   sky(g,320,80,SKY6(['#3e7cc8','#74a8dc','#b4cee4','#ece8d0']));cloud(g,140,14,60,7,r);cloud(g,250,8,40,5,r);cloud(g,60,26,36,5,r);
   /* the Taurus, close now: the road east runs for the gap in it */

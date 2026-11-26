@@ -143,7 +143,9 @@ ART.yard10={w:320,q:12,variant:yardV,
   else if(dusk)lightmap(g,320,'#b89c98',l=>{pool(l,34,84,70,80,'#ffd0a0',1);pool(l,90,124,150,40,'#ffc898',.6);pool(l,200,26,150,12,'#ffc8a0',.45);pool(l,140,112,60,8,'#ffd4a8',.3);bands(l,.12,.24)});
   else{lightmap(g,320,'#e2dcdc',l=>{pool(l,170,52,210,48,'#fff6e4',.55);pool(l,34,80,56,60,'#fffbec',.6);pool(l,160,126,210,26,'#fff4dc',.5);pool(l,211,96,40,8,'#fff0d8',.3);bands(l,.08,.16)});
     shade(g,[0,104,320,104,320,112,0,116],SH,.35);comp(g,'soft-light',.4,()=>{g.fillStyle=lg(g,0,103,0,144,['rgba(250,244,222,0)','rgba(250,244,222,.9)']);g.fillRect(0,103,320,41)});pool(g,34,84,70,70,'#fff0cc',.22,'screen')}},
- light(){const v=yardV();return v==='n'?{amb:'#6c6e96',wallY:103,wall:[[0,18,103,19],[50,320,103,19]],lamps:[[211,96,96,'#7a5220',103,55.6]]}:v==='u'?{amb:'#e8cdbc',wallY:103}:null},
+ /* by night the lamp in its niche over the bench; at dusk the low sun through the gate on the left, which throws long shadows to the right
+    and toward us; by day the sun high over the wall behind, as the wall's shade lies along its foot: short shadows toward us */
+ light(){const v=yardV();return v==='n'?{amb:'#6c6e96',wallY:103,wall:[[0,18,103,19],[50,320,103,19]],lamps:[[211,96,96,'#7a5220',103,55.6]]}:v==='u'?{amb:'#e8cdbc',wallY:103,sun:[16,10,.3]}:{amb:'#ffffff',wallY:103,sun:[3,8,.4]}},
  draw(g,t){const v=yardV();if(v==='n')flame(g,214.6,55.6,t);
   /* the bolt, pegged out at the foot of the wall: until it is cut. Its third cubit from the left is woven thin. */
   if(!F.cutd&&v!=='u'){const x0=80,x1=200,y0=105.2,y1=112.4,k=v==='n'?.5:1,c=tint(CLOTH,k<1?-.3:0);poly(g,[x0,y0,x1,y0,x1+6,y1,x0-6,y1],c);
@@ -295,7 +297,7 @@ ART.bolt10={w:320,q:12,
     l.fillStyle=lg(l,0,124,0,144,['rgba(20,16,24,0)','rgba(20,16,24,.12)']);l.fillRect(0,124,320,20)});
   comp(g,'soft-light',.22,()=>{g.fillStyle=lg(g,0,0,320,144,['#ffe0a8','rgba(255,224,168,0)']);g.fillRect(0,0,320,144)});
   pool(g,200,40,220,130,'#fff4d6',.08,'screen')},
- light:{amb:'#ffffff'},
+ light:null,
  draw(g,t){const st=G.bolt10;if(!st)return;
   /* panels laid out on the cloth: a paler patch of the same cloth with its own tint, its threads the long way, a lit fold along its top
      and a hem of shadow on its two near sides; small stitch marks of chalk, inset, stopping clear of the corners */
@@ -355,7 +357,8 @@ ART.syn10={w:320,q:12,
     l.fillStyle=lg(l,0,0,0,24,['rgba(20,16,24,.3)','rgba(20,16,24,0)']);l.fillRect(0,0,320,24);l.fillStyle=lg(l,0,126,0,144,['rgba(20,16,24,0)','rgba(20,16,24,.22)']);l.fillRect(0,126,320,18)})},
  /* the platform and its table stand inside the strip where people walk: whoever goes behind them is hidden by them */
  props:[{y:121,shape(g){R(g,118,110,84,11,'#000');R(g,134,96,52,14,'#000')},foot:[118,110,84,11]}],
- light:{amb:'#e6dcd8'},draw(){},front(){}};
+ /* the daylight of the three high windows in the back wall: soft shadows that fall toward us */
+ light:{amb:'#e6dcd8',sun:[0,9,.25]},draw(){},front(){}};
 
 /* ---------- The scroll table, seen from above ---------- */
 /* Two scrolls in Thessalonica (the Psalms and the Prophets), three in Beroea (Moses as well), and Paul's tablets in front of them.
@@ -479,7 +482,7 @@ ART.table10={w:320,q:12,variant:tabV,
   lightmap(g,320,b?'#c8c0b8':'#b8aeb0',l=>{pool(l,b?200:120,60,230,110,'#fff0d0',.8);pool(l,160,118,150,40,'#ffe8c0',.4);pool(l,160,76,150,22,'#fff2d8',.3);
     l.fillStyle=lg(l,0,0,0,26,['rgba(20,16,24,.22)','rgba(20,16,24,0)']);l.fillRect(0,0,320,26);
     l.fillStyle=lg(l,0,0,24,0,['rgba(20,16,24,.16)','rgba(20,16,24,0)']);l.fillRect(0,0,24,144);l.fillStyle=lg(l,320,0,296,0,['rgba(20,16,24,.16)','rgba(20,16,24,0)']);l.fillRect(296,0,24,144)})},
- light:{amb:'#ffffff'},
+ light:null,
  draw(g,t){const st=G.tab10;if(!st)return;const n=st.n,slots=SLOT[n];
   /* each scroll and the tablets are painted once for what they show, and kept (TAB10), so that the writing is not drawn again every frame */
   st.s.forEach((k,i)=>{const[x,w]=slots[i];g.drawImage(tab10(`s${n}|${i}|${k||''}`,x-3,SY-7,w+12,SHH+17,tg=>scroll10(tg,x,w,k,i)),x-3,SY-7,w+12,SHH+17)});
@@ -641,13 +644,16 @@ ART.ber10={w:320,q:12,
      its niche unlit by day; the top of the room and its near edge in shade */
   lightmap(g,320,'#bcb2b6',l=>{pool(l,160,52,84,34,'#fff6dc',.9);pool(l,160,86,60,8,'#fff4dc',.45);pool(l,160,118,200,46,'#fff0d0',.6);pool(l,160,126,70,12,'#fff6e0',.3);
     l.fillStyle=lg(l,0,0,0,24,['rgba(20,16,24,.28)','rgba(20,16,24,0)']);l.fillRect(0,0,320,24);l.fillStyle=lg(l,0,126,0,144,['rgba(20,16,24,0)','rgba(20,16,24,.2)']);l.fillRect(0,126,320,18)})},
- light:{amb:'#ece2dc'},draw(){},front(){}};
+ /* the daylight of the wide window over the table: shadows that fall toward us and away from it to either side */
+ light:{amb:'#ece2dc',wallY:103,lamps:[[160,47,220,'#a09888',103,47]]},draw(){},front(){}};
 
 /* ---------- The quay at Athens' harbor ---------- */
 /* A quay, a ship's side and open water. The city lies inland and is not seen: no temple, no statue and no image stands in this view.
    The ship has no figurehead. Only her after part is in the picture: her mast stands further forward, out of it, so that no upright
    crosses the level line where the sea meets the sky. */
 ART.quay10={w:320,q:12,
+ /* the sun high to the left, out of the picture, as what stands on the quay throws its shade: short shadows to the right */
+ light:{amb:'#ffffff',wallY:99,sun:[12,3.5,.42]},
  paint(g){const r=rng(1027),ST='#cfc4a8',HZ=66,rs=rng(1032);
   /* the sky: deep overhead, hazed and warm toward the horizon; the sun stands high to the left, out of the picture, and lights a soft
      glow there; low clouds lit from above, and a few long wisps */

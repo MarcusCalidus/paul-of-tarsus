@@ -81,6 +81,8 @@ function stoneGround(g,x,y0,w,y1,c,r,n){g.fillStyle=lg(g,0,y0,0,y1,[tint(c,-.1),
 /* ---------- Perga: the north road, outside the gate ---------- */
 const taurus=x=>22+11*Math.sin(x/61+1.2)+5*Math.sin(x/23+.4)+2.4*Math.sin(x/8)-9*Math.exp(-Math.pow((x-388)/15,2));
 ART.perga={w:480,fp:1.3,q:12,
+ /* the morning sun from the left: shadows fall to the right and toward us, as those painted on the ground */
+ light:{amb:'#ffffff',sun:[14,7,.4]},
  paint(g){const r=rng(331),ST='#d8c9a2';
   sky(g,480,72,SKY5(['#4583c8','#79aedc','#b4d0e4','#ece6c8']));cloud(g,170,10,58,7,r);cloud(g,318,20,40,5,r);cloud(g,450,9,36,5,r);
   /* the Taurus, a wall across the north, snow on its crest; the road climbs toward the notch of the pass */
@@ -141,7 +143,9 @@ ART.perga={w:480,fp:1.3,q:12,
 /* The river comes out at the foot of the cliff and runs toward us (RIV: its bed). NEAR and FAR: the tops of the two posts of the guide rope. */
 const RIV=[230,60,248,60,254,69,257,78,263,91,269,104,274,116,279,129,285,144,193,144,198,131,201,117,205,104,213,91,221,78,226,69],NEAR=[193,99],FAR=[281,99];
 ART.ford={w:480,fp:1.25,q:12,
- light:()=>({amb:'#e2e4f0'}),
+ /* the sun stands high over the right wall: the far bank on the right lies in it, and its boulders throw short shadows to the left
+    (CO.boulder, light 1); so do the people there. The near bank on the left lies in the gorge's cool shade, and casts none. */
+ light:()=>({amb:'#ffffff',sun:[-8,4,.38],shade:[[-40,200,'#e2e4f0']]}),
  paint(g){const r=rng(347),LS='#b9b0a4',GR='#b4aa96';
   sky(g,480,46,SKY5(['#5088c8','#8fb8e0','#d0e0ea']));cloud(g,236,12,46,6,r);
   /* far peaks through the gap of the gorge */
@@ -221,6 +225,8 @@ ART.ford={w:480,fp:1.25,q:12,
 /* ---------- Antioch in Pisidia: the square between the wool market and the synagogue ---------- */
 const sultan=x=>40+9*Math.sin(x/53+2)+5*Math.sin(x/19)+2.4*Math.sin(x/7+1);
 ART.pisidia={w:480,fp:1.3,q:12,
+ /* the sun from the left and high: short shadows to the right and toward us, as the columns' */
+ light:{amb:'#ffffff',sun:[8,4,.4]},
  paint(g){const r=rng(367),rw=rng(371),LS='#e2d8c0',MB='#eee6d2',W='#e8dab4';
   sky(g,480,70,SKY5(['#3470c4','#629ad8','#9ec2e6','#d8e6ee']));cloud(g,96,9,54,7,r);cloud(g,262,16,46,6,r);cloud(g,420,8,40,6,r);
   /* the mountains north-east of the city, white half way down */
@@ -346,6 +352,8 @@ ART.synp={w:320,q:12,
  front(){}};
 /* ---------- Outside the boundaries of Antioch: the road to Iconium ---------- */
 ART.border={w:320,q:12,
+ /* the afternoon sun: shadows fall to the right and a little toward us, as the milestone's */
+ light:{amb:'#ffffff',sun:[16,5,.4]},
  paint(g){const r=rng(397);
   sky(g,320,84,SKY5(['#3a76c6','#70a4da','#b0cde8','#e4e8e0']));cloud(g,236,14,70,10,r);cloud(g,120,26,46,6,r);cloud(g,300,32,34,5,r);cloud(g,40,10,36,5,r);
   snowy(g,0,320,76,x=>20+10*Math.sin(x/47+4)+5*Math.sin(x/17)+2*Math.sin(x/6),['#97a6ca','#b6c0d2','#d0d4cc'],19);comp(g,'screen',.3,()=>{g.fillStyle=lg(g,0,40,0,78,['rgba(214,224,238,0)','rgba(214,224,238,1)']);g.fillRect(0,40,320,38)});

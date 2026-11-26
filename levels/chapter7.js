@@ -109,6 +109,8 @@ function wagon(g,x,y,cov,load,pole){pole=pole==null?13:pole;shadow7(g,x+30,y+.6,
 function bale(g,x,y,w,h,c){clothRoll(g,x,y,w,h,c,{shadow:1,hi:1,k:.3})}
 /* ---------- Antioch: the courtyard where the congregation meets (opening scenes) ---------- */
 ART.antioch7={w:320,q:12,
+ /* the morning sun from the upper left, as the house and the arbor throw their shade: shadows fall to the right and a little toward us */
+ light:{amb:'#ffffff',wallY:104,sun:[12,6,.4]},
  paint(g){const r=rng(703),W='#e6d6ac',rw=rng(707);
   /* the sky's blues drawn a little toward grey (earth7), so that they sit with the plaster and the stone */
   sky(g,320,58,['#3e7cc8','#76a8dc','#c2d6e4'].map(c=>earth7(c,.14)));cloud(g,150,10,54,6,r);cloud(g,250,20,40,5,r);
@@ -151,6 +153,9 @@ ART.antioch7={w:320,q:12,
  draw(){},front(){}};
 /* ---------- Jerusalem: the room where the apostles and the elders gathered (opening scene) ---------- */
 ART.council={w:320,q:12,
+ /* the day falls from the three high windows in the back wall onto the floor in front: shadows fall toward us. The lamps in their niches
+    are faint beside it. */
+ light:{amb:'#e4d6c4',wallY:103,sun:[0,10,.28]},
  paint(g){const r=rng(709),ST='#d8ccae',rw=rng(711);
   ashlar(g,0,0,320,104,ST,r,{bw:17,bh:8.5,v:.07,t:.22});
   /* a few hairline cracks in the stones, high up, where they run to no head */
@@ -191,6 +196,8 @@ ART.council={w:320,q:12,
 /* ---------- Tarsus: the courtyard of Eirene the linen weaver, where the congregation meets ---------- */
 const taur7=x=>18+7*Math.sin(x/83+1.4)+4*Math.sin(x/29+.6)+2*Math.sin(x/9);
 ART.tarsus7={w:480,fp:1.3,q:12,
+ /* the sun from the upper left, as the shed, the benches and the basin throw their shade: shadows fall to the right and a little toward us */
+ light:{amb:'#ffffff',wallY:103,sun:[9,7,.4]},
  paint(g){const r=rng(719),W='#e8dcc0',W2='#dccfae',rw=rng(721);
   /* the sky's blues drawn a little toward grey (earth7), so that they sit with the plaster and the stone */
   sky(g,480,60,['#3a78c6','#72a6dc','#b8d2e6','#e6e8dc'].map(c=>earth7(c,.14)));cloud(g,170,9,60,7,r);cloud(g,330,18,44,5,r);cloud(g,446,8,34,5,r);
@@ -277,6 +284,7 @@ function tentArt(g,t){const[x0,x1]=TENT,xm=(x0+x1)/2;
     poly(g,[x0+27,112,x0+31,98,x0+41,98,x0+45,112],'#c8873a');poly(g,[x0+29,112,x0+32.4,100,x0+39.6,100,x0+43,112],'#f8cf80');pool(g,x0+36,106,13+Math.sin(t/210),9,'#ffb050',.22)}}
 ART.gates={w:480,fp:1.25,q:12,
  variant:()=>F.up?'n':'d',
+ /* by night the merchant's lamp in the tent; by day the storm's light, soft and from nowhere in particular, so the contact shadow alone */
  light:()=>F.up?{amb:'#8890b4',wallY:100,lamps:[[298,106,46,'#6a4a1c',112,104]]}:{amb:'#c8c4d8',wallY:100},
  paint(g,v){const r=rng(733),LS='#a8a29a',GR='#a29c8e',night=v==='n',DK='#1c1830';
   /* the sky: what the walls leave of it, and that full of cloud */
@@ -354,7 +362,8 @@ function wellJar(g,x,y,c){R(g,x-3,y-.4,8,1,'rgba(30,20,40,.3)');poly(g,[x-1.6,y-
 function lowTable(g){const rw=rng(4611);board7(g,170,112,40,3,'#96703e',rw);board7(g,170,115,2.6,8,'#5a4226',rw,1);board7(g,207.4,115,2.6,8,'#5a4226',rw,1);vessel(g,190,112,4.6,3.6,'#a8844e','bowl',{noShadow:1})}
 ART.lystra7={w:320,q:12,
  props:[{y:123,shape:lowTable,foot:[171,119,37,4]}],
- light:()=>({amb:'#f0e8dc',wallY:103,wall:[[0,52,103,11],[52,68,103,45],[68,320,103,11]],lamps:[[92,96,38,'#4a2410',103,100]]}),
+ /* the hearth's glow, and the winter day through the window on the lane: whoever stands in its fall casts a shadow away from it */
+ light:()=>({amb:'#f0e8dc',wallY:103,wall:[[0,52,103,11],[52,68,103,45],[68,320,103,11]],lamps:[[92,96,38,'#4a2410',103,100],[60,36,200,'#a8a898',103,36]]}),
  paint(g){const r=rng(461),W='#d8c8a4';
   plaster(g,0,0,320,104,W,r,{patch:4,cracks:0,brick:'#a8875a',t:.36});skipCracks7(r,6);
   /* cracks cut by hand, high on the wall, where they run to no head; rb: a seed of their own, so the rest of the room keeps its shape */
@@ -406,6 +415,8 @@ ART.lystra7={w:320,q:12,
 /* ---------- Iconium: the saddlers' street again, in winter ---------- */
 const sultan7=x=>30+8*Math.sin(x/57+1)+4*Math.sin(x/21+2)+2*Math.sin(x/7);
 ART.iconium7={w:480,fp:1.3,q:12,
+ /* the low winter sun from the upper left: shadows fall long to the right and a little toward us, as the carrier's wall and the fountain throw theirs */
+ light:{amb:'#ffffff',wallY:103,sun:[15,6,.4]},
  paint(g){const r=rng(431),W='#e6d8b4',ST='#d8ccae',rw=rng(433);
   /* the sky's blues drawn a little toward grey (earth7), so that they sit with the plaster and the stone */
   sky(g,480,72,['#4a7cbc','#7ea4d0','#b4c8dc','#e2e4dc'].map(c=>earth7(c,.14)));cloud(g,236,12,60,7,r);cloud(g,360,22,40,5,r);cloud(g,70,8,40,5,r);

@@ -109,6 +109,8 @@ function ship(g,X,Y,t,o){o=o||{};const y=Y+Math.round(Math.sin(t/900)*2)/2,
 /* ---------- Seleucia: the harbor of Antioch, in the morning ---------- */
 function post4(g,x){g.fillStyle=lg(g,x-1,0,x+7,0,['#8a7a66','#5a4c40','#3a302c']);g.fillRect(x,96,6,8);R(g,x-1,94.6,8,2,'#6a5a4a');R(g,x-1,94.6,8,.6,'#e8d8b8')}
 ART.seleucia={w:480,fp:1.3,q:12,
+ /* the morning sun: shadows fall to the right and toward us, as those of the gate's wall, the posts and the jars on the quay */
+ light:{amb:'#ffffff',sun:[14,6,.4]},
  paint(g){const r=rng(211),ST='#d9cba6';
   sky(g,480,64,SKY4);cloud(g,330,12,64,9,r);cloud(g,190,22,40,6,r);cloud(g,440,26,34,5,r);
   /* the mountain above the town, falling steeply to the sea */
@@ -160,6 +162,8 @@ ART.seleucia={w:480,fp:1.3,q:12,
  front(){}};
 /* ---------- Salamis: the square between the harbor and the synagogue ---------- */
 ART.salamis={w:480,fp:1.3,q:12,
+ /* the sun high over the square: short shadows to the right and toward us, as the columns' */
+ light:{amb:'#ffffff',sun:[8,4,.4]},
  paint(g){const r=rng(233),LS='#e4d9bc',MB='#eee6d2',CU=['#c8743c','#b8632e','#d88a4a','#a85628'];
   sky(g,480,70,SKY4S);cloud(g,140,10,56,8,r);cloud(g,318,15,44,6,r);cloud(g,436,8,34,5,r);
   /* the harbor we landed in: the mole, and our ship at anchor with her sail furled. The low coast running away to the north lies on
@@ -270,7 +274,8 @@ ART.synagogue={w:320,q:12,
  front(){}};
 /* ---------- Paphos: the hall of the proconsul, open to the harbor ---------- */
 ART.paphos={w:400,fp:1.25,q:12,
- light:()=>({amb:'#f0e2d2',shade:[[0,96,'#d8c8c4'],[306,400,'#e0d0c8']]}),
+ /* the day comes in between the columns from the harbor: shadows fall to the right and toward us, as the columns' do */
+ light:()=>({amb:'#f0e2d2',sun:[12,12,.34],shade:[[0,96,'#d8c8c4'],[306,400,'#e0d0c8']]}),
  paint(g){const r=rng(271),MB='#f1eadb',RED=earth4('#a8402e',.08),rw=rng(2711);
   /* the view between the columns: the harbor of Paphos inside its two moles */
   sky(g,400,54,['#3a78c8','#6aa2dc','#a4c8e8','#dbe8ee'].map(c=>earth4(c,.14)));cloud(g,190,22,50,7,r);cloud(g,270,30,32,5,r);
@@ -325,7 +330,10 @@ ART.paphos={w:400,fp:1.25,q:12,
   if(MK.room==='paphos')depth(MK.y-12,()=>baggage(g,MK.x-14,MK.y-12))},
  front(){}};
 /* ---------- Antioch: the room where the congregation fasted and prayed (opening scene) ---------- */
-ART.sendoff={w:320,q:12,paint(g){const r=rng(291),W='#e6d6ac',rw=rng(2911);
+ART.sendoff={w:320,q:12,
+ /* the day through the high window on the right: its fall crosses the floor down to the left, so a shadow falls to the left and toward us */
+ light:{amb:'#dccbb8',wallY:103,sun:[-7,7,.3]},
+ paint(g){const r=rng(291),W='#e6d6ac',rw=rng(2911);
   plaster(g,0,0,320,104,W,r,{patch:3,cracks:0,brick:'#b89468',t:.36});skipCracks4(r,6);
   /* hairline cracks set by hand, high on the wall, where they run to no head */
   {const rb=rng(2912);for(const[x,y,n]of[[60,14,3],[186,13,3],[296,15,3]])crack4(g,x,y,n,rb,.85)}
@@ -345,7 +353,11 @@ ART.sendoff={w:320,q:12,paint(g){const r=rng(291),W='#e6d6ac',rw=rng(2911);
     comp(l,'multiply',1,()=>{ao(l,0,0,56,144,'l',.3,'#2a2030');ao(l,264,0,56,144,'r',.26,'#2a2030');ao(l,0,0,320,14,'t',.3,'#2a2030');ao(l,0,128,320,16,'b',.3,'#2a2030')})})},
  draw(){},front(){}};
 /* ---------- The crossing: evening on the sea, Cyprus ahead (voyage scene) ---------- */
-ART.voyage={w:320,q:12,paint(g){const r=rng(307);
+ART.voyage={w:320,q:12,
+ /* the evening sun low ahead on the left, over Cyprus: a shadow would fall long to the right along the deck. The three stand behind the
+    bulwark with their feet out of sight (voyageScene draws them without shade), so nothing is cast. */
+ light:{amb:'#ffffff',sun:[26,4,.35]},
+ paint(g){const r=rng(307);
   /* the evening's blues drawn a little toward grey (earth4), the sunset's warmth left as it is */
   sky(g,320,86,['#22386a','#45588e','#8f7696','#e09a72','#f8c680'].map((c,i)=>i<3?earth4(c,.12):c));pool(g,58,86,130,54,'#ffd890',.55,'screen');pool(g,58,84,34,22,'#fff0c0',.7,'screen');oval(g,58,83,7,7,'#fff2c8');
   for(const[cx0,cy,cw]of[[70,40,70],[210,26,90],[280,52,50],[150,60,44]]){pool(g,cx0,cy+1.6,cw,4,'#7a5a84',.5,'source-over');pool(g,cx0,cy,cw*.9,3,'#ffc898',.75,'source-over')}

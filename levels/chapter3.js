@@ -32,6 +32,8 @@ const GATE3={far:['#8ea284','#a8b890'],near:['#7c9668','#8fa87a'],land:'#b8c090'
 function bolt(g,x,y,w,hh,c){c=c||'#2a211c';shadow3(g,x+w/2+1.5,y+hh+.3,w/2+1.5,1.1,.42,'#281e30');clothRoll(g,x,y+hh,w,hh,tint(c,.06),{near:1,k:.3,face:.22,hi:1})}
 /* ---------- Tarsus: Saul's stall, the Taurus behind the city ---------- */
 ART.tarsus={w:320,q:12,
+ /* the morning sun from the left: shadows fall to the right and a little toward us, as the stall's and the posts' do */
+ light:{amb:'#ffffff',sun:[14,6,.4]},
  paint(g){const r=rng(113),SH='#8f95c8',ST='#d8c8a0';
   sky(g,320,76,SKY3(['#3a78c8','#66a0dc','#9cc4ea','#d0e2ee']));cloud(g,150,12,56,9,r);cloud(g,262,24,40,7,r);cloud(g,40,16,34,6,r);
   /* the Taurus, snow on its heads */
@@ -99,6 +101,8 @@ function oilJar(g,x,y,L){L=L||(c=>c);vessel(g,x,y,5.6,16,L('#a25a30'),'amph');fo
   R(g,x-1.6,y-17.4,3.2,1.8,L('#cbb48a'));R(g,x-1.6,y-17.4,3.2,.5,L('#ecd8b0'));R(g,x-.5,y-16.6,1,.8,L('#8a4a2a'))}
 /* ---------- Antioch: the courtyard where the congregation meets ---------- */
 ART.court={w:320,q:12,
+ /* the day from the left: short shadows to the right and toward us, as the porch's and the walls' */
+ light:{amb:'#ffffff',sun:[10,5,.4]},
  paint(g){const r=rng(131),SH='#8f95c8',W='#e6d6ac';
   sky(g,320,40,SKY3(['#3f7ecc','#74aade','#a8cdea']));cloud(g,210,7,40,6,r);
   ridge(g,92,320,36,x=>10+8*Math.sin(x/70+.4)+2*Math.sin(x/13),['#8ea27c','#a6b68e']);
@@ -173,6 +177,8 @@ ART.court={w:320,q:12,
  front(){}};
 /* ---------- Antioch: the colonnaded street under Mount Silpius ---------- */
 ART.antioch={w:480,fp:1.3,q:12,
+ /* the day from the left: short shadows to the right and toward us, as the columns' */
+ light:{amb:'#ffffff',sun:[9,4,.4]},
  paint(g){const r=rng(149),SH='#8f95c8',MB='#f4eede';
   sky(g,480,70,SKY3(['#3a78c8','#66a0dc','#9cc4ea','#d4e4ee']));cloud(g,150,10,60,9,r);cloud(g,60,15,36,6,r);cloud(g,330,8,44,6,r);
   /* Mount Silpius, the city wall climbing over its shoulder */
@@ -245,7 +251,10 @@ ART.antioch={w:480,fp:1.3,q:12,
   for(let i=0;i<4;i++){const k=((t/400+i*.25)%1);g.strokeStyle=`rgba(230,246,252,${.7*(1-k)})`;g.lineWidth=.5;g.beginPath();g.ellipse(267.1,94.5,1.5+k*9,.3+k*.7,0,0,6.2832);g.stroke()}},
  front(){}};
 /* ---------- The road south (ending) ---------- */
-ART.road={w:320,q:12,paint(g){const r=rng(167);
+ART.road={w:320,q:12,
+ /* the sun high on the left: the trees and the milestone throw short shadows to the right and a little toward us, as in the chapter's rooms */
+ light:{amb:'#ffffff',sun:[9,4,.4]},
+ paint(g){const r=rng(167);
   sky(g,320,96,SKY3(['#3f7ecc','#6ea6de','#a2c8ea','#dbe6ea','#dbe6ea']));cloud(g,222,13,62,9,r);cloud(g,146,25,40,6,r);cloud(g,60,10,30,5,r);
   ridge(g,0,320,80,x=>20+8*Math.sin(x/41+2)+4*Math.sin(x/13),['#9cacca','#b4c0d4']);comp(g,'screen',.3,()=>{g.fillStyle=lg(g,0,44,0,82,['rgba(208,220,238,0)','rgba(208,220,238,1)']);g.fillRect(0,44,320,38)});
   /* Antioch behind us, under its mountain */

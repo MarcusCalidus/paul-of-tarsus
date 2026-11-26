@@ -219,6 +219,9 @@ ART.river9={w:480,fp:1.3,q:12,
      a walk goes round it; they are the seats of the place of prayer (issue #83) */
   props:STONES.map(([x,y])=>({y,shape(g){oval(g,x,y,10,2.8,'#000');R(g,x-9,y+1,18,1.4,'#000')},foot:[x-10,y-3,20,3],seat:1})),
   /* The sun stands to the right of the picture (o.light 1), as in Chapter Eight, so that the great plane tree throws its shade over the stones. */
+  /* the morning sun to the right and beyond: shadows fall long to the left and a little toward us, as the plane tree's does. Under the
+     plane tree's crown (its shade lies over the stones, x 186..392) whoever stands there is in its shade and casts none. */
+  light:{amb:'#ffffff',sun:[-16,5,.4],shade:[[186,392,'#d0d0e4']]},
   paint(g){const r=rng(913),S=SCRAP9,L=1;
   sky(g,480,70,['#4a86c8','#86b2dc','#c8dae6','#eeeada'].map(c=>earth9(c,.14)));cloud(g,70,12,50,6,r);cloud(g,206,20,56,5,r);cloud(g,356,9,48,5,r);cloud(g,452,24,30,4,r);
   /* far across the plain: a long mountain, blue with the morning, its slopes turned to the sun a little lighter */
@@ -289,6 +292,9 @@ ART.river9={w:480,fp:1.3,q:12,
 /* ---------- The marketplace of Philippi: the long hall of shops, and the platform where the magistrates sit ---------- */
 /* No temple, altar, statue or image stands in it. The hall is a row of arches under a tiled roof. */
 ART.forum9={w:320,q:12,
+ /* the sun from the left and high, as the platform throws its shade: shadows fall to the right and a little toward us. On the platform
+    (x 94..210) the magistrates stand on its top, at y 80; elsewhere the square begins at the foot of the hall. */
+ light:{amb:'#ffffff',wallY:x=>x>=94&&x<=210?78:103,sun:[9,5,.4]},
  paint(g){const r=rng(917),ST='#d6ccb0',W='#e4d6b6',A='#3a3050';
   sky(g,320,58,['#3d7cc6','#76a8dc','#bcd4e6','#e8e8dc'].map(c=>earth9(c,.14)));cloud(g,60,10,44,5,r);cloud(g,236,16,50,5,r);
   /* over the roofs: the rocky acropolis hill with its citadel wall grounded into the slope and tower at the wall's end */
@@ -378,6 +384,7 @@ ART.cell9={w:320,q:12,variant:cellV,
     l.fillStyle=lg(l,0,128,0,144,['rgba(14,10,16,0)','rgba(14,10,16,.3)']);l.fillRect(0,128,320,16)});
   else if(v)lightmap(g,320,'#11131f',l=>{pool(l,216,80,46,56,'#6a76a6',.9);pool(l,200,124,90,26,'#4a5684',.7);pool(l,190,72,10,34,'#5a6698',.4);pool(l,242,72,10,34,'#5a6698',.4);pool(l,218,112,30,6,'#7a86b6',.4)});
   else lightmap(g,320,'#020204',l=>{pool(l,216,106,26,5,'#2a2e44',.9)})},
+ /* before the earthquake pitch dark, so no shadow at all; after it the grey of the open door, then the lamps carried in */
  light(){const v=cellV(),W=[[0,196,105,14],[236,320,105,14]];return v==='l'?{amb:'#7a6c72',wallY:105,wall:W,lamps:[[216,96,90,'#6a4a20',105,84],[160,124,90,'#5a3a14',140,114]]}:v?{amb:'#1c2030',wallY:105,wall:W,lamps:[[214,110,60,'#20284a',105,84]]}:{amb:'#07070b'}},
  draw(g,t){/* the jailer, as he is seen from the dark: a man against the grey of the outer door, with his sword drawn. The blade is one slanting
      line from his raised hand; his hand covers the guard, so that hilt and blade make no cross. */
@@ -428,7 +435,9 @@ ART.gaol9={w:320,q:12,variant:()=>F.back?'d':'',
   else lightmap(g,320,'#363a5c',l=>{nicheLight(l,258,74,34,28,'#ffc070',.92);pool(l,262,112,80,40,'#ffb060',.5);pool(l,120,116,150,40,'#8a94c8',.35);
     pool(l,140,26,180,14,'#8e98c8',.4);pool(l,290,96,30,12,'#ffb060',.3);
     l.fillStyle=lg(l,0,128,0,144,['rgba(10,10,20,0)','rgba(10,10,20,.26)']);l.fillRect(0,128,320,16)})},
- light(){return F.back?null:{amb:'#6c6e96',wallY:105,wall:[[0,194,105,23],[230,320,105,30]],lamps:[[258,90,84,'#7a5220',105,74.6]]}},
+ /* by night the lamp in its niche by the jailer's door; in the morning the sun over the wall on the left, as the wall and the trough throw
+    their shade: shadows fall to the right and toward us */
+ light(){return F.back?{amb:'#ffffff',wallY:105,sun:[13,8,.4]}:{amb:'#6c6e96',wallY:105,wall:[[0,194,105,23],[230,320,105,30]],lamps:[[258,90,84,'#7a5220',105,74.6]]}},
  draw(g,t){if(!F.back)flame(g,258.2,74.6,t);
   /* what the constables carry, drawn with them */
   for(const a of[CO,C2])if(a.room==='gaol9')depth(a.y+.2,()=>rods(g,a.x-a.dir*3.4,a.y-28,-a.dir))},
@@ -436,6 +445,8 @@ ART.gaol9={w:320,q:12,variant:()=>F.back?'d':'',
 
 /* ---------- The jailer's house, in that hour of the night ---------- */
 ART.jailer9={w:320,q:12,
+ /* night: the two lamps in their niches in the back wall; whoever stands on the floor in front throws his shadow forward, away from them */
+ light:{amb:'#8a7c8a',wallY:103,lamps:[[68.6,51.6,150,'#c89050',103,51.6],[232.6,51.6,150,'#c89050',103,51.6]]},
  paint(g){const r=rng(929),W='#dccaa4',rw=rng(9291),A='#2a2030';
   plaster(g,0,0,320,104,W,r,{patch:3,cracks:0,brick:'#a8845a',t:.36});skipCracks9(r,5);
   /* cracks cut by hand, high on the wall, where they run to no head */
