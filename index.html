@@ -137,9 +137,11 @@ body{display:flex;align-items:center;justify-content:center}
    the upper part of the picture has not moved. A menu or the code box opened over the title covers all of it. */
 #wrap.title #view{height:calc(var(--s)*210px)}
 #wrap.title #status,#wrap.title #panel{display:none}
-/* with that height the title holds its prologue, twenty-one chapters and the line of the planned ones without scrolling (the lines stand
-   a little closer and smaller than they did for nineteen, and the small lines above and below the list a little closer to it); the list
-   still scrolls when there are more lines than room, as it does when the planned chapters are opened */
+/* with that height the title held its prologue, twenty-one chapters and the line of the planned ones without scrolling (the lines stand
+   a little closer and smaller than they did for nineteen, and the small lines above and below the list a little closer to it). From the
+   twenty-third chapter on the list scrolls on a first visit too, as it does for a returning player and when the planned chapters are
+   opened: its bottom edge fades while more lies below. FOR NOW: the layout the maintainer chooses for the longer list (two mockups, on
+   another branch) replaces this. */
 #overlay.title{padding-top:calc(var(--s)*5px);padding-bottom:calc(var(--s)*5px)}
 #overlay.title .chs p{margin:0 auto;font-size:calc(var(--s)*5.4px);line-height:1}
 #overlay.title>p.small{margin:calc(var(--s)*1px) 0}
@@ -2547,15 +2549,22 @@ const CHAP={
   /* Chapter Twenty's line. treasure.at: the window in the second spring (the CODE of the stop pstorks20), a little before the storks. */
   20:{name:'some_other_time',label:'chapter_twenty',title:'some_other_time_2',salt:0x5CA5,src:'levels/chapter20.js',needs:['materials','birds','cast','coast','temple','caesarea','weather'],treasure:{name:'storks_over_the_harbor',at:'20-TA3-NJT-BEA-P7J'}},
   /* Chapter Twenty-One's line. treasure.at is the code of the court before the hearing, where the ox goad is (pcourt21). */
-  21:{name:'to_caesar',label:'chapter_twenty_one',title:'to_caesar_2',salt:0x6DC7,src:'levels/chapter21.js',needs:['materials','birds','cast','coast','temple','caesarea','damascus','map'],treasure:{name:'the_ox_goad',at:'21-BE2-P7X-KJR-ES7'}}};
+  21:{name:'to_caesar',label:'chapter_twenty_one',title:'to_caesar_2',salt:0x6DC7,src:'levels/chapter21.js',needs:['materials','birds','cast','coast','temple','caesarea','damascus','map'],treasure:{name:'the_ox_goad',at:'21-BE2-P7X-KJR-ES7'}},
+  /* LOGIC22: Chapter Twenty-Two's line. STUB: needs are what the sea chapters are likely to load (add or drop what the chapter uses);
+     treasure.at is the stub's first code, codeOf(22,0): replace it with the CODE that the p-stop of the point a little before Tarsus prints
+     (CONTRIBUTING section 2), and the treasure's name if the chapter calls it otherwise. */
+  22:{name:'euroaquilo',label:'chapter_twenty_two',title:'euroaquilo_2',salt:0x7EE9,src:'levels/chapter22.js',needs:['materials','birds','cast','coast','weather','ship','beat','map'],treasure:{name:'tarsus_from_the_sea',at:'22-6GM-QSG'}},
+  /* LOGIC23: Chapter Twenty-Three's line. carry: its first thirteen flags (from22, then the six marks of Luke's tablet, two bits each) are
+     carried in from Chapter Twenty-Two's end screen (see startChapter and setChapter). STUB: needs and treasure.at as for Twenty-Two: at is
+     codeOf(23,0), to be replaced with the CODE of the point a little before the stone at the gate. */
+  23:{name:'all_safe_to_land',label:'chapter_twenty_three',title:'all_safe_to_land_2',salt:0x900B,carry:13,src:'levels/chapter23.js',needs:['materials','birds','cast','coast','weather','ship','beat','map'],treasure:{name:'the_stone_at_the_gate',at:'23-8K2-Y63'}}};
 const TITLE={level:1,scene:'title',mood:'ancient',amb:{crickets:.5,wind:.35,owl:.4}};
 const PRO={name:'road_to_damascus',label:'Prologue',title:'the_road_to_damascus',src:'levels/prologue.js',needs:['materials','birds','damascus','temple']};
 /* PLANNED: the chapters that are planned and not built (issue #47). The title lists them, dimmed, under one line that opens them in place.
    Each is named by the part of Acts it will tell, not by a working title, which may still change; the title it is given replaces that
    reference when the chapter is built and moves into CHAP. Nothing else reads this list: these chapters have no file, no salt and no codes. */
 const PLANNED=[
-  {label:'chapter_twenty_two',short:'twenty_two',ref:'acts_27_1_26'},
-  {label:'chapter_twenty_three',short:'twenty_three',ref:'acts_27_27_28_10'},{label:'chapter_twenty_four',short:'twenty_four',ref:'acts_28_11_16'},
+  {label:'chapter_twenty_four',short:'twenty_four',ref:'acts_28_11_16'},
   {label:'chapter_twenty_five',short:'twenty_five',ref:'acts_28_16_31'}];
 /* A level file calls LEVEL(n, init). init() registers its art, cast, items and rooms, and returns the chapter definition. */
 function LEVEL(n,init){LOOK.paul=paulLook(n);Object.assign(CHAP[n],init(),{ready:1});LOOK.paul=paulLook(G.ch)}
@@ -2620,9 +2629,14 @@ async function showCard(n){const c=n==='prologue'?PRO:CHAP[n],logo=await need('l
     let done=false;const fin=()=>{if(done)return;done=true;clearTimeout(tm);ov.onclick=null;if(G.skip===fin)G.skip=null;ov.className='';ov.innerHTML='';
       G.busy=was;if(!was)lock(false);status();res()};
     const tm=setTimeout(fin,G.speedAll>200?400:3000);ov.onclick=fin;G.skip=fin;G.lineT=performance.now()})}
-/* a code at the very beginning of a chapter (no flag set, in its first room) opens with the card too; one in the middle never does */
-const atStart=b=>b&&b.w==null&&b.b===0;
-async function startChapter(n){ov.onclick=null;try{await loadLevel(n)}catch(e){return loadFail(e)}AU.key=CHAP[n].music;await showCard(n);return CHAP[n].start()}
+/* a code at the very beginning of a chapter (no flag set, in its first room) opens with the card too; one in the middle never does. The
+   flags carried into a chapter (CHAP[n].carry, below) do not count: the first code that an end screen prints with them set is a start too. */
+const atStart=b=>b&&b.w==null&&(b.b&~((1<<(CHAP[b.ch].carry||0))-1))===0;
+/* startChapter: the chapter's card, then its opening. carry: a choice carried in from the chapter before, as the bits of the chapter's first
+   CHAP[n].carry flags (CONTRIBUTING section 5). It is kept until the chapter's start calls setChapter, which sets those flags from it and
+   forgets it; so the end screen's click and the code it prints, typed later, lead to the same flags. From the title nothing is carried. */
+async function startChapter(n,carry){ov.onclick=null;G.carry=null;try{await loadLevel(n)}catch(e){return loadFail(e)}
+  if(carry&&CHAP[n].carry)G.carry={ch:n,b:carry&((1<<CHAP[n].carry)-1)};AU.key=CHAP[n].music;await showCard(n);return CHAP[n].start()}
 /* startPrologue: play the Road to Damascus prologue and run without a break into Chapter One; SKIP in the top bar jumps straight to Chapter One */
 async function startPrologue(){ov.onclick=null;try{await Promise.all([loadLevel(1),loadPrologue()])}catch(e){return loadFail(e)}
   audioInit();SFX.good();G.started=performance.now();setChapter(1);G.inPro=1;$('#chname').textContent=T(PRO.name);
@@ -2742,7 +2756,10 @@ function decode(t){t=(t||'').toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1'
     const c=Number(x&511n),v=x>>9n^wideMask(c,t.length*5-9);return wideChk(v,CHAP[ch].salt,t.length)===c?{ch,w:v}:null}
   if(t.length!==6)return null;let v=0;for(const x of t){const i=A32.indexOf(x);if(i<0)return null;v=v*32+i}
   const c=v%512,b=Math.floor(v/512)^msk(c);return chk(b,CHAP[ch].salt)!==c||(b>>19&3)>2||b>>21?null:{ch,b}}
-function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];if(SHARED.beat)SHARED.beat.stop();G.pc=P;G.invs={};P.hs=null;P.called=null;
+function setChapter(ch){G.ch=ch;for(const k in F)delete F[k];
+  /* the carried flags (see startChapter): set once, for the chapter they were carried into, and forgotten whatever chapter is set */
+  {const c=G.carry;G.carry=null;if(c&&c.ch===ch)CHAP[ch].flags.slice(0,CHAP[ch].carry).forEach((k,i)=>{if(c.b>>i&1)F[k]=1})}
+  if(SHARED.beat)SHARED.beat.stop();G.pc=P;G.invs={};P.hs=null;P.called=null;
   LOOK.paul=paulLook(ch);if(LOOK.barnabas)LOOK.barnabas=Object.assign({skin:'#b8844f',tunic:'#b0563a',cloak:'#d8c8a0',belt:'#5a3a20',trim:'#7a3a26',long:1,ph:500},ch>2?{hair:'#58483a',beard:'#58483a',grey:'#8a8076',fullBeard:1}:{hair:'#3a2a1a',beard:'#3a2a1a'});
   SPR.clear();Object.values(ACT).forEach(a=>{if(a!==P)a.room=null;a.bow=a.talk=false;a.walk=null;a.party=0;a.seat=0;a.kneel=0;a.bound=0;a.chained=a.held=a.lifted=a.keeper=a.grips=a.chainTo=0;a.wear='';a.look=LOOK[a.id]});
   (CHAP[ch].party||[]).forEach(id=>ACT[id].party=1);

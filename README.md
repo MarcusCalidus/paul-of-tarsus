@@ -39,6 +39,8 @@ Each chapter has its own page with screenshots, a walkthrough, its music and map
 19. [Chapter Nineteen: The Sister's Son](docs/chapter-19.md)
 20. [Chapter Twenty: Some Other Time](docs/chapter-20.md)
 21. [Chapter Twenty-One: To Caesar](docs/chapter-21.md)
+22. [Chapter Twenty-Two: Euroaquilo](docs/chapter-22.md) (STUB: the chapter and its page are still to be written)
+23. [Chapter Twenty-Three: All Safe to Land](docs/chapter-23.md) (STUB: the chapter and its page are still to be written)
 
 ## How to play
 
@@ -73,6 +75,8 @@ The events themselves are from the Scriptures. All dialogue is dramatization, in
 - [Chapter Nineteen: The Sister's Son](docs/chapter-19.md#about-the-content)
 - [Chapter Twenty: Some Other Time](docs/chapter-20.md#about-the-content)
 - [Chapter Twenty-One: To Caesar](docs/chapter-21.md#about-the-content)
+- [Chapter Twenty-Two: Euroaquilo](docs/chapter-22.md#about-the-content) (STUB: the page is still to be written)
+- [Chapter Twenty-Three: All Safe to Land](docs/chapter-23.md#about-the-content) (STUB: the page is still to be written)
 
 This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society, and it is not affiliated with jw.org. It contains no material from jw.org or its subdomains; it only refers to them as sources that its authors read. Their [Terms of Use](https://www.jw.org/en/terms-of-use/) apply to their content.
 
