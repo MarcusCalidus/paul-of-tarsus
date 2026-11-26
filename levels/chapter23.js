@@ -1701,7 +1701,7 @@ function place23(room){for(const a of EVERY.concat([P])){a.talk=false;a.seat=0;a
     OLD.hs=ph==='count'&&!F.found?null:OLDHS;
     if(ph==='talk')pl(EL,'beach23',296,126,-1);if(ph==='fire')pl(EL,'beach23',FIRE23[0]+90,FIRE23[1]+4,-1)}
   if(ph==='estate'){pl(P,'estate23',150,124,1);pl(AR,'estate23',122,130,1);pl(PU,'estate23',206,122,-1);pl(HH,'estate23',248,118,-1);if(F.healed)pl(FA,'estate23',228,128,-1)}
-  if(room==='sick23'){pl(FA,'sick23',BED23[0],BED23[1],1,'lie');pl(P,'sick23',BED23[0]+1,124,-1,'lay')}
+  if(room==='sick23'){pl(FA,'sick23',BED23[0],BED23[1],1,'lie');pl(P,'sick23',BED23[0]-3,124,-1,'lay')}
   P.hs=lukePlays()?PAULHS:null;P.party=LK.party=0}
 function setup23(){P.hs=null;P.called='Paul';LK.called='Luke';G.pk23=null;G.ld23=null;G.ex23=0;G.at23=0;G.heave23=0;G.mailSaid=0;G.fed23=0;G.dry23=0;G.vip23=null;G.lw23=0;G.cab23=0;G.num23=0;G.scratch23=0;G.caps23=[];
   G.invs={paul:['tablets'],luke23:['tablet23']};G.inv=G.invs.paul;drawInv()}
