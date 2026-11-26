@@ -7,6 +7,7 @@
    title screen. Nothing sparkles or glows, and the rules stop short of the subtitle: see section 3 of CONTRIBUTING.md.
 
      paint(name, sub)   the logo as a canvas, for a name and a subtitle already in the player's language. It is painted once and kept.
+                        An empty subtitle has no rules either (the caption "After Acts" of the finale).
      can(text)          whether every letter of a text has a glyph here. A language whose title needs another letter adds it to GL;
                         until then the title screen shows that language's title as plain text.
      plain(text, pen, cap) the mask of a line written plainly, for the playtest (the stops card<N>). */
@@ -118,7 +119,7 @@ function paint(name,sub){const key=name+'|'+sub;if(KEPT[key])return KEPT[key];
   /* the subtitle, and a rule on each side of it that thins away from it and stops short of it */
   const sx=Math.round((W-sw)/2),my=sy+Math.floor(o2.cap/2),len=Math.min(70,sx-12-DEPTH);
   const small=mask(W,H,g=>{write(g,sub,{x:sx,y:sy,...o2});
-    if(len>=16)for(const s of[-1,1]){const x0=s<0?sx-10:sx+sw+10,bar=(dy,part)=>{const l=Math.round(len*part);g.fillRect(s<0?x0-l:x0,my+dy,l,1)};bar(-1,.36);bar(0,1);bar(1,.6)}});
+    if(sub&&len>=16)for(const s of[-1,1]){const x0=s<0?sx-10:sx+sw+10,bar=(dy,part)=>{const l=Math.round(len*part);g.fillRect(s<0?x0-l:x0,my+dy,l,1)};bar(-1,.36);bar(0,1);bar(1,.6)}});
   /* the raised side runs down and to the left, away from the light */
   const raise=m=>{let r=shift(m,-1,1);for(let i=2;i<=DEPTH;i++)r=join(r,shift(m,-i,i));return r};
   /* a dot's side is as deep as a letter's, but where it would run into its letter it stops a pixel short, so that the outline parts them */

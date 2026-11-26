@@ -537,7 +537,7 @@
      pclosing (the closing screen), pabout (the page behind it), ptitlefin (the title of a
      finished game). The last chapter is the one whose line of CHAP names done. Where there is none yet (a branch without it), the newest chapter there is stands in for it: it is given the flag that says
      finished, its place in the manifest (done) and a page about itself, and is entered at a safe point of its own. */
-  if(/^(finale|later|pletters|plater|proll|plookback|plook\d+|pclosing|pabout|ptitlefin|phone(letters|later|lookback|closing|about))$/.test(stop)){clearInterval(sk);sk=0;
+  if(/^(finale|later|pafteracts|pletters|plater|proll|plookback|plook\d+|pclosing|pabout|ptitlefin|phone(letters|later|lookback|closing|about))$/.test(stop)){clearInterval(sk);sk=0;
     /* the same pictures on a phone held sideways: phoneletters, phonelookback, phoneclosing, phoneabout */
     const is=k=>stop===k||stop==='phone'+k.slice(1),haltAs=k=>halt(is(k)?stop:k);
     const FN=await need('finale'),M=await need('map'),LB=await need('lookback'),TU=await need('tunes'),real=FN.last(),n=real||Math.max(...Object.keys(CHAP).map(Number));
@@ -572,6 +572,9 @@
       ok(!cover.size,'a line told over that map lies over no place of it, neither its dot nor its name'+(cover.size?'. COVERED: '+[...cover].join(' | '):''));
       ok(!tight.size&&!MISSING.size&&!RAWKEY.size,'no text overflows its box, and every line had its text'+(tight.size?'. TOO LONG: '+[...tight].slice(0,6).join(' | '):'')+(MISSING.size||RAWKEY.size?'. MISSING: '+[...MISSING,...RAWKEY].slice(0,6).join(' | '):''));
       clearInterval(lines);clearInterval(watch);halt('later')}
+    /* pafteracts: the caption "After Acts", painted in the letters of the logo with no subtitle (a morning that never ends stands in for the level's) */
+    if(stop==='pafteracts'){G.speedAll=1;clearInterval(lines);FN.after(()=>new Promise(()=>{}));await until(()=>ov.classList.contains('card'),8000);await wait(400);
+      ok(!!ov.querySelector('h1.art canvas')&&ov.textContent.includes(T('after_acts')),'the caption After Acts, painted in the letters of the logo');halt('pafteracts')}
     if(is('plater')){G.speedAll=1;clearInterval(lines);FN.later();await until(()=>names('perhaps_he_reached_spain_romans_15_24_28'),120000);await wait(600);haltAs('plater')}
     /* the roll, closed: the lines before it are passed over, the closing plays at its own pace, and the picture is taken as it is held */
     if(stop==='proll'){G.speedAll=1;FN.run();await until(()=>names('here_the_account_ends'),120000);await wait(300);clearInterval(lines);if(G.skip&&G.skip.name!=='cut')G.skip();
