@@ -1829,6 +1829,17 @@
       const before=rms(Math.max(0,Math.round((crashAt-.25)*sr))),early=rms(0);
       ok(!err&&s===1&&calls.length>=10&&calls.every(c=>c[1]&&c[1]!==AU.fx)&&pk>.02&&Math.abs(pt-crashAt)<.15&&before>early*3,
         `with sound on, the sea is scheduled on the beat's own bus (${calls.length} voices for one sea) and heard where the wave breaks: the loudest moment ${pt.toFixed(2)} s, the crash ${crashAt.toFixed(2)} s, and the swell rising before it`+(err?' ERR '+err.message:''))}
+    /* the step of Chapter Twenty-Four's walk (kind 'step'): scheduled from the same clock on the beat's own bus, heard where the foot comes
+       down, and much quieter than a sea */
+    {BT.stop();const sr=22050,off=new OfflineAudioContext(1,sr*2,sr),c0=AU.ctx,calls=[];
+      const n0=window.noise,t0=window.tone;window.noise=o=>{calls.push(['noise',o.dest]);return n0(o)};window.tone=o=>{calls.push(['tone',o.dest]);return t0(o)};
+      AU.ctx=new Proxy(off,{get(t,k){if(k==='state')return'running';const v=t[k];return typeof v==='function'?v.bind(t):v}});
+      let s,downAt,err=null;try{const k=BT.start({period:3000,pause:1200,at:.55,phase:.3,kind:'step',dest:off.destination,room:null});downAt=(k.crash()-now())/1000;s=k.sounded;k.bus=null}catch(e){err=e}
+      finally{AU.ctx=c0;window.noise=n0;window.tone=t0;BT.stop()}
+      const buf=await off.startRendering(),d=buf.getChannelData(0),win=Math.round(sr*.02),rms=i=>{let e=0;for(let j=i;j<i+win&&j<d.length;j++)e+=d[j]*d[j];return Math.sqrt(e/win)};
+      let pk=0,pt=0,top=0;for(let i=0;i<d.length-win;i+=win/2){const r=rms(i);if(r>pk){pk=r;pt=i/sr}}for(let i=0;i<d.length;i++)top=Math.max(top,Math.abs(d[i]));
+      ok(!err&&s===1&&calls.length>=3&&calls.every(c=>c[1]&&c[1]!==AU.fx)&&pk>.004&&top<.35&&Math.abs(pt-downAt)<.08,
+        `the soldier's step is scheduled on the beat's own bus (${calls.length} voices) and heard where his foot comes down: the loudest moment ${pt.toFixed(2)} s, the footfall ${downAt.toFixed(2)} s, its peak ${top.toFixed(3)}`+(err?' ERR '+err.message:''))}
     /* a code restored in the middle of a crossing: no beat is left running, and the room's own scripts would start one again */
     {BT.start();ok(!!G.beat,'a beat runs again');applyState(decode(codeOf(1,0)));await wait(250);
       ok(G.beat===null&&BT.beat===null&&G.room!=='beattest','a safe-point code restored in the middle of a crossing leaves no beat running')}
@@ -6476,8 +6487,8 @@
         pe('pointerdown');pe('pointerup');vp.dispatchEvent(new MouseEvent('click',{clientX:cx,clientY:cy,bubbles:true}))}else view(x,y);await idle()};
   if(/^(beatwalk24|phonewalk24)$/.test(stop)){const ph=stop==='phonewalk24';await loadLevel(24);if(ph){if(/[?&]emu=1/.test(location.search))$('#safe').style.padding='0px 59px 21px 59px';fit();await wait(120)}
     G.speedAll=500;await open24(up24('onroad'),'hills24');await till24(()=>B24());const b=B24(),C=CHAP[24],MK=C.marks,SO=ACT.sold24a;
-    ok(G.room==='hills24'&&PC()===P&&b&&b.room==='hills24'&&b.sticky&&b.period===Math.round(C.beat.period*.3)&&b.need===Math.round(C.beat.need*.3)&&C.phase()==='road'&&Math.abs(P.x-MK[0][0])<1&&!P.chained,
-      'the road: Paul in step beside a soldier, unchained; the beat runs from the room, one bar of the music long, shortened under the playtest ('+b.period+' ms, a pause of '+b.pause+', a step of '+b.need+')');
+    ok(G.room==='hills24'&&PC()===P&&b&&b.room==='hills24'&&b.sticky&&b.period===Math.round(C.beat.period*.3)&&b.need===Math.round(C.beat.need*.3)&&b.sound&&b.kind==='step'&&!CHAP[24].music.tracks.some(t=>t.drum&&(t.moods||[]).includes('walk'))&&C.phase()==='road'&&Math.abs(P.x-MK[0][0])<1&&!P.chained,
+      'the road: Paul in step beside a soldier, unchained; the beat runs from the room and sounds the step itself (the road\'s music keeps no drum beside it), one bar of the music long, shortened under the playtest ('+b.period+' ms, a pause of '+b.pause+', a step of '+b.need+')');
     ok(C.music.dt*C.music.steps*1000===C.beat.period,'the beat of the walk is the bar of the music ('+C.beat.period+' ms)');
     {const W=ROOMS.hills24.walk;ok(W[0]===W[1]&&W[2]===W[3],'in step, the floor is his own place: only the road ahead moves him')}
     await tap24('road_ahead',ph,calm24);ok(G.mark24===1&&Math.abs(P.x-MK[1][0])<1&&Math.abs(SO.x-MK[1][0]-16)<1&&b.misses===0,'a step while the soldier\'s foot is up: Paul and the column go on to the next mark');

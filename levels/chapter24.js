@@ -70,11 +70,12 @@ LEVEL(24,()=>{
 /* ==== MUSIC: begin ==== */
 /* One tune for the road to Rome. It is in C, in the major mode (C, D, E, F, G, A, B), in bars of fifteen steps that fall five, five,
    five: no earlier chapter has this key or this bar. The bar is the bar of the walk: on the road the soldier's foot comes down on its
-   first step, and the beat of the timed walk (BEAT24) is one bar long, so the step is heard in the music as the drum on the downbeat.
+   first step in the picture, and the beat of the timed walk (BEAT24) is one bar long; the step itself is heard from the beat's own clock
+   (shared/beat.js, kind 'step'), never from the music, which cannot be tied to it: so the road's music has no drum.
    The tune is four bars long (A B C D): up the triad; down from the sixth; up from the second to the seventh; home by the fifth and the
    second. The tune's bar for shared/tunes.js is A. At the quay ("quay") lyre and harp take turns over a low string; at Puteoli and in
    the houses ("house") the harp has it; the relay of the news ("relay") a lighter lyre; by the canal at dusk and before daybreak ("dusk")
-   a low note lies quietly under a sparse harp; on the road ("walk") the drum marks the step, the low string walks, and the ney has the
+   a low note lies quietly under a sparse harp; on the road ("walk") the low string walks, with no drum, and the ney has the
    tune; weary ("weary") the ney begins it and breaks off before it comes home (E); at the meeting and on into Rome ("meet") lyre and harp
    have the whole tune again. No tense music: nothing here is a threat. Nothing is claimed about how music was played then. */
 const SCALE=[0,2,4,5,7,9,11],ST=15,
@@ -92,8 +93,7 @@ const SCALE=[0,2,4,5,7,9,11],ST=15,
   {inst:'lyre',moods:['relay'],oct:0,loop:8,lines:bars24('A_C_ABCD'),vol:.32},
   {inst:'bass',moods:['dusk'],oct:-12,loop:4,lines:LOW,vol:.16},
   {inst:'harp',moods:['dusk'],oct:-12,loop:8,lines:bars24('A___C___'),vol:.16},
-  /* the road: the drum on the downbeat is the soldier's step */
-  {drum:1,moods:['walk','weary'],prog:'A',seq:{A:'t..............'},vol:.16},
+  /* the road: no drum here. The soldier's step is the beat's own sound (shared/beat.js, kind 'step'), from the clock that shows his foot */
   {inst:'bass',moods:['walk','weary'],oct:-12,loop:4,lines:WALKLOW,vol:.26},
   {inst:'ney',moods:['walk'],oct:0,loop:8,lines:bars24('ABCD____'),vol:.24},
   {inst:'ney',moods:['weary'],oct:0,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.2},
@@ -434,7 +434,7 @@ const spoke=(a,k)=>say(a,k,{to:PC()});
 const think=(k,a)=>say(a||PC(),k,THT(a||PC()));
 /* the beat of the walk: started by the room's draw while a stretch is on, so that a code restored on the road finds it again */
 function beat24(){if(phase24()!=='road'||!SHARED.beat)return;const s=stretch24();if(!s||G.room!==s.room)return;
-  if(!G.beat||G.beat.room!==G.room||G.beat.st24!==s.f){const b=SHARED.beat.start(Object.assign({sticky:true,room:G.room,sound:false,phase:0},BEAT24));b.st24=s.f;G.step24=null}}
+  if(!G.beat||G.beat.room!==G.room||G.beat.st24!==s.f){const b=SHARED.beat.start(Object.assign({sticky:true,room:G.room,kind:'step',phase:0},BEAT24));b.st24=s.f;G.step24=null}}
 const stretch24=()=>STRETCH24.find(s=>!F[s.f]);
 for(const id of['hills24','marsh24']){const d=ART[id].draw;ART[id].draw=(g,t)=>{if(G.room===id)beat24();d(g,t)}}
 

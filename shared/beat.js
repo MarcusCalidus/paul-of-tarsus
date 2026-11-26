@@ -15,7 +15,8 @@
                        phase   the phase at the start (by default the end of the pause, so the first sea is seen rising);
                        call    misses in a row after which a sailor calls the moment (3); carry misses after which he takes him across (6);
                        sticky  the help, once given, stays until reset() (false: a hit clears the count, and the help with it);
-                       sound   schedule the sea's sound (true); kind 'deck' (a sea over a ship's side) or 'surf' (a breaker on a beach);
+                       sound   schedule the beat's sound (true); kind 'deck' (a sea over a ship's side), 'surf' (a breaker on a beach)
+                               or 'step' (a soldier's foot on the paving of a road, Chapter Twenty-Four);
                                vol its level (1); dest the bus it goes to (AU.fx);
                        room    the room it belongs to (G.room): it stops by itself when that room is no longer shown; null for none.
                      Under the playtest (fast()) period, pause and need are shortened to three tenths.
@@ -60,6 +61,18 @@ const SEA={
   surf:{swell:2.2,bands:[[0,150,'lowpass',.7,.14],[.4,380,'bandpass',.7,.065],[.7,800,'bandpass',.8,.035]],
     crash:[[0,480,'bandpass',.5,.09,.21,1.6,.4],[0,220,'lowpass',.7,.06,.12,1.2,0],[20,2800,'highpass',.6,.06,.035,.8,0]],boom:[55,36,.05,.06,.9],
     off:{at:700,f:1800,v:.05,d:2.2,a:.45},gurgle:0,fizz:12}};
+/* kind 'step': a soldier's foot on the paving of a road (Chapter Twenty-Four, the walk in step on the Appian Way). The foot comes down
+   where a sea would break, at 0: a short low thud with the bite of nails on stone under it. It leaves the ground where the pause
+   begins, with a light scuff of leather, so that the step can be heard coming as it is seen. Both are quiet, well below the sea and
+   the game's chimes, and both come from the beat's own clock like the sea: a road's music keeps no drum of its own beside them. */
+function step(B,n,crashMs){const c=AU.ctx;if(!c||!B.bus)return false;const v=B.vol,nowMs=performance.now(),at=ms=>ctxAt(c,ms),soon=nowMs+20,dest=B.bus,
+    lift=crashMs-(1-B.from)*B.period;
+  if(lift>=soon)noise({t:at(lift),d:.1,a:.04,v:.02*v,f:1800,type:'highpass',q:.6,dest});
+  if(crashMs<soon)return true;
+  tone({t:at(crashMs),d:.12,a:.004,v:.085*v,f:95,to:55,type:'sine',dest});
+  noise({t:at(crashMs),d:.09,a:.003,v:.1*v,f:320,type:'lowpass',q:.7,dest});
+  noise({t:at(crashMs+4),d:.035,a:.002,v:.03*v,f:2400,type:'bandpass',q:1.2,dest});
+  return true}
 function sea(B,n,crashMs){const c=AU.ctx;if(!c||!B.bus)return false;const k=clamp(B.period/6000,.3,1.4),v=B.vol,S=SEA[B.kind]||SEA.deck,
     nowMs=performance.now(),at=ms=>ctxAt(c,ms),soon=nowMs+20,
     rnd=(i=>()=>{i=Math.imul(i^i>>>15,2246822507)^Math.imul(i^i>>>13,3266489909);return((i^=i>>>16)>>>0)/4294967296})(n*7919+13),
@@ -91,7 +104,7 @@ function tick(){if(!B)return;if(B.room&&G.room!==B.room)return stop();
   if(!B.bus){try{B.bus=c.createGain();B.bus.gain.value=1;B.bus.connect(B.dest||AU.fx)}catch(e){B.bus=null;return}}
   const nowMs=performance.now(),lead=500+1700*clamp(B.period/6000,.3,1.4);
   for(let n=Math.floor((nowMs-B.t0)/B.period);;n++){const crash=B.t0+n*B.period;if(crash-lead>nowMs)break;
-    if(crash<nowMs-50||n<=B.last)continue;B.last=n;if(sea(B,n,crash))B.sounded++}}
+    if(crash<nowMs-50||n<=B.last)continue;B.last=n;if((B.kind==='step'?step:sea)(B,n,crash))B.sounded++}}
 
 function stop(){clearInterval(timer);timer=0;const b=B;B=null;if(G.beat===b)G.beat=null;if(!b)return;b.on=false;
   /* what was scheduled ahead is let go at once: the beat's own bus fades out and is taken away */
@@ -127,5 +140,5 @@ function cap(g,key,x,y,o={}){const s=T(key),w=o.w||60;let sz=o.sz||6.4;g.save();
   cap.last={key,s,sz,w:tw,max:w,t:performance.now()}}
 function call(g,x,y,t){if(G.beat&&G.beat.calling(t))cap(g,'now',x,y)}
 
-/* voice: one sea's sound, scheduled on B (period, vol, kind, bus) to break at crashMs; for offline renders and the playtest */
-return{start,stop,cap,call,fast,voice:sea,get beat(){return B}}})();
+/* voice: one beat's sound (a sea, or a step), scheduled on B (period, vol, kind, bus, from) to fall at crashMs; for offline renders and the playtest */
+return{start,stop,cap,call,fast,voice:(B,n,ms)=>(B.kind==='step'?step:sea)(B,n,ms),get beat(){return B}}})();
