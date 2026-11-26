@@ -5698,7 +5698,7 @@
     window.cut=async function(){try{return await cut0.apply(this,arguments)}finally{if(!G.busy)R.pend=null}};
     R.off=()=>{window.codeBtn=cb0;window.say=say0;window.cut=cut0};return R};
   const codesCheck=async(ch,R,finish)=>{R.off();
-    const fresh=()=>{for(const k of Object.keys(G))if(new RegExp(ch+'$').test(k)||/^(mailSaid|skiffT|pk23saw)$/.test(k))delete G[k]},
+    const fresh=()=>{for(const k of Object.keys(G))if(k.endsWith(String(ch))||/^(mailSaid|skiffT|pk23saw)$/.test(k))delete G[k]},
       settle=async()=>{for(let i=0;i<80&&(G.busy||ov.classList.contains('on')||P.walk||PC().walk);i++){if(G.skip)G.skip();await wait(50)}await wait(150)},
       /* a restore that does not come back in eight seconds is a fault of its own, not a wait */
       rest=c=>Promise.race([restore(c,1),wait(8000).then(()=>'timeout')]),
