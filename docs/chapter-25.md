@@ -34,8 +34,8 @@ One room in two variants and two close views, with the travel map, and one perso
 
 | | |
 |---|---|
-| ![The day of Acts 28:23 in the early morning: the listeners along the benches, the sun through the window, Valens at the table](screenshots/day25.png) | ![The lodging at night, the lamp lit in its niche, the soldier's question](screenshots/night25.png) |
-| From morning to evening: one listener at each hour | Night: the soldier asks his one question |
+| ![The day of Acts 28:23 in the early morning: the listeners along the benches, the sun through the window, Valens at the table](screenshots/day25.png) | ![The lodging at night: the lamp lit in its niche, the dark roofs through the window, Valens on his stool and Paul beside him](screenshots/night25.png) |
+| From morning to evening: one listener at each hour | Night: the listeners have gone, and the lamp is lit |
 
 **Sent home.** A year and more goes by. Epaphroditus is well again, and the narrator tells what the Philippians sent with him (Philippians 4:18). Timothy sits at the table with the pen, and Bassus is on watch. **Talk to** Timothy and give him the letter's three lines in order (Philippians 2:25-29). Then the landlady brings a visitor, Anthus, a freedman of Caesar's household who keeps accounts, and he asks to have a greeting added from those of the household; the letter takes Philippians 4:22. How he came to believe is never said. Epaphroditus leaves with the letter. Through this watch Luke sits writing on the bench.
 
@@ -48,8 +48,8 @@ One room in two variants and two close views, with the travel map, and one perso
 
 | | |
 |---|---|
-| ![The fourth watch at midday: Macer on his stool by the door, the chain across the floor with the cat asleep on it, Epaphras and Onesimus](screenshots/cat25.png) | ![The sheet for Philemon close, in Paul's own hand](screenshots/philemon25.png) |
-| Not as an order: the cat sleeps on the chain | The letter to Philemon, in Paul's own hand |
+| ![The fourth watch at midday: Macer on his stool by the door, the chain across the floor with the cat asleep on it, Epaphras and Onesimus](screenshots/cat25.png) | ![The sheet for Philemon close, Paul's hand laid on it, the inkwell and the pen beside it](screenshots/philemon25.png) |
+| Not as an order: the cat sleeps on the chain | The letter to Philemon: this one Paul writes himself |
 
 **Those who greet you.** In the same weeks the letter for Colossae is done but for the greetings, and the room is the list: Aristarchus, Mark, Jesus who is called Justus, Epaphras, Luke and Demas stand about it, Timothy sits with the pen, and Tychicus and Onesimus stand ready to travel. **Talk to** each of the six and choose what the letter calls him: my fellow captive, the cousin of Barnabas, the one called Justus, one of you and a slave of Christ Jesus, the beloved physician, or no more than his name. All six are on offer every time; a name that is not his is answered by the man himself, truly, and the right one is dictated to Timothy (Colossians 4:10-14). From the table the chain reaches the two in the middle of the room: Valens has to be asked to sit by the window for the two at the left, and by the door for the two at the right. Mark's line is the one that tells the Colossians to welcome him; Justus and Demas have a line each and no more. Last, Paul writes the greeting in his own hand (Colossians 4:18).
 
@@ -69,7 +69,7 @@ One room in two variants and two close views, with the travel map, and one perso
 
 | |
 |---|
-| ![The last morning: Celer carries his stool to the door, and the chain reaches it](screenshots/morning25.png) |
+| ![The last morning: Celer has carried his stool to the door, and the chain reaches it](screenshots/morning25.png) |
 | The last watch: the stool by the door |
 
 **No end screen.** This is the last chapter, and it has no end screen of its own (CONTRIBUTING section 2). After the open door the game is watched and no longer played: the map of the letters written in Rome, the narrator's last line, the look back over every journey, and the game's closing screen, which takes the place of the end screen. What the chapter invented and what the account leaves unsaid stand on a page behind the closing screen, opened by its line **About the last chapter**; this page says them in full. How the end of the game looks and works is in the [README](../README.md#how-to-play), in [How to play](how-to-play.md) ("Watch the end" and "After the end") and in [Look and sound](look-and-sound.md) ("The end of the game").

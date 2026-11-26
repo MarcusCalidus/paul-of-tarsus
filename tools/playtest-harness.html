@@ -6719,7 +6719,8 @@
      room at street level, carried in) · pmen25 · pday25 · pnight25 · pphilippi25 (the treasure's point) · pphilemon25 · psheet25 (the sheet,
      close) · pgreet25 · pletters25 · pthree25 (the three letters, close) · pmorning25 (the last safe point: the morning goes on by itself);
      and two that go one step further, for the pictures of the chapter's page: pask25 (the flat, Paul has spoken to Fulvius and the
-     requests stand) and plycus25 (the sixth watch, the map on the Lycus with its road drawn).
+     requests stand), plycus25 (the sixth watch, the map on the Lycus with its road drawn) and pcat25 (the fourth watch, Paul at the far
+     end of his reach from Macer by the door, so that the chain lies long on the floor with the cat asleep on it).
      carry25 plays Chapter Twenty-Four's end for each lodging and checks the code and the click, and the start from the title and from the
      plain first code (the flat). rooms25 puts every picture on one sheet, each room in each of its views (CHAP[25].views); the generic stops
      card25, routes25 and shadows25 (above) run against the chapter's rooms, in each view. The checks that bind to the end: finished is
@@ -6740,7 +6741,7 @@
       S={plodging25:[[],'lodging25'],pstreet25:[['from24','street'],'lodging25'],pmen25:[upto25('men'),'lodging25'],pday25:[upto25('q1'),'lodging25'],
         pnight25:[upto25('h5'),'lodging25'],pphilippi25:[upto25('q2'),'lodging25'],pphilemon25:[upto25('q3'),'lodging25'],psheet25:[upto25('q3'),'sheet25'],
         pgreet25:[upto25('q4'),'lodging25'],pletters25:[upto25('q5'),'lodging25'],pthree25:[upto25('q5'),'letters25'],pmorning25:[upto25('sent'),'lodging25'],
-        pask25:[[],'lodging25'],plycus25:[upto25('q5'),'lodging25']}[stop];
+        pask25:[[],'lodging25'],plycus25:[upto25('q5'),'lodging25'],pcat25:[upto25('q3'),'lodging25']}[stop];
     if(!S)throw new Error('no such stop '+stop);setChapter(25);for(const k of S[0])F[k]=1;
     const room=S[1];C.place(room);dealInv(room);G.scene=null;enterRoom(room,...(C.ent[room]||[160,236,1]));
     G.busy=false;lock(false);drawInv();status();swapBtn();codeBtn();L('CODE '+stop+' '+(G.room?makeCode():'-'));
@@ -6748,6 +6749,8 @@
     if(stop==='pask25'){const S=C.soldier();verb('talk');clickView(S.x,S.y-10,S.hs);
       for(let i=0;i<600&&!$('#choices').classList.contains('on');i++){if(G.skip)G.skip();await wait(40)}
       ok([...document.querySelectorAll('#choices button')].some(x=>x.dataset.src==='would_you_sit_by_the_door'),'Paul may ask the soldier to sit elsewhere, with the reason')}
+    if(stop==='pcat25'){const b=C.box();place(P,'lodging25',b[0]+3,b[3]-2,1);G.cat25=null;for(let i=0;i<200&&!G.cat25;i++)await wait(20);
+      ok(!!G.cat25,'Paul at the far end of his reach, the chain long on the floor, and the cat asleep on it')}
     if(stop==='plycus25'){await need('map');SHARED.map.journey(C.road,{view:'lycus',speed:200});
       for(let i=0;i<1500&&!(G.scene===SHARED.map.draw&&SHARED.map.state.legs.length===2&&SHARED.map.state.legs.every(L=>L.k>=1));i++)await wait(30);
       ok(SHARED.map.state.legs.map(L=>L.a+'-'+L.b).join()==='ephesus-laodicea,laodicea-colossae','the map on the Lycus: the road from Ephesus to Laodicea and Colossae')}
