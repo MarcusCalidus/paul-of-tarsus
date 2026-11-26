@@ -98,10 +98,10 @@ const ROMAN={
 };
 
 /* shipwrecked(base, opts): derive a wet, torn shipwreck survivor look from any existing character look.
-   Drops dry cloaks/helmets/spears unless keepCloak/keepArmor is set, applies soaked cloth/hair (wet:1) and ragged tears (torn:1..3). */
+   Drops dry cloaks (and the border along a mantle)/helmets/spears unless keepCloak/keepArmor is set, applies soaked cloth/hair (wet:1) and ragged tears (torn:1..3). */
 function shipwrecked(base,opts){
   const o=Object.assign({},base,{p:null,gt:null,wet:1,torn:(opts&&opts.torn)||1});
-  if(!(opts&&opts.keepCloak)){delete o.cloak;delete o.cape;delete o.offCloak;delete o.himation;delete o.toga}
+  if(!(opts&&opts.keepCloak)){delete o.cloak;delete o.cape;delete o.offCloak;delete o.himation;delete o.toga;delete o.edge}
   if(!(opts&&opts.keepArmor)){delete o.armor;delete o.armorStyle;delete o.pteruges;delete o.sash}
   delete o.helm;delete o.helmStyle;delete o.crest;delete o.spear;delete o.pilum;delete o.gladius;delete o.pouch;
   if(opts&&opts.barefoot!==undefined)o.barefoot=opts.barefoot;else if(!o.caligae)o.barefoot=1;
@@ -263,9 +263,10 @@ const SHIPWRECK={
    The grain ship of Alexandria (27:6):
      pilot             the steersman (27:11): an old hand of the sea, weathered dark, his beard grey, a dark blue head cloth against the sun
                        and the spray, a short brown tunic, barefoot.
-     shipowner         the owner of the ship and her cargo (27:11), a man of means from Alexandria: a long fine tunic with long sleeves and a
-                       band of blue at the hems, a sea-green mantle wrapped over it (himation), sandals, one ring; his beard close and his
-                       hair receding. Nothing on him is the sign of a god.
+     shipowner         the owner of the ship and her cargo (27:11), a man of means from Alexandria: a long fine cream tunic with long sleeves and a
+                       band of ochre at the hems, a deep indigo mantle wrapped over it (himation) with a narrow ochre border along it (edge),
+                       sandals, one ring; his beard close and his hair receding. No one else on the deck wears his colors (Luke wears a white
+                       tunic under a teal mantle, Julius a red cloak), and nothing on him is the sign of a rank or of a god.
      sailor_1 .. _4    sailors, barefoot in short tunics, each told apart at a glance on a crowded deck: sailor_1 the sailor of the earlier
                        sheets (SHIPWRECK.sailor_wet), short beard, a sand-colored tunic; sailor_2 young, dark, his hair cropped, a cloth bound
                        round his forehead and a madder-red tunic; sailor_3 bald, with a grey full beard and a slate-blue tunic; sailor_4 a
@@ -280,13 +281,17 @@ const SHIPWRECK={
                        over his shoulders, a full beard, a ring and good shoes.
    soldier_mail, soldier_unmailed   a soldier of the guard aboard, in mail and his belt with its sword, bareheaded at sea; and the same man
                        with his mail off, in his tunic, belt and boots: the one who cannot swim in it (Chapter Twenty-Three's planks).
+   julius_sea          Julius, the army officer of 27:1 (ROMAN.centurion_julius, the same head and the same red cloak), as he is on the
+                       days at sea: without his cuirass, in a plain white tunic with his cloak over the shoulder, a plain belt and his
+                       boots; julius_sea_wet the same after the wreck, keeping his cloak. ROMAN.centurion_julius and SHIPWRECK.julius_dry
+                       and julius_wet, in the cuirass, stay as they are.
    The islanders of Malta (28:1, 2): of Phoenician descent under Roman rule, with a language of their own. Country people, dry, in long
      tunics, in the earth colors of undyed and plant-dyed wool, the men with a head cloth, the women with a veil,
      so that they are plainly another people than the ship's company in its short tunics.
      islander_elder    the older man who talks with Luke: a long white beard, a pale head cloth, a brown tunic and an umber mantle.
      islander_1, _2    men: a wheat-colored tunic and a rust head cloth with a full black beard; a dark tunic, an ochre mantle and a
                        dun head cloth with a young beard.
-     islander_3, _4    women: a veil of dark umber over an ochre tunic; an older woman, her hair greying under a rust veil.
+     islander_3, _4    women: a veil of undyed brown over an ochre tunic; an older woman, her hair greying under a rust veil.
      islander_5        a young man, beardless, a tawny tunic and a sand-colored head cloth (he brings the sticks).
    Publius and his house (28:7-10):
      publius           "the principal man of the island", probably the leading Roman officer there and a man of lands (Insight on the
@@ -298,8 +303,8 @@ const SHIPWRECK={
 const SAILOR_1=Object.assign({},SAILOR_ALEX,{barefoot:1,ph:11500});
 const SEA_DRY={
   pilot:{skin:'#94603a',hair:'#6a625a',beard:'#8a847a',grey:'#b4aea4',fullBeard:1,brow:'#5a524a',wrap:'#3e4e62',tunic:'#7a6450',belt:'#2e2016',barefoot:1,ph:11700},
-  shipowner:{skin:'#ac784c',hair:'#2e2420',grey:'#7e766e',beard:'#3a2e26',shortBeard:1,receding:1,brow:'#241a12',tunic:'#ece6d6',long:1,longSleeve:1,trim:'#2e5a72',
-    cloak:'#2e5a56',himation:1,belt:'#6a4a26',ring:1,shoes:'#6a4026',ph:11900},
+  shipowner:{skin:'#ac784c',hair:'#2e2420',grey:'#7e766e',beard:'#3a2e26',shortBeard:1,receding:1,brow:'#241a12',tunic:'#e2d6b6',long:1,longSleeve:1,trim:'#a8823a',
+    cloak:'#262e56',himation:1,edge:'#b08a3a',belt:'#6a4a26',ring:1,shoes:'#6a4026',ph:11900},
   sailor_1:SAILOR_1,
   sailor_2:{skin:'#8a5632',hair:'#1e1410',brow:'#1a100a',crop:1,slim:1,tunic:'#8e3c2c',belt:'#2e2016',sweat:'#d8ccb0',barefoot:1,ph:12100},
   sailor_3:{skin:'#a06a40',hair:'#7a746c',beard:'#8a847c',grey:'#b8b2aa',bald:1,fullBeard:1,brow:'#5a544e',tunic:'#5a6a76',belt:'#2a2018',barefoot:1,ph:12300},
@@ -313,6 +318,8 @@ const SEA_DRY={
   prisoner_old:{skin:'#b4805a',hair:'#b0aaa2',beard:'#bcb6ae',grey:'#dad4cc',thin:1,longBeard:1,brow:'#8e8880',tunic:'#958b76',long:1,belt:'#3a2c1c',ph:13700},
   merchant:{skin:'#bc8a60',hair:'#4a3626',beard:'#4a3626',fullBeard:1,brow:'#30221a',tunic:'#c8a462',long:1,trim:'#6a3e22',cloak:'#6a4434',belt:'#5a3a1e',ring:1,shoes:'#5a3a22',ph:13900},
   soldier_mail:{skin:'#b07c54',hair:'#2a1a12',brow:'#20140e',crop:1,tunic:'#d6cab2',armor:'#7e8692',armorStyle:'mail',belt:'#4a2e18',milBelt:1,caligae:1,gladius:1,ph:14100},
+  julius_sea:{skin:ROMAN.centurion_julius.skin,hair:ROMAN.centurion_julius.hair,grey:ROMAN.centurion_julius.grey,brow:ROMAN.centurion_julius.brow,crop:1,thin:1,
+    tunic:'#e6dfcc',cloak:ROMAN.centurion_julius.cloak,offCloak:1,belt:'#4a2c16',caligae:1,ph:ROMAN.centurion_julius.ph},
   soldier_unmailed:{skin:'#b07c54',hair:'#2a1a12',brow:'#20140e',crop:1,tunic:'#d6cab2',belt:'#4a2e18',caligae:1,ph:14100},
   islander_elder:{skin:'#9e6a42',wrap:'#d2c4a4',beard:'#b4aea4',grey:'#dcd6cc',longBeard:1,brow:'#8a847a',tunic:'#866446',long:1,cloak:'#5e4a30',belt:'#3a2818',ph:14300},
   islander_1:{skin:'#a8703f',wrap:'#8a4a2a',beard:'#22160e',fullBeard:1,brow:'#1e140c',tunic:'#c4b088',long:1,belt:'#4a3020',ph:14500},
@@ -341,7 +348,8 @@ const SEA_WET={
   prisoner_old_wet:shipwrecked(SEA_DRY.prisoner_old,{torn:2,barefoot:1}),
   merchant_wet:shipwrecked(SEA_DRY.merchant,{torn:1,barefoot:1}),
   soldier_mail_wet:shipwrecked(SEA_DRY.soldier_mail,{torn:1,keepArmor:1,barefoot:0}),
-  soldier_unmailed_wet:shipwrecked(SEA_DRY.soldier_unmailed,{torn:2,barefoot:0})
+  soldier_unmailed_wet:shipwrecked(SEA_DRY.soldier_unmailed,{torn:2,barefoot:0}),
+  julius_sea_wet:shipwrecked(SEA_DRY.julius_sea,{torn:2,keepCloak:1,barefoot:0})
 };
 const SEA=Object.assign({},SEA_DRY,SEA_WET);
 
