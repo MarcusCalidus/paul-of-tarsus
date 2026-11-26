@@ -439,15 +439,20 @@ function far(g,o){o=o||{};const V=view(VF),Q=frame(DF),hz=VF.hz,r=rng(2401),sun=
   /* the near verge beyond the road, the ground the tomb, the trees and the milestone stand on: spring grass from the ditch back to a low
      bank (about 25 away), where the fields of the plain begin; then the dry ditch */
   verge(g,V,Q,17.1,25.5,2404);
-  /* the pine and the cypresses at the left, each with its foot in the grass; the tomb before them, on a strip of trodden earth */
+  /* the pine and the cypresses at the left, each with its foot in the grass; the tomb on a strip of trodden earth */
   /* (the engine's pine sets its foot in rock with a dark wedge beside it; here it grows out of grass, so its foot is cut at the ground) */
   inRect(g,-20,-20,120,113.6,()=>pine(g,8,93,(o.pineH||80),'#46623e',{lean:o.pineLean==null?.3:o.pineLean,shade:false}));
   sh(g,9,93.4,4,1.1,.5);weeds(g,2,93.6,16,93.8,22,2414,2.8);
-  cypress(g,54,95,40,{c:'#34502f',seed:2405,cast});cypress(g,63,96,31,{c:'#3a5634',seed:2406,cast});
-  weeds(g,50,95.4,58,95.6,12,2415,2.6);weeds(g,59,96.4,67,96.6,12,2417,2.4);
+  /* the smaller cypress beside the tomb's far corner, a little behind it */
+  cypress(g,60.5,93.6,31,{c:'#3a5634',seed:2406,cast,w:5.4});weeds(g,56,94,65,94.2,12,2417,2.4);
   {const TU=12.6,TS=22,TW=2.4,P=(u,s2)=>V.P(...Q.w(u,s2),0),E=[...P(TU-.5,TS-1.1),...P(TU+TW+.6,TS-1.1),...P(TU+TW+.6,TS-.1),...P(TU-.5,TS-.1)];
     poly(g,E,'rgba(168,148,112,.55)');clipTo(g,()=>poly(g,E),()=>{tex(g,'mott',.5,0,85,80,14,'overlay',1);tex(g,'grain',.3,0,85,80,14,'overlay',.5)});
     tomb(g,V,Q,{u:TU,s:TS,w:TW,d:2.2,h:3.3,seed:2407,sun,castK:.88})}
+  /* the tall cypress in front of the tomb's right end (decided by the maintainer, 26 November 2026): nearer to us than the tomb (its foot
+     at y 98, below the tomb's foot), drawn after it, its body over the corner of the tomb and the end of its steps; its top ends against
+     the tomb's body, below its cornice, so that it never stands across the far skyline. It stands on the verge behind the walk strip, so
+     no walker passes behind it and it needs no place among the props. Its shadow falls back and to the left, onto the tomb's end. */
+  cypress(g,51,98,40,{c:'#34502f',seed:2405,cast,w:7.4});weeds(g,46,98.4,56,98.7,16,2415,2.6);
   /* the ditch: a shallow dry trough under the verge, grass on its far bank, its bed in shade */
   ditch(g,V,Q,16.2,17.1,r);
   /* the footpath of packed gravel between the curb and the ditch */
