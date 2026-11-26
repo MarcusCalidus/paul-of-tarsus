@@ -145,13 +145,16 @@ async function closing(o){o=o||{};const[sp,logo]=await Promise.all([need('splash
   page();ov.classList.add('wait');await fade(0,quick()?40:1300);await wait(quick()?20:500);ov.classList.remove('wait');shown=true}
 
 /* ---------- 2a. after Acts: the one part that is played ---------- */
-/* The caption "After Acts" on the dark, as a chapter's title card stands (a click or about three seconds); then the level's morning. While
+/* The caption "After Acts" on the dark, as a chapter's title card stands (a click or about three seconds), painted in the letters of the
+   title's logo as a chapter's name is (shared/logo.js), with no subtitle; then the level's morning. While
    it plays, SKIP is gone and the player has the verbs; when it is over the finale takes the screen again. */
-async function after(fn){if(!fn)return;const S=SHARED.scroll;if(S&&S.state!=='down')await S.down();
+async function after(fn){if(!fn)return;const S=SHARED.scroll,logo=await need('logo').catch(()=>null);if(S&&S.state!=='down')await S.down();
   RUN.all=RUN.cut=false;RUN.wake=[];G.onSkip=null;$('#skip').style.display='none';G.cap=null;status();
   await fade(1,ms(500));G.scene=DARK;
   await new Promise(res=>{let done=false;const fin=()=>{if(done)return;done=true;clearTimeout(tm);ov.onclick=null;if(G.skip===fin)G.skip=null;ov.className='';ov.innerHTML='';res()};
-    overlay('on card',()=>{ov.innerHTML='<h1>'+esc(T('after_acts'))+'</h1>'});if(AU.ctx)cardSting();
+    overlay('on card',()=>{const name=T('after_acts'),cap=name.toUpperCase(),art=logo&&logo.can(cap)?logo.paint(cap,''):null;   /* the logo has capitals only, as a chapter's card has its name */ov.innerHTML=art?'<h1 class="art"></h1>':'<h1>'+esc(name)+'</h1>';
+      if(art){art.textContent=name;art.setAttribute('role','img');art.setAttribute('aria-label',name);
+        art.style.width='calc(var(--s)*'+art.width/HR+'px)';art.style.height='calc(var(--s)*'+art.height/HR+'px)';ov.querySelector('h1').appendChild(art)}});if(AU.ctx)cardSting();
     const tm=setTimeout(fin,quick()?400:3000);ov.onclick=fin;G.skip=fin;G.lineT=performance.now()});
   try{await fn()}catch(e){console.error(e)}
   begin()}
@@ -184,5 +187,5 @@ async function again(){begin();const n=last();
   try{await lookBack()}catch(e){console.error(e)}
   if(G.skip===cut)G.skip=null;
   return closing()}
-return{run,again,last,later,LATER,POS,get all(){return RUN.all}};
+return{run,again,last,after,later,LATER,POS,get all(){return RUN.all}};
 })();
