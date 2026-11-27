@@ -71,39 +71,47 @@ LEVEL(20,()=>{
 /* ==== MUSIC: begin ==== */
 /* One tune for two years of waiting. It is in B, in the Dorian mode (B, C sharp, D, E, F sharp, G sharp, A: a minor third over the
    keynote, with a bright sixth), in bars of six that fall three and three, a lilt like the swell under the palace; no earlier chapter has
-   this key or this bar. The tune is four bars long (A B C D): up from the keynote by the third to the fifth, on to the sixth and down,
-   up again from the fourth, and home by way of the second. As at Caesarea in Chapter Nineteen, lyre and harp take turns with it: at the
-   hearing ("court") the lyre first, the harp after it, over a low string; in the inner hall ("hall") the lyre has it while the harp
-   rocks; in Paul's room ("room") the harp has it while the lyre rocks; in winter ("winter") the harp alone, at half its pace, over a low
-   note held quietly on the keynote. While the charges are brought and when Felix is frightened ("tense") the low string plucks the
-   keynote and leans on the note above it, a drum ticks with it and almost stops every fourth bar, and the ney begins the tune and breaks
-   off before it comes home; no louder than the rest. Nothing is claimed about how music was played then. */
+   this key or this bar. The tune is eight bars long, in two phrases that answer each other. Half its bars keep the lilt of its first, a
+   long note, a short one and a longer one (two, one, three); the others turn it round (three, two, one) or break it into quick notes. It begins as the chapter always has, up from the keynote by the
+   third to the fifth (bar 1); turns on the sixth and comes back down in quick notes (2); falls by thirds to the keynote (3); and climbs
+   from the A below it to the second, where it is left open, asking (4). The answer takes up the first bar's rise a fifth higher, to the
+   octave (5), reaches the high C sharp above it, the top of the tune, and falls back by a third (6), comes down in thirds (7), and goes home
+   from the second by way of the A below (8). As at Caesarea in Chapter Nineteen, lyre and harp take turns with it: at the hearing
+   ("court") the lyre plays it once and the harp plays it again, over a low string that follows its chords; in the inner hall ("hall")
+   the lyre has it while the harp rocks on the same chords; in Paul's room ("room") the harp has it while the lyre rocks; in winter
+   ("winter") the harp alone, at half its pace, over a low note held quietly on the keynote. While the charges are brought and when
+   Felix is frightened ("tense") the low string plucks the keynote and leans on the note above it, a drum ticks with it and almost stops
+   every fourth bar, and the ney begins the tune and breaks off in its second bar, and again in the bar of the high C sharp, before
+   either phrase can end; no louder than the rest. Nothing is claimed about how music was played then. */
 const SCALE=[0,2,3,5,7,9,10],ST=6,
- /* the tune, a bar to a letter: [step, degree of the scale, length in steps]; E is D broken off before it comes home */
- TUNE={A:[[0,0,2],[2,2,1],[3,4,3]],B:[[0,5,2],[2,4,1],[3,2,3]],C:[[0,3,2],[2,4,1],[3,5,3]],D:[[0,4,2],[2,1,1],[3,0,3]],E:[[0,4,2],[2,1,4]],_:[]},
- bars20=s=>[...s].map(k=>TUNE[k]),
- ROCK={A:[[0,0,3],[3,4,3]],B:[[0,-2,3],[3,2,3]],C:[[0,-3,3],[3,1,3]],D:[[0,-4,3],[3,0,3]]},
- rock20=s=>[...s].map(k=>ROCK[k]),
- LOW=[[[0,0,6]],[[0,-3,6]],[[0,-2,6]],[[0,0,3],[3,1,3]]],
+ /* the tune, a bar to an entry: [step, degree of the scale, length in steps] */
+ TUNE=[[[0,0,2],[2,2,1],[3,4,3]],[[0,5,2],[2,4,1],[3,3,1],[4,2,1],[5,3,1]],[[0,4,3],[3,2,2],[5,0,1]],[[0,-1,2],[2,0,1],[3,1,3]],
+  [[0,4,2],[2,5,1],[3,7,3]],[[0,8,3],[3,6,2],[5,7,1]],[[0,5,2],[2,3,1],[3,4,2],[5,2,1]],[[0,1,2],[2,-1,1],[3,0,3]]],
+ /* a bar of rest */
+ REST=[],
+ /* what rocks under it, bar by bar: the root of each bar's chord and the note above it in the chord, on the two beats */
+ ROCK=[[0,4],[-4,0],[0,2],[-1,1],[0,4],[-1,3],[-4,-2],[-3,0]].map(([a,b])=>[[0,a,3],[3,b,3]]),
+ /* the low string under each bar: B, E, B, A, B again for the answer, A, E, and F sharp to B */
+ LOW=[0,-4,0,-1,0,-1,-4].map(n=>[[0,n,6]]).concat([[[0,-3,3],[3,0,3]]]),
  /* at half its pace: a bar of the tune takes two */
- half20=(k,at)=>{const o=[];for(const[s,n,l]of TUNE[k]){const S=s*2;o.push([at+Math.floor(S/ST),S%ST,n,Math.min(l*2,ST-S%ST)])}return o},
- SLOW=(()=>{const L=Array.from({length:8},()=>[]),put=x=>x.forEach(([b,s,n,l])=>L[b].push([s,n,l]));put(half20('A',0));put(half20('B',2));put(half20('C',4));put(half20('D',6));return L})(),
+ half20=(bar,at)=>{const o=[];for(const[s,n,l]of bar){const S=s*2;o.push([at+Math.floor(S/ST),S%ST,n,Math.min(l*2,ST-S%ST)])}return o},
+ SLOW=(()=>{const L=Array.from({length:16},()=>[]),put=x=>x.forEach(([b,s,n,l])=>L[b].push([s,n,l]));TUNE.forEach((bar,i)=>put(half20(bar,i*2)));return L})(),
  /* gain: the whole score +9.6 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
  MUSIC={gain:3.02,dt:.22,steps:ST,group:[3,3],root:47,scale:SCALE,bars:16,tracks:[
-  {inst:'lyre',moods:['court'],oct:12,loop:8,lines:bars20('ABCD____'),vol:.5},
-  {inst:'harp',moods:['court'],oct:12,loop:8,lines:bars20('____ABCD'),vol:.42},
-  {inst:'bass',moods:['court'],oct:0,loop:4,lines:LOW,vol:.26},
-  {inst:'lyre',moods:['hall'],oct:12,loop:8,lines:bars20('ABCD____'),vol:.5},
-  {inst:'harp',moods:['hall'],oct:12,loop:4,lines:rock20('ABCD'),vol:.3},
-  {inst:'bass',moods:['hall'],oct:0,loop:4,lines:LOW,vol:.24},
-  {inst:'harp',moods:['room'],oct:12,loop:8,lines:bars20('ABCD____'),vol:.45},
-  {inst:'lyre',moods:['room'],oct:12,loop:4,lines:rock20('ABCD'),vol:.28},
-  {inst:'harp',moods:['winter'],oct:12,loop:8,lines:SLOW,vol:.4},
+  {inst:'lyre',moods:['court'],oct:12,loop:16,lines:TUNE.concat(TUNE.map(()=>REST)),vol:.5},
+  {inst:'harp',moods:['court'],oct:12,loop:16,lines:TUNE.map(()=>REST).concat(TUNE),vol:.42},
+  {inst:'bass',moods:['court'],oct:0,loop:8,lines:LOW,vol:.26},
+  {inst:'lyre',moods:['hall'],oct:12,loop:8,lines:TUNE,vol:.5},
+  {inst:'harp',moods:['hall'],oct:12,loop:8,lines:ROCK,vol:.3},
+  {inst:'bass',moods:['hall'],oct:0,loop:8,lines:LOW,vol:.24},
+  {inst:'harp',moods:['room'],oct:12,loop:8,lines:TUNE,vol:.45},
+  {inst:'lyre',moods:['room'],oct:12,loop:8,lines:ROCK,vol:.28},
+  {inst:'harp',moods:['winter'],oct:12,loop:16,lines:SLOW,vol:.4},
   {drone:[0],every:48,moods:['winter'],vol:.04},
   /* tension: the keynote plucked, leaning on the note above; the drum ticks and almost stops every fourth bar; the ney breaks off */
   {inst:'bass',moods:['tense'],oct:0,loop:1,lines:[[[0,0,2],[2,1,2],[4,0,2]]],vol:.38},
   {drum:1,moods:['tense'],prog:'AAAB',seq:{A:'t..t..',B:'t.....'},vol:.16},
-  {inst:'ney',moods:['tense'],oct:12,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.26}]};
+  {inst:'ney',moods:['tense'],oct:12,loop:8,lines:[TUNE[0],TUNE[1].slice(0,3),REST,REST,TUNE[4],TUNE[5].slice(0,2),REST,REST],vol:.26}]};
 
 /* ---- around you ---- */
 /* Waves, gulls, wind and the murmur of people are the engine's; the rain of winter is the chapter's own bed (beds, below). */

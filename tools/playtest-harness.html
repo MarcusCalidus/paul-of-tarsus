@@ -4493,7 +4493,7 @@
   const RUN=A('eudoros14'),DA=A('damon14'),AR=A('arist14'),PK=A('philo14'),PH=A('philon14'),KL=A('klea14');
   ok(G.room==='colon14'&&PC()===RUN&&!P.room&&srt()==='tab14'&&['v21','v22','v23','v24','v25','v26','v27','v28','v29a','v32'].every(k=>seenTold.has(k))&&said('i_will_ask_around'),
     'chapter fourteen opens in the court (Acts 19:21, 22), shows the marketplace while the narrator tells Demetrius (19:23-29), and gives the runner to the player at the colonnade of the theater ['+[G.room,PC().id,srt(),[...seenTold].join(' ')].join()+']');
-  ok(!document.querySelector('#verbs').classList.contains('party'),'nobody else can be played from here: the chapter has no swap button');
+  ok(!document.querySelector('#verbs').classList.contains('party')||($('#swap').disabled&&$('#swap').classList.contains('who')),'nobody else can be played from here: the swap button is absent, or greyed and only names whoever is played (swap:false)');
   halt('colon14');
   /* puzzle 1: Aristokles will not be told before all six have been asked */
   heard.length=0;await talkTo(AR);ok(said('ask_them_all_first'),'Aristokles wants all six asked first');
@@ -4621,7 +4621,7 @@
   const LK=A('luke15'),TE=A('tert15'),TI=A('tim15'),PH=C().phoebe;
   ok(G.room==='gaius15'&&PC()===P&&!LK.room&&TE.seat&&srt()==='tablets'&&['v1a','v1b','v2','v3a'].every(k=>seenTold.has(k))&&said('in_corinth_he_stayed_with_gaius')&&said('nobody_in_rome_knows_her'),
     'then the house of Gaius in Corinth: Tertius at the table, and Paul is played ['+[G.room,PC().id,srt(),[...seenTold].join(' ')].join()+']');
-  ok(!document.querySelector('#verbs').classList.contains('party'),'nobody else can be played from here: the chapter has no swap button');
+  ok(!document.querySelector('#verbs').classList.contains('party')||($('#swap').disabled&&$('#swap').classList.contains('who')),'nobody else can be played from here: the swap button is absent, or greyed and only names whoever is played (swap:false)');
   ok(/^15(-[0-9A-Z]{3}){4,5}$/.test(makeCode())&&decode(makeCode()).ch===15&&decode(makeCode()).w!=null,'chapter fifteen code format: two digits for the chapter, then a wide code '+makeCode());
   ok(snd('house','brazier15,wind')&&C().beds.lamps15&&['brazier15','wick15','dawnbird15'].every(k=>C().calls[k]),'the score of the chapter plays, in the mood of the house; a brazier ticks ['+AU.mood+' '+amb()+']');
   keep('start');halt('gaius15');

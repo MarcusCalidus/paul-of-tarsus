@@ -118,10 +118,10 @@ const _=null,
   13:{dt:.2,steps:9,group:[2,2,2,3],root:55,scale:[0,2,3,5,7,9,10],bars:2,src:{mood:'gap',bar:0,tracks:[0,1]},tracks:[
    {inst:'lyre',prog:'AB',seq:{A:[0,_,2,_,4,_,3,_,_],B:[4,_,6,_,4,_,2,_,_]},len:3},
    {inst:'bass',prog:'AB',seq:{A:[-7,_,_,_,_,_,-3,_,_],B:[-5,_,_,_,_,_,-7,_,_]},len:5,vol:.8}]},
-  /* Chapter Fourteen, D in eights, mood "uproar" (its first rooms), two bars: the tune on the pipe, drum, bass (levels/chapter14.js:46-48) */
+  /* Chapter Fourteen, D in eights, mood "uproar" (its first rooms), two bars: the tune on the pipe, drum, bass (levels/chapter14.js:57, 58, 59) */
   14:{gain:1.29,dt:.19,steps:8,group:[3,3,2],root:50,scale:[0,2,3,5,7,9,10],bars:2,src:{mood:'uproar',bar:0,tracks:[3,4,5]},tracks:[
-   {inst:'aulos',prog:'AB',seq:{A:[0,_,2,_,3,_,4,_],B:[5,_,4,_,3,_,2,_]},len:1,oct:12,vol:.55},
-   {drum:1,seq:{A:'d.tkd.tk'},vol:.75},
+   {inst:'aulos',oct:12,lines:[[[0,0,1],[2,2,1],[4,3,1],[6,4,1]],[[0,5,2],[3,4,2],[6,2,1]]],vol:.55},
+   {drum:1,prog:'AA',seq:{A:'d.tkd.tk'},vol:.75},
    {inst:'bass',prog:'AB',seq:{A:[-7,_,_,_,_,_,_,_],B:[-6,_,_,_,_,_,_,_]},len:6,vol:.85}]},
   /* Chapter Fifteen, six notes from C in twelves, mood "house" (the house of Gaius): lyre, bass (levels/chapter15.js:88, 89) */
   15:{gain:1.84,dt:.24,steps:12,group:[3,3,3,3],root:48,scale:[0,2,4,5,7,9],bars:1,src:{mood:'house',bar:0,tracks:[0,1]},tracks:[
@@ -137,46 +137,46 @@ const _=null,
    {inst:'lyre',lines:[[[0,0,3],[3,2,2],[5,4,3],[8,3,2],[10,2,3]]],vol:.75},
    {inst:'bass',lines:[[[0,0,8],[8,-3,5]]],oct:-12,vol:.45},
    {drum:1,seq:{A:'d..k.t..k.t..'},vol:.2}]},
-  /* Chapter Eighteen, F minor in fifteens, mood "arrive" (at Mnason's; the harp rests in this bar): lyre, bass (levels/chapter18.js:112,
+  /* Chapter Eighteen, F minor in fifteens, mood "arrive" (at Mnason's; the harp rests in this bar): lyre, bass (levels/chapter18.js:117, 119
      114) */
   18:{gain:2.32,dt:.17,steps:15,group:[3,2,3,2,3,2],root:53,scale:[0,2,3,5,7,8,10],bars:1,src:{mood:'arrive',bar:0,tracks:[0,2]},tracks:[
-   {inst:'lyre',lines:[[[0,0,3],[3,2,2],[5,3,3],[8,4,2],[10,2,3],[13,3,2]]],oct:12,vol:.62},
-   {inst:'bass',lines:[[[0,0,8],[8,-3,7]]],vol:.32}]},
-  /* Chapter Nineteen, E Phrygian in sevens, mood "council", two bars: lyre, bass, the low held note (levels/chapter19.js:100-102) */
+   {inst:'lyre',oct:12,lines:[[[0,0,3],[3,2,2],[5,3,3],[8,4,2],[10,2,3],[13,3,2]]],vol:.62},
+   {inst:'bass',oct:0,lines:[[[0,0,8],[8,-3,7]]],vol:.32}]},
+  /* Chapter Nineteen, E Phrygian in sevens, mood "council", two bars: lyre, bass, the low held note (levels/chapter19.js:106, 107, 108) */
   19:{gain:2.63,dt:.2,steps:7,group:[2,2,3],root:52,scale:[0,1,3,5,7,8,10],bars:2,src:{mood:'council',bar:0,tracks:[0,1,2]},tracks:[
-   {inst:'lyre',lines:[[[0,0,2],[2,1,2],[4,2,3]],[[0,3,2],[2,4,2],[4,3,3]]],oct:12,vol:.5},
-   {inst:'bass',lines:[[[0,0,7]],[[0,-4,7]]],vol:.3},
+   {inst:'lyre',oct:12,lines:[[[0,0,2],[2,1,2],[4,2,3]],[[0,3,4],[4,4,3]]],vol:.5},
+   {inst:'bass',oct:0,lines:[[[0,0,7]],[[0,-4,7]]],vol:.3},
    {drone:[0],every:14,vol:.05}]},
-  /* Chapter Twenty, B Dorian in sixes, mood "court", two bars (the harp rests in them): lyre, bass (levels/chapter20.js:92, 94) */
+  /* Chapter Twenty, B Dorian in sixes, mood "court", two bars (the harp rests in them): lyre, bass (levels/chapter20.js:101, 103) */
   20:{gain:3.02,dt:.22,steps:6,group:[3,3],root:47,scale:[0,2,3,5,7,9,10],bars:2,src:{mood:'court',bar:0,tracks:[0,2]},tracks:[
-   {inst:'lyre',lines:[[[0,0,2],[2,2,1],[3,4,3]],[[0,5,2],[2,4,1],[3,2,3]]],oct:12,vol:.5},
-   {inst:'bass',lines:[[[0,0,6]],[[0,-3,6]]],vol:.26}]},
-  /* Chapter Twenty-One, A Aeolian in twenties, mood "court" (the harp rests in this bar): lyre, bass (levels/chapter21.js:82, 84) */
+   {inst:'lyre',oct:12,lines:[[[0,0,2],[2,2,1],[3,4,3]],[[0,5,2],[2,4,1],[3,3,1],[4,2,1],[5,3,1]]],vol:.5},
+   {inst:'bass',oct:0,lines:[[[0,0,6]],[[0,-4,6]]],vol:.26}]},
+  /* Chapter Twenty-One, A Aeolian in twenties, mood "court" (the harp rests in this bar): lyre, bass (levels/chapter21.js:98, 100) */
   21:{gain:2.92,dt:.12,steps:20,group:[3,3,4,3,3,4],root:57,scale:[0,2,3,5,7,8,10],bars:1,src:{mood:'court',bar:0,tracks:[0,2]},tracks:[
-   {inst:'lyre',lines:[[[0,0,3],[3,2,3],[6,4,4],[10,3,3],[13,2,3],[16,4,4]]],oct:12,vol:.52},
-   {inst:'bass',lines:[[[0,0,20]]],vol:.26}]},
+   {inst:'lyre',oct:12,lines:[[[0,0,3],[3,2,3],[6,4,4],[10,3,3],[13,2,3],[16,4,4]]],vol:.52},
+   {inst:'bass',oct:0,lines:[[[0,0,20]]],vol:.26}]},
   /* Chapter Twenty-Two, A harmonic major in twenty-ones that fall 6, 6, 9, a seventh of a second to the step, mood "quay" (the harp rests
-     in this bar): lyre, frame drum, low string (levels/chapter22.js:102, 104, 107; TUNE :88, LOWS :99) */
+     in this bar): lyre, frame drum, low string (levels/chapter22.js:121, 123, 126) */
   22:{gain:2.45,dt:.14285714285714285,steps:21,group:[6,6,9],root:45,scale:[0,2,4,5,7,8,11],bars:1,src:{mood:'quay',bar:0,tracks:[0,2,5]},tracks:[
-   {inst:'lyre',lines:[[[0,0,2],[2,2,1],[3,4,3],[6,5,2],[8,4,1],[9,3,3],[12,2,6],[18,1,3]]],oct:24,vol:.5},
+   {inst:'lyre',oct:24,lines:[[[0,0,2],[2,2,1],[3,4,3],[6,5,2],[8,4,1],[9,3,3],[12,2,6],[18,1,3]]],vol:.5},
    {drum:1,seq:{A:'d.....k.....d..k..k..'},vol:.2},
    {inst:'bass',lines:[[[0,0,12],[12,-3,9]]],vol:.4}]},
   /* Chapter Twenty-Three, B-flat harmonic minor in eighteens that fall 4, 5, 4, 5, mood "night": the harp, and the low string's one note
-     to the bar (levels/chapter23.js:92, 93; TUNE :85, LOW :90) */
+     to the bar (levels/chapter23.js:106, 107) */
   23:{gain:3.59,dt:.15,steps:18,group:[4,5,4,5],root:46,scale:[0,2,3,5,7,8,11],bars:1,src:{mood:'night',bar:0,tracks:[0,1]},tracks:[
-   {inst:'harp',lines:[[[0,0,4],[4,2,5],[9,4,4],[13,3,5]]],oct:12,vol:.34},
-   {inst:'bass',lines:[[[0,0,18]]],oct:0,vol:.2}]},
+   {inst:'harp',oct:12,lines:[[[0,0,4],[4,2,5],[9,4,4],[13,3,5]]],vol:.34},
+   {inst:'bass',oct:0,lines:[[[0,0,18]]],vol:.2}]},
   /* Chapter Twenty-Four, C major in fifteens that fall 5, 5, 5, the bar of the walk, mood "quay" (the harp rests in this bar): lyre, low
-     string (levels/chapter24.js:88, 90; TUNE :82, LOW :85) */
+     string (levels/chapter24.js:101, 103) */
   24:{gain:3.7,dt:.2,steps:15,group:[5,5,5],root:60,scale:[0,2,4,5,7,9,11],bars:1,src:{mood:'quay',bar:0,tracks:[0,2]},tracks:[
-   {inst:'lyre',lines:[[[0,0,5],[5,2,5],[10,4,5]]],oct:0,vol:.44},
-   {inst:'bass',lines:[[[0,0,15]]],oct:-12,vol:.22}]},
+   {inst:'lyre',oct:0,lines:[[[0,0,5],[5,2,5],[10,4,5]]],vol:.44},
+   {inst:'bass',oct:-12,lines:[[[0,0,15]]],vol:.22}]},
   /* Chapter Twenty-Five, A-flat Mixolydian in seventeens that fall 4, 4, 4, 5, mood "lodging": the lyre, the harp that rocks under it and
-     the low string (levels/chapter25.js:106-108; TUNE :96, ROCK :99, LOW :101) */
+     the low string (levels/chapter25.js:117, 118, 119) */
   25:{gain:4.0,dt:.19,steps:17,group:[4,4,4,5],root:44,scale:[0,2,4,5,7,9,10],bars:1,src:{mood:'lodging',bar:0,tracks:[0,1,2]},tracks:[
-   {inst:'lyre',lines:[[[0,0,4],[4,2,4],[8,4,4],[12,5,5]]],oct:12,vol:.48},
-   {inst:'harp',lines:[[[0,0,4],[8,4,4]]],oct:12,vol:.28},
-   {inst:'bass',lines:[[[0,0,8],[8,4,9]]],oct:0,vol:.24}]}},
+   {inst:'lyre',oct:12,lines:[[[0,0,4],[4,2,4],[8,4,4],[12,5,5]]],vol:.48},
+   {inst:'harp',oct:12,lines:[[[0,0,4],[8,4,4]]],vol:.28},
+   {inst:'bass',oct:0,lines:[[[0,0,8],[8,4,9]]],vol:.24}]}},
  has=n=>Object.prototype.hasOwnProperty.call(BARS,n),
  len=n=>{const b=BARS[n];return b.bars*b.steps*b.dt},
  /* the silence that follows a bar: a score with no tracks, in the bar's key (setScore keeps the key of the last score, see AU.key) */

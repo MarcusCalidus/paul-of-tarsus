@@ -70,58 +70,77 @@ LEVEL(22,()=>{
    steps that fall six, six, nine: a swell that comes in twice and the third time runs on. A step is a seventh of a second (written out,
    since tools/strings.mjs reads a lone digit before a slash as the start of a pattern), so a bar
    lasts three seconds and two bars are one sea of the beat of the storm (shared/beat.js). No other chapter has this key, this mode or this bar,
-   Chapter Twenty-Three included. The tune is four bars long: up the triad and down round the lowered sixth (A); up through the raised seventh
-   to the octave (B); down from the octave, leaning on the lowered sixth (C); and its last bar, which on the voyage never comes home: it
-   stops on the fifth (O). Only when Paul stands up among them ("midst") does the last bar go home, through the raised seventh below to
-   the keynote (D), for the first time in the chapter.
-   On the quay at Caesarea, on a fair morning ("quay"), the lyre has the tune and the harp answers it, over a low string and a light frame
-   drum: a lilt, as the earlier sea chapters have. In the harbor of Myra ("myra") the harp has it first and the lyre answers. On deck at
-   Myra in the evening ("deck") the harp has the tune alone over the low string. At Fair Havens ("havens") the ney has only its first bar
-   and the bar that leans on the lowered sixth, never the climb to the octave, over the rocking figure of the harp: unease. In the storm
-   ("storm") the music moves and never holds: the low string plucks the keynote and leans on the note above it, a drum ticks with it and
-   almost stops every fourth bar, and the ney begins the tune and breaks off on the raised seventh before it comes home; no louder than
-   the rest. In the dark days ("night") the low string plucks one note to a bar under a few bars of the tune on the harp, far apart. In
-   their midst ("midst") lyre and harp have the whole tune, and it comes home. Nothing is claimed about how music was played then. */
+   Chapter Twenty-Three included. The tune is eight bars long, in two phrases that answer each other. Its first bar is the chapter's own,
+   as it always was: up the triad and down round the lowered sixth to the second (bar 1). Then a long C sharp, and the lowered sixth
+   leans on the fifth and is held there (2); a leap to the octave and a fall by steps from it (3); and the first phrase stops on the
+   second, held, open (4). The answer climbs through the raised seventh to the octave and the ninth (5); reaches the high C sharp, the
+   top of the tune, and comes down to lean on the lowered sixth again (6); and falls back towards the keynote, turning up to the fifth (7). Its last bar, on the
+   voyage, never comes home: it stops on the fifth (8). Only when Paul stands up among them ("midst") does the last bar go home, through
+   the raised seventh below to the keynote, for the first time in the chapter.
+   On the quay at Caesarea, on a fair morning ("quay"), the lyre has the tune and the harp plays it again after it, over a low string
+   that follows its chords and a light frame drum: a lilt, as the earlier sea chapters have. In the harbor of Myra ("myra") the harp has
+   it first and the lyre plays it after. On deck at Myra in the evening ("deck") the harp has the tune alone over the low string. At Fair
+   Havens ("havens") the ney has only the first phrase, a breath between its halves, and never the answer that climbs to the octave,
+   over the rocking figure of the harp: unease. In the storm ("storm") the music moves and never holds: the low string plucks the
+   keynote and leans on the note above it, a drum ticks with it and almost stops every fourth bar, and the ney begins the tune and
+   breaks off on the raised seventh before it comes home; no louder than the rest. While the skiff is hauled and the deck is crossed
+   (G.beat runs, in this same mood) the drum is silent, so that no drum is heard beside the sea that keeps the time. In the dark days
+   ("night") the low string plucks one note to a bar under the tune's first bar and its leaning bar on the harp, far apart. In their
+   midst ("midst") the lyre has the whole tune, and it comes home. Nothing is claimed about how music was played then. */
 const SCALE=[0,2,4,5,7,8,11],ST=21,
- /* the tune, a bar to a letter: [step, degree of the scale, length in steps]. O is the last bar left on the fifth; D is the same bar
-    come home; E is it broken off on the raised seventh, for the ney in the storm */
- TUNE={A:[[0,0,2],[2,2,1],[3,4,3],[6,5,2],[8,4,1],[9,3,3],[12,2,6],[18,1,3]],
-   B:[[0,2,2],[2,4,1],[3,7,3],[6,6,2],[8,7,1],[9,8,3],[12,7,6],[18,6,3]],
-   C:[[0,7,2],[2,8,1],[3,7,3],[6,5,2],[8,4,1],[9,5,3],[12,4,6],[18,3,3]],
-   O:[[0,3,2],[2,2,1],[3,1,3],[6,2,6],[12,4,9]],
-   D:[[0,3,2],[2,2,1],[3,1,3],[6,-1,6],[12,0,9]],
-   E:[[0,3,2],[2,2,1],[3,1,3],[6,-1,15]],_:[]},
- bars22=s=>[...s].map(k=>TUNE[k]),
- /* what rocks under it: a note on each beat of three, seven to the bar, on the chord of each half bar */
- ROCK={A:[0,4,2,4,-1,1,4],B:[0,4,-1,4,-3,1,-1],C:[-4,0,-2,0,-2,3,0],O:[-4,0,-2,0,-3,1,-1],D:[-3,1,-1,1,0,4,2]},
- rock22=s=>[...s].map(k=>k==='_'?[]:ROCK[k].map((n,i)=>[i*3,n,3])),
- /* the low string under each bar of the tune: on the first beat and on the third, long one */
- LOWS={A:[[0,0,12],[12,-3,9]],B:[[0,0,6],[6,-1,6],[12,-3,9]],C:[[0,-4,12],[12,-2,9]],O:[[0,-4,12],[12,-3,9]],D:[[0,-3,12],[12,0,9]]},
- low22=s=>[...s].map(k=>LOWS[k]),
+ /* the tune, a bar to an entry: [step, degree of the scale, length in steps]. Its last bar is OPEN on the voyage, left on the fifth;
+    HOME is the same bar come home; BROKE is a bar like the fourth that breaks off on the raised seventh, for the ney in the storm */
+ TUNE=[[[0,0,2],[2,2,1],[3,4,3],[6,5,2],[8,4,1],[9,3,3],[12,2,6],[18,1,3]],
+  [[0,2,6],[6,4,3],[9,5,3],[12,4,9]],
+  [[0,7,3],[3,6,3],[6,5,2],[8,4,1],[9,3,3],[12,2,3],[15,3,3],[18,1,3]],
+  [[0,2,6],[6,3,2],[8,2,1],[9,0,3],[12,1,9]],
+  [[0,4,2],[2,6,1],[3,7,3],[6,8,6],[12,7,6],[18,6,3]],
+  [[0,7,3],[3,9,3],[6,8,3],[9,7,3],[12,5,2],[14,4,1],[15,5,6]],
+  [[0,4,6],[6,3,2],[8,2,1],[9,1,3],[12,2,3],[15,4,6]]],
+ OPEN=[[0,3,2],[2,2,1],[3,1,3],[6,2,6],[12,4,9]],
+ HOME=[[0,3,2],[2,2,1],[3,1,3],[6,-1,6],[12,0,9]],
+ BROKE=[[0,2,6],[6,3,2],[8,2,1],[9,1,3],[12,-1,9]],
+ VOYAGE=TUNE.concat([OPEN]),MIDST=TUNE.concat([HOME]),
+ /* a bar of rest */
+ REST=[],rest22=n=>Array.from({length:n},()=>REST),
+ /* the chords under it, bar by bar: [step, root] (A 0, C sharp -5, D -4, E -3) */
+ CH={1:[[0,0],[12,-3]],2:[[0,0],[6,-4],[12,-3]],3:[[0,0],[6,-4],[12,-3]],4:[[0,-5],[6,-4],[12,-3]],5:[[0,-3],[12,0]],
+  6:[[0,0],[6,-3],[12,-4]],7:[[0,-5],[6,-3],[12,0]],O:[[0,-4],[6,0],[12,-3]],D:[[0,-4],[6,-3],[12,0]]},
+ /* what rocks under it: a note on each beat of three, seven to the bar, root and fifth on the chord of each part, and the third
+    after them where the part is long */
+ TONES={0:[0,4,2],'-5':[2,4,2],'-4':[-4,0,-2],'-3':[-3,1,-1]},
+ rock22=k=>{const c=CH[k],o=[];for(let i=0;i<7;i++){const s=i*3;let j=0;while(j+1<c.length&&c[j+1][0]<=s)j++;const T=TONES[c[j][1]];o.push([s,T[[0,1,2,1][(s-c[j][0])/3%4]],3])}return o},
+ /* the low string under each bar: the root of each part, held */
+ low22=k=>{const c=CH[k];return c.map(([s,n],j)=>[s,n,(j+1<c.length?c[j+1][0]:ST)-s])},
+ KEYS=['1','2','3','4','5','6','7'],ROCKV=KEYS.concat('O').map(rock22),ROCKM=KEYS.concat('D').map(rock22),
+ LOWV=KEYS.concat('O').map(low22),LOWM=KEYS.concat('D').map(low22),
+ /* the storm's tick: the rim of the drum, silent while the beat runs, for then the sea keeps the time and no drum is beside it */
+ DRUMS22={q(t,v){if(!(G.beat&&G.beat.on))DRUMS.t(t,v)}},
  /* gain: the whole score +7.8 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
- MUSIC={gain:2.45,dt:.14285714285714285,steps:ST,group:[6,6,9],root:45,scale:SCALE,bars:16,tracks:[
-  {inst:'lyre',moods:['quay'],oct:24,loop:8,lines:bars22('ABCO____'),vol:.5},
-  {inst:'harp',moods:['quay'],oct:12,loop:8,lines:bars22('____ABCO'),vol:.5},
+ MUSIC={gain:2.45,dt:.14285714285714285,steps:ST,group:[6,6,9],root:45,scale:SCALE,bars:16,drums:DRUMS22,tracks:[
+  {inst:'lyre',moods:['quay'],oct:24,loop:16,lines:VOYAGE.concat(rest22(8)),vol:.5},
+  {inst:'harp',moods:['quay'],oct:12,loop:16,lines:rest22(8).concat(VOYAGE),vol:.5},
   {drum:1,moods:['quay'],prog:'AAAB',seq:{A:'d.....k.....d..k..k..',B:'d.....k.....d..k.kk..'},vol:.2},
-  {inst:'harp',moods:['myra'],oct:12,loop:8,lines:bars22('ABCO____'),vol:.5},
-  {inst:'lyre',moods:['myra'],oct:24,loop:8,lines:bars22('____ABCO'),vol:.46},
-  {inst:'bass',moods:['quay','myra','deck'],loop:4,lines:low22('ABCO'),vol:.4},
-  {inst:'harp',moods:['deck'],oct:12,loop:8,lines:bars22('ABCO____'),vol:.46},
-  {inst:'ney',moods:['havens'],oct:24,loop:8,lines:bars22('A_C_A_C_'),vol:.3},
-  {inst:'harp',moods:['havens'],oct:12,loop:4,lines:rock22('ACCO'),vol:.34},
-  {inst:'bass',moods:['havens'],loop:4,lines:low22('ACCO'),vol:.36},
-  /* the storm: the keynote plucked, leaning on the step above; the drum ticks with it and almost stops every fourth bar; the ney begins
-     the tune and breaks off */
+  {inst:'harp',moods:['myra'],oct:12,loop:16,lines:VOYAGE.concat(rest22(8)),vol:.5},
+  {inst:'lyre',moods:['myra'],oct:24,loop:16,lines:rest22(8).concat(VOYAGE),vol:.46},
+  {inst:'bass',moods:['quay','myra','deck'],loop:8,lines:LOWV,vol:.4},
+  {inst:'harp',moods:['deck'],oct:12,loop:8,lines:VOYAGE,vol:.46},
+  /* Fair Havens: the first phrase only, in two halves with a breath between them, over the harp's rocking on the same chords */
+  {inst:'ney',moods:['havens'],oct:24,loop:8,lines:[TUNE[0],TUNE[1],REST,REST,TUNE[2],TUNE[3],REST,REST],vol:.3},
+  {inst:'harp',moods:['havens'],oct:12,loop:8,lines:[ROCKV[0],ROCKV[1],ROCKV[0],ROCKV[1],ROCKV[2],ROCKV[3],ROCKV[2],ROCKV[3]],vol:.34},
+  {inst:'bass',moods:['havens'],loop:8,lines:[LOWV[0],LOWV[1],LOWV[0],LOWV[1],LOWV[2],LOWV[3],LOWV[2],LOWV[3]],vol:.36},
+  /* the storm: the keynote plucked, leaning on the step above; the drum ticks with it and almost stops every fourth bar, and is silent
+     while the beat runs; the ney begins the tune and breaks off */
   {inst:'bass',moods:['storm'],loop:1,lines:[[[0,0,3],[3,1,3],[6,0,6],[12,0,3],[15,1,3],[18,0,3]]],vol:.36},
-  {drum:1,moods:['storm'],prog:'AAAB',seq:{A:'t..t..t.....t..t..t..',B:'t....................'},vol:.16},
-  {inst:'ney',moods:['storm'],oct:24,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.26},
+  {drum:1,moods:['storm'],prog:'AAAB',seq:{A:'q..q..q.....q..q..q..',B:'q....................'},vol:.16},
+  {inst:'ney',moods:['storm'],oct:24,loop:8,lines:[TUNE[0],BROKE].concat(rest22(6)),vol:.26},
   /* the dark days: one low note plucked to a bar, and the first bar of the tune and its leaning bar on the harp, far apart */
   {inst:'bass',moods:['night'],loop:4,lines:[[[0,0,21]],[[0,-2,21]],[[0,-4,21]],[[0,-3,21]]],vol:.26},
-  {inst:'harp',moods:['night'],oct:12,loop:8,lines:bars22('A___C___'),vol:.32},
+  {inst:'harp',moods:['night'],oct:12,loop:8,lines:[TUNE[0],REST,REST,REST,TUNE[1],REST,REST,REST],vol:.32},
   /* in their midst: the whole tune, and home */
-  {inst:'lyre',moods:['midst'],oct:24,loop:8,lines:bars22('ABCDABCD'),vol:.44},
-  {inst:'harp',moods:['midst'],oct:12,loop:4,lines:rock22('ABCD'),vol:.28},
-  {inst:'bass',moods:['midst'],loop:4,lines:low22('ABCD'),vol:.36}]};
+  {inst:'lyre',moods:['midst'],oct:24,loop:8,lines:MIDST,vol:.44},
+  {inst:'harp',moods:['midst'],oct:12,loop:8,lines:ROCKM,vol:.28},
+  {inst:'bass',moods:['midst'],loop:8,lines:LOWM,vol:.36}]};
 
 /* ---- around you ----
    In harbor and in fair weather (Caesarea, Myra, Fair Havens) the sea, gulls and wind of the engine, and the creak of a hull. The sounds of the storm are
