@@ -1321,7 +1321,8 @@ const KNEEL={both:1,bothFolded:2,one:3,oneFolded:4},kneelX=(o,fr)=>fr<=-2&&fr>=-
                  the foot of the mast), the feet set apart and braced; braced back, and thrown forward
      sack        carrying a sack on the far shoulder, the far hand up under its front end: walks (the frame is the walk's)
      bundle      carrying a bundle low before the body in both hands: walks too
-     plank 0-1   in the water to the chest, the forearms laid forward along a plank, and the plank itself; it rides up a little in 1
+     plank 0-1   in the water to the armpits, the forearms laid forward along a plank that floats level with the water, and the plank
+                 itself; he rides up a little in 1 (the kick)
      swim 0-1    swimming, the head and one bent arm out of the water: the elbow up and the hand going in; the arm brought forward again
      lie         lying in bed on the back, the head on a bolster, a cover to the chest and the near arm on it (feet at x 0, see lying)
      sitUp       sitting up in the same bed, the cover over the lap and legs, the hands on it
@@ -1349,7 +1350,7 @@ const POSE={
   hold:{n:2,lean:k=>[-3,2][k],legs:()=>stance({ax:-11,kx:-5},{ax:10,kx:5},1),far:()=>[18,8]},
   sack:{n:1,walk:1,far:()=>[17,1]},
   bundle:{n:1,walk:1,far:()=>[15,15],near:()=>[-6,16]},
-  plank:{n:2,water:k=>17-k,far:()=>[25,8],near:()=>[7,9]},
+  plank:{n:2,water:k=>12-k,far:k=>[[24,3],[25,2]][k],near:k=>[[11,4],[12,3]][k]},
   swim:{n:2,water:()=>3,far:k=>[[23,0],[19,-4]][k]},
   lie:{n:1,lie:1},
   sitUp:{n:1,fr:()=>-1,bed:1},
@@ -1835,9 +1836,12 @@ function person(g,x,y,o,dir,fr,talk,bow,ges,blink,mv,pz,ps){
     else if(n==='hold'){toFar(FH);fist(FH[0],FH[1])}
     else if(n==='sack'){toFar(FH);fist(FH[0],FH[1])}
     else if(n==='bundle'){toFar(FH);fist(FH[0],FH[1]);bundle();if(openN)toNear(NH);fist(NH[0],NH[1],1)}
-    else if(n==='plank'){const W0=yS+PQ.water(PK),R=ramp('#8a6a46'),x0=-8,x1=36-nw,yt=x=>yS+13-(x>14?1:0);
-      for(let xx=x0;xx<=x1;xx++){const t=yt(xx);px(xx,t,R[xx===x0?2:1]);px(xx,t+1,R[xx===x0?3:2]);px(xx,t+2,R[3],1,W0-t-2);if(xx%9===4)px(xx,t+1,R[3])}
-      limb(12-nw,yS+9,FH[0]-1,FH[1]+1,RF);flat(FH[0],FH[1]+1);limb(ax+3,yS+9,NH[0]-1,NH[1]+1,RN,1);flat(NH[0],NH[1]+1,1);foam([[-14,-8],[x1-2,x1+3]],W0)}
+    /* plank: afloat, its top a little out of the water and level with it, from under his chest on before him; the forearms come up out of
+       the water and lie along it, the hands flat on it. The rest of him lies in the water behind, which the room paints (Chapter
+       Twenty-Three, the surf): the figure is cut at the water line. */
+    else if(n==='plank'){const W0=yS+PQ.water(PK),R=ramp('#5c5246'),x0=-9,x1=38-nw,yt=W0-5;
+      for(let xx=x0;xx<=x1;xx++){const e=xx===x0||xx===x1;px(xx,yt,R[e?1:0]);px(xx,yt+1,R[e?2:1]);px(xx,yt+2,R[2]);px(xx,yt+3,R[3]);px(xx,yt+4,R[4]);if(xx%11===5)px(xx,yt+2,R[3])}
+      limb(ax+5,FH[1]+1,NH[0]-1,NH[1]+1,RN,1);flat(NH[0],NH[1]+1,1);limb(7-nw,FH[1]+1,FH[0]-1,FH[1]+1,RF);flat(FH[0],FH[1]+1);foam([[x0-6,x0-1],[x1-2,x1+3]],W0)}
     else if(n==='swim'){const W0=yS+PQ.water(PK),E=PK?[14-nw,yS-6]:[15-nw,yS-3];limb(11-nw,yS+3,E[0],E[1],RF);limb(E[0],E[1],FH[0]-1,FH[1],RF);
       if(PK)fist(FH[0],FH[1]);else flat(FH[0],FH[1]);foam(PK?[[-17,-12],[12-nw,17-nw]]:[[-17,-12],[12-nw,17-nw],[FH[0]+4,FH[0]+9]],W0)}
     /* lay: the far arm bent at the elbow, the upper arm down at the side and the forearm slanting forward and down to the open hand,

@@ -47,9 +47,11 @@
    4. Everyone has a plank (wreck23, planks23). Four who cannot swim and three things that float. Rules found by trying, each refusal with a
       true reason: a plank carries one, the hatch cover two; the soldier's mail must come off first (he takes it off when Paul tells him,
       after the refusal); the old prisoner will not go beside a soldier (27:42). Any pairing that keeps those rules is right.
-   5. Through the surf (surf23). The beat of the sea (shared/beat.js, sticky help): a hold is reached only in the pause between two seas; a
-      miss puts Paul back at the last hold with no line to click away; after three misses the sailor in the shallows calls the moment, after
-      six he wades out and takes him across.
+   5. Through the surf (surf23). The beat of the sea (shared/beat.js, sticky help): the waves carry him in, as Paul has told the others
+      (paul_hold_on_and_kick). The next hold is reached by a stroke begun while a sea that has broken runs in as white water; a stroke begun
+      while the water drains back out to sea, lies low, or gathers for the next sea is a miss, and the backwash draws him back to the last
+      hold with no line to click away. The holds are taken in order: a hold too far on, or one behind him, is answered by a thought and
+      costs nothing. After three misses the sailor in the shallows calls the moment, after six he wades out and takes him across.
    6. The count on the beach (beach23). Luke counts the groups by looking at them, walking the beach (it is wider than the view); the count
       stands on the screen as a caption. Five groups make 275: one short. The last is the old prisoner, hiding behind a piece of the stern,
       who comes out when Luke tells him the officer has forbidden it. 27:44 is told only when the count is full.
@@ -598,13 +600,16 @@ ART.planks23={w:320,q:12,paint(g){paintPlanks23(g)},
    in the shallows. Behind, the sea runs back into the rain with no edge drawn, and the low hills of the shore come down to it at the
    right. Pieces of the wreck float between, each alone.
    The sea is the beat's (G.beat.phase): the wave seen is the wave that is judged.
-     [0, from)   the sea has broken by the wreck: its white water rushes in over everything to the beach (in the first third of the
-                 run-off), then thins to lace and drains away while the water sinks;
-     [from, to)  the pause: the water lies low and dark between the holds, the sandbar shows, only old lace drifts on it;
-     [to, 1)     the next sea rises out of the rain at the left, a dark green hump that grows as it comes, its lip whitening, and breaks
+     [0, to)     the window (G.beat.from is 0): the sea breaks by the wreck, its white water rushes in heaped over everything to the
+                 beach, then settles to a low, lacy blanket that still runs in; a stroke begun now is carried;
+     [to, DRAIN) the backwash: the white water is drawn back out toward the wreck, thinning, and the lace drifts seaward with it;
+     [DRAIN, RISE) the lull: the water lies low and dark between the holds, the sandbar shows;
+     [RISE, 1)   the next sea rises out of the rain at the left, a dark green hump that grows as it comes, its lip whitening, and breaks
                  at 1 by the wreck.
-   Paul is in the water to the chest on his plank (pose plank) at the water line WATER23; in the white water's rush the foam runs over him
-   to the shoulders (front). The sailor's call ("Now!") stands over the sailor (front).
+   Paul is in the water to the armpits, his forearms on his plank (pose plank), and rides the water (P.y follows its level); the rest of
+   him is seen dim through the water behind the plank (body23), and while he swims his legs kick and his feet break the water behind him
+   (front). In the white water's rush the foam runs over him to the shoulders (front). The sailor's call ("Now!") stands over the sailor
+   (front) for the whole window.
    Called from outside: ART.surf23, HOLDX23, WATER23, SAILOR_SURF23. Reads G.beat. Hotspots (ROOMS.surf23): the wreck 0,40,34,80 · the
    floating spar 96,96,30,30 · the rock 164,90,32,34 · the sandbar 234,100,32,26 · the beach 282,88,38,46. Light: overcast, soft. */
 const HOLDX23=[40,110,180,250,302],WATER23=120,SAILOR_SURF23=[300,126];
@@ -615,9 +620,18 @@ const SURF23={sky:null,
   far:x=>60+.05*Math.max(0,x-150),
   /* the hills' outline: from the far water at the left of them, along their tops, down to the shore at the right */
   get hp(){if(this._hp)return this._hp;const H=[150,60];for(let x=150;x<=320;x++)H.push(x,this.far(x)-clamp((x-150)/50,0,1)*(10+5*Math.sin(x/37+1)+2.4*Math.sin(x/13)));H.push(320,this.far(320)+1);return this._hp=H},
-  /* the parts of the beat: run (1 at the break, 0 at from), the white water's front (x), the pause, the rising sea (0..1) */
-  at(p,b){const from=b?b.from:.24,to=b?b.to:.74,run=p<from?1-p/from:0,rush=p<from?clamp(p/(from*.42),0,1):1,rise=p>=to?(p-to)/(1-to):0;
-    return{run,rush,rise,pause:p>=from&&p<to,front:p<from?60+262*(1-Math.pow(1-rush,2)):-99,lvl:WATER23+1.4-1.8*run-2.6*rise*rise+(p>=from&&p<to?.8:0)}}};
+  /* the parts of the beat. The window in which a stroke is carried in begins as the sea breaks (0) and lasts while its white water runs
+     in and lies over everything (to); then the white water drains back out to sea (the backwash, to DRAIN), the water lies low and dark
+     for a moment (the lull, to RISE), and the next sea rises out of the rain at the left and breaks at 1.
+     run: how much white water lies on the sea (1 at the break); front: where its edge is (x), running in to the beach and then drawn back
+     toward the wreck; back: 0..1 through the backwash; lull: the low water before the next sea; rise: the next sea, 0..1 */
+  DRAIN:.62,RISE:.74,
+  at(p,b){const to=b?b.to:.38,D=this.DRAIN,Q=this.RISE,rush=clamp(p/.12,0,1),rise=p>=Q?(p-Q)/(1-Q):0,lull=p>=D&&p<Q;let run=0,front=-99,back=0;
+    if(p<to){run=1-.3*clamp((p-.12)/Math.max(.01,to-.12),0,1);front=60+262*(1-Math.pow(1-rush,2))}
+    else if(p<D){back=(p-to)/(D-to);run=.7*(1-back);front=322-262*back}
+    /* ht: how high the white water stands: heaped as it breaks and rushes in, then settling to a low, lacy blanket */
+    const ht=p<.12?1:p<to?Math.max(.3,1-(p-.12)/.14*.7):.3*(1-back);
+    return{run,ht,rush,rise,back,lull,front,lvl:WATER23+1.4-1.8*run-2.6*rise*rise+(lull?.8:0)}}};
 function paintSurf23(g){const P=SHARED.storm.PAL.dawn,r=rng(2309),W=320;
   g.fillStyle=lg(g,0,0,0,60,[P.mid,P.low,P.haze]);g.fillRect(0,0,W,60);
   /* the far water, lost in the rain: the haze at its top, darker and greener toward us */
@@ -680,7 +694,7 @@ function drawSurf23(g,t){const b=G.beat,p=b?b.phase(t):.5,S=SURF23.at(p,b),P=SHA
       if(x>c-10){const lip=clamp((h-3)/8,0,1)*S.rise;if(lip>.05){R(g,x,y-.3,1,.6+lip*2.2,rgba(P.foam,.4+.6*lip));if(h2s23(x,((t/160)|0))<.5)R(g,x,y+1.5+lip*2,1,.5,rgba(P.foamS,.6*lip))}}
       else if(h2s23(x,3)<.3)R(g,x,y+.5,1+h2s23(x,4)*3,.5,rgba(P.crest,.5))}}
   /* old lace drifting on the water: thick after the sea has run, thinning through the pause */
-  const lace=.25+.55*S.run+.15*(1-S.rise);for(let i=0;i<120;i++){const q=rng(2390+i),x=fr23(q()+t/90000*(q()<.5?1:-1))*W,y=y0+2+Math.pow(q(),.7)*24;if(y>SURF23.edge(x)-.5)continue;
+  const lace=.25+.55*S.run+.15*(1-S.rise);for(let i=0;i<120;i++){const q=rng(2390+i),x=fr23(q()+t/90000*(q()<.5?1:-1))*W-34*S.back*(.4+.6*q()),y=y0+2+Math.pow(q(),.7)*24;if(y>SURF23.edge(x)-.5)continue;
     R(g,x,y,(2+q()*8)*clamp((y-100)/20,.5,1.3),.5,rgba(q()<.6?P.foam:P.foamS,(.18+.4*q())*lace))}
   /* the holds: the spar riding the water, the sandbar (covered while the sea runs), the foam at the rock's foot */
   sparSurf23(g,HOLDX23[1],lvl(HOLDX23[1])-hump(HOLDX23[1])+1.2,t);
@@ -688,9 +702,10 @@ function drawSurf23(g,t){const b=G.beat,p=b?b.phase(t):.5,S=SURF23.at(p,b),P=SHA
   for(let i=0;i<10;i++){const q=rng(2380+i),x=HOLDX23[2]-16+q()*32;R(g,x,lvl(x)+1+q()*2,2+q()*4,.5,rgba(P.foam,.5+.3*Math.sin(t/300+i)))}
   /* floating wreckage, each piece alone, riding the water */
   if(SHARED.grainship)SHARED.grainship.wreckage(g,{light:'dawn',slant:-.05,seed:23052,pieces:[[58,lvl(58)+9-hump(58),9],[140,lvl(140)+12-hump(140),12,'beam'],[214,lvl(214)+7-hump(214),8],[150,lvl(150)-7,7],[232,lvl(232)-9,6]]});
-  /* the white water of the sea that has broken: rushing in over everything, then thinning to lace and draining away */
+  body23(g);
+  /* the white water of the sea that has broken: rushing in over everything, then drawn back out to sea as it thins */
   if(S.run>0){const x1=Math.min(S.front,W+4),a=Math.min(1,S.run*1.6);
-    const top=x=>lvl(x)-2-12*S.run*(.62+.18*Math.sin(x/7.3+t/180)+.12*Math.sin(x/2.9+t/90)+.16*h2s23(x>>1,7))*nose(x),bot=x=>lvl(x)+3+(5+6*S.run)*nose(x),nose=x=>x1>=W?1:Math.sqrt(clamp((x1-x)/18,0,1));
+    const top=x=>lvl(x)-2-12*S.ht*(.62+.18*Math.sin(x/7.3+t/180)+.12*Math.sin(x/2.9+t/90)+.16*h2s23(x>>1,7))*nose(x),bot=x=>lvl(x)+3+(5+6*S.ht)*nose(x),nose=x=>x1>=W?1:Math.sqrt(clamp((x1-x)/18,0,1));
     const FP=[];for(let x=-2;x<=x1;x+=2)FP.push(x,Math.min(top(x),SURF23.edge(x)-1));for(let x=x1;x>=-2;x-=2)FP.push(x,Math.min(bot(x),SURF23.edge(x)+2));
     poly(g,FP);g.fillStyle=lg(g,0,y0-12,0,y0+12,[rgba(P.foam,.95*a),rgba(P.foamS,.85*a),rgba(P.glass,.4*a)]);g.fill();
     clipTo(g,()=>poly(g,FP),()=>{for(let i=0;i<220;i++){const q=rng(2400+i+((t/150)|0)%2),x=q()*x1,y=y0-12+q()*24;R(g,x,y,1.5+q()*6,.5,rgba(q()<.4?P.glass:P.foamS,(.2+.35*q())*a))}});
@@ -700,7 +715,20 @@ function drawSurf23(g,t){const b=G.beat,p=b?b.phase(t):.5,S=SURF23.at(p,b),P=SHA
   if(p<.12||p>.97){const u=p<.12?.25+p/.12*.75:(p-.97)/.03*.25;SHARED.storm.spray(g,30,lvl(30)-6,10,-16,u,26,(b?Math.floor((t-b.t0)/b.period):0)+7,P.foam,.9*Math.sin(Math.PI*u),10)}
   /* the wash in the shallows round the sailor's feet, running up and back */
   {const u=fr23(t/3400),k=Math.sin(Math.PI*u);for(let x=264;x<=W;x+=2){const e=SURF23.edge(x),up=k*(3+3*Math.sin(x/11));if(up<.4)continue;R(g,x,e,2,up,rgba(P.glass,.28));R(g,x,e+up-.5,2,.5,rgba(P.foam,.7))}}
+  /* Paul rides the water on his plank: he rises and sinks with it */
+  if(P.room==='surf23'&&P.pose==='plank')P.y=Math.round(lvl(P.x));
   if(P0surf23())beat23()}
+/* Paul's body in the water behind his plank (the figure is cut at the water line): seen dim and dark through the water, from under his
+   shoulders back to the hips, a little lower as it goes, and his legs on behind; while he swims (G.kick23, the kick's count) they open
+   and close one against the other, never crossing, and his feet break the water (front) */
+function body23(g){if(P.room!=='surf23'||P.pose!=='plank')return;const d=P.dir||1,x=P.x,y=P.y,k=G.kick23,s=k==null?0:Math.sin(k*Math.PI*2),
+    W=SHARED.storm.PAL.dawn.water,tun=mix('#6e6450',W,.35),dk=mix('#3a3a30',W,.3),
+    /* one column of him at xx: from yy down h, its top (nearest the surface) lit by the water, its lower rows fading into it */
+    col=(xx,yy,h,a)=>{const X=d>0?xx-1:xx;R(g,X,yy,1,.5,rgba(mix(tun,'#c8d4cc',.25),.5*a));for(let r=.5;r<h;r+=.5)R(g,X,yy+r,1,.5,rgba(r<h*.5?tun:dk,a*(1-.6*r/h)))};
+  /* the back, from under the shoulders to the hips, sinking a little */
+  for(let i=0;i<=13;i++){const u=i/13;col(x-d*(1+i),y+.5+u*1.5,3.5-u*.5,.7)}
+  /* the legs from the hips: they open and close as he kicks, one a little above the other, and never cross */
+  for(const sg of[1,-1])for(let i=0;i<=11;i++){const u=i/11;col(x-d*(15+i),y+2+u*(1+sg*.5+1.6*s*sg*u)+(sg<0?.5:0),1.5-u*.4,sg>0?.65:.5)}}
 const h2s23=(x,s)=>{let h=Math.imul((x*4)|0,374761393)+Math.imul(s,668265263)|0;h=Math.imul(h^(h>>>13),1274126177);return((h^(h>>>16))>>>0)/4294967296};
 const P0surf23=()=>P.room==='surf23'&&G.room==='surf23'&&!F.surf&&!G.busy;
 ART.surf23={w:320,q:12,paint(g){if(SHARED.storm&&SHARED.grainship)paintSurf23(g)},
@@ -708,8 +736,14 @@ ART.surf23={w:320,q:12,paint(g){if(SHARED.storm&&SHARED.grainship)paintSurf23(g)
   draw(g,t){if(!SHARED.storm){if(P0surf23())beat23();return}drawSurf23(g,t)},
   front(g,t){if(!SHARED.storm)return;const b=G.beat,p=b?b.phase(t):.5,S=SURF23.at(p,b),Pl=SHARED.storm.PAL.dawn;
     /* the white water over Paul as it rushes past him, to the shoulders, and the shallows over the sailor's feet */
-    if(S.run>0&&P.room==='surf23'&&S.front>P.x-6){const a=Math.min(1,S.run*1.5);for(let i=0;i<40;i++){const q=rng(2450+i+((t/140)|0)%3),x=P.x-12+q()*24,y=WATER23-2-q()*7*S.run;R(g,x,y,1.5+q()*4,.5,rgba(q()<.6?Pl.foam:Pl.foamS,(.4+.5*q())*a))}}
-    if(P.room==='surf23'&&P.pose==='plank'){for(let i=0;i<6;i++){const u=fr23(t/1300+i/6);R(g,P.x-9+i*3+Math.sin(t/400+i),WATER23-.4+(i%2)*.5,2+(i%3),.5,rgba(Pl.foam,.35+.4*Math.sin(Math.PI*u)))}}
+    if(S.run>0&&P.room==='surf23'&&S.front>P.x-6){const a=Math.min(1,S.run*1.5);for(let i=0;i<40;i++){const q=rng(2450+i+((t/140)|0)%3),x=P.x-12+q()*24,y=P.y-2-q()*5*S.run;R(g,x,y,1.5+q()*4,.5,rgba(q()<.6?Pl.foam:Pl.foamS,(.4+.5*q())*a))}}
+    if(P.room==='surf23'&&P.pose==='plank'){const d=P.dir||1;for(let i=0;i<6;i++){const u=fr23(t/1300+i/6);R(g,P.x-d*9+i*3*d+Math.sin(t/400+i),P.y-.4+(i%2)*.5,2+(i%3),.5,rgba(Pl.foam,.35+.4*Math.sin(Math.PI*u)))}
+      /* the kick: his feet break the water behind him, first one and then the other */
+      if(G.kick23!=null){const fx=P.x-d*26,up=Math.abs(Math.sin(G.kick23*Math.PI*2)),n=(G.kick23*4)|0;
+        /* a churn of white at the water where the feet are, and drops thrown up as a foot comes up */
+        for(let i=0;i<7;i++){const q=rng(2470+i+n);R(g,fx-4+q()*8,P.y-.5-q()*.8,1.5+q()*2.5,.5,rgba(Pl.foam,.75+.25*q()))}
+        /* the drops fly back and up along a slant, never straight up over the churn */
+        for(let i=0;i<4;i++){const q=rng(2490+i+n),u=(i+q())/4;R(g,fx-d*(2+u*5),P.y-1.5-u*3.5*up,.5,.5,rgba('#ffffff',(.55+.4*q())*up))}}}
     if(SA2.room==='surf23'){const x=SA2.x,y=SA2.y;for(let i=0;i<5;i++){const u=fr23(t/1700+i*.2);R(g,x-7+i*3,y-2.5+Math.sin(t/500+i)*.4,3,.5,rgba(Pl.foam,.55*Math.sin(Math.PI*u)+.2))}
       g.fillStyle=lg(g,0,y-3,0,y+1,[rgba(Pl.glass,.4),rgba(Pl.water,.6)]);g.fillRect(x-8,y-2.6,16,3.4);
       SHARED.beat&&SHARED.beat.call(g,x-14,y-56,t)}
@@ -1482,15 +1516,20 @@ async function mail23(){if(F.mailOff)return say(SO1,'soldier_lighter_now',{to:P}
 async function launch23(){await say(P,'paul_hold_on_and_kick',{to:null});F.planks=1;SFX.good();
   await fade(1,600);G.pk23=null;G.at23=0;show23('surf23');await fade(0,600);codeBtn()}
 /* ---- through the surf: the beat of the sea, sticky help ---- */
-function beat23(){const B=SHARED.beat;if(!B||B.beat&&B.beat.on)return;B.start({need:1500,sticky:true,room:'surf23',kind:'surf'})}
-const swim23=x=>{const x0=P.x;return tween(fast()?240:1100,k=>{P.x=x0+(x-x0)*(k*k*(3-2*k));P.pk=k>.3&&k<.7?1:0})};
-async function hold23(i){const at=G.at23||0;if(i!==at+1||!G.beat)return;const r=G.beat.attempt();
+/* the window begins as the sea breaks and lasts while its white water runs in (2.3 s of every 6): a stroke begun in it is carried */
+function beat23(){const B=SHARED.beat;if(!B||B.beat&&B.beat.on)return;B.start({at:0,pause:2280,need:0,sticky:true,room:'surf23',kind:'surf'})}
+/* a stroke: he kicks (G.kick23 counts the kicks, P.pk is up on every other half) and goes slowly at first, quickest in the middle where the
+   white water carries him, and slowly as he takes hold; kick 0: he is drawn along without kicking (the backwash) */
+const swim23=(x,ms,kick=1)=>{const x0=P.x,T=fast()?240:ms;return tween(T,k=>{P.x=x0+(x-x0)*(k*k*(3-2*k));if(kick){G.kick23=k*T/440;P.pk=(G.kick23*2|0)%2}}).then(()=>{G.kick23=null;P.pk=0})};
+async function hold23(i){const at=G.at23||0;if(!G.beat||i===at)return;
+  if(i<at)return say(P,'paul_not_back_out_there',TP);if(i>at+1)return say(P,'paul_too_far_for_one_wave',TP);
+  const r=G.beat.attempt();
   if(r.carry){/* six misses in a row: the sailor wades out and brings him in */
-    await go23(SA2,P.x+16,WATER23+4,60);SA2.dir=-1;await Promise.all([swim23(HOLDX23[4]),go23(SA2,HOLDX23[4]+14,WATER23+6,60)]);G.at23=4;G.beat.reset();return ashore23()}
-  if(r.hit){await swim23(HOLDX23[i]);G.at23=i;if(i===4)return ashore23();return}
-  /* a miss: the sea throws him back to the last hold; nothing is said */
-  SFX.splash();await swim23(HOLDX23[at]+(HOLDX23[i]-HOLDX23[at])*.15);await swim23(HOLDX23[at])}
-async function ashore23(){P.pose=0;P.pk=0;P.y=126;if(SHARED.beat)SHARED.beat.stop();F.surf=1;
+    await go23(SA2,P.x+16,WATER23+4,60);SA2.dir=-1;await Promise.all([swim23(HOLDX23[4],2600),go23(SA2,HOLDX23[4]+14,WATER23+6,60)]);G.at23=4;G.beat.reset();return ashore23()}
+  if(r.hit){await swim23(HOLDX23[i],2300);G.at23=i;if(i===4)return ashore23();return}
+  /* a miss: he kicks out a little, and the water running back out to sea draws him back to the last hold; nothing is said */
+  SFX.splash();await swim23(HOLDX23[at]+(HOLDX23[i]-HOLDX23[at])*.14,900);await swim23(HOLDX23[at],1200,0)}
+async function ashore23(){P.pose=0;P.pk=0;G.kick23=null;P.y=126;if(SHARED.beat)SHARED.beat.stop();F.surf=1;
   await fade(1,600);show23('beach23');await fade(0,600);await say(LK,'luke_ashore_but_is_everyone',TL);codeBtn()}
 /* ---- the count on the beach: Luke ---- */
 async function group23(g){if(F[g.k])return say(LK,'luke_counted_them_already',TL);F[g.k]=1;SFX.click();await say(LK,g.say,TL);
