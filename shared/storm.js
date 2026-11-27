@@ -32,7 +32,8 @@
                                   perspective, each lifting as it nears, dark faces and lighter backs, the foam on their tops, spindrift
                                   torn off them, and no horizon (the far seas run into the rain). The sea that comes stands up highest at
                                   the windward end and comes over there first. o.pal, o.rail (the top of the rail, 82), o.deck0 (the foot
-                                  of the bulwark on the deck, 97), o.height (the seas' height, 1), o.slant (the rain's, as rain's), o.lamp [x, y, r] (a low warm light that
+                                  of the bulwark on the deck, 97), o.foot(x) (where the water meets the deck's far edge at x on the screen,
+                                  in her own frame, for a deck whose far edge is not level: default deck0), o.height (the seas' height, 1), o.slant (the rain's, as rain's), o.lamp [x, y, r] (a low warm light that
                                   lights the water and the rain near it), o.from, o.to, o.seed; o.lightning (true: strokes far off in its
                                   sky), o.clear [x0, x1] (where no stroke falls: the masts; default the middle third), o.posts [[xc, half, A], ...] (an upright
                                  of the ship that stands against the seas, such as a mast, at xc on the screen, half its width with a margin
@@ -357,7 +358,7 @@ function faceTex(pal){if(FACEC.has(pal))return FACEC.get(pal);const P=PAL[pal],T
    and its saddles sinking below it, with the ranks beyond it dissolving into the rain; the lower parts show their backs, where we see
    over them. The sea that comes stands up highest at the windward end (the right: the rain slants down to the left) and its shoulder
    runs along the rail to the other end. No horizon is drawn: the farthest seas fade into the rain, the color of the sky's foot. */
-function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz==null?56:o.hz,F=o.F||150,cx=w/2,RAIL=o.rail||82,D0=o.deck0||97,
+function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz==null?56:o.hz,F=o.F||150,cx=w/2,RAIL=o.rail||82,D0=o.deck0||97,foot=o.foot||(()=>D0),
     ht=o.height==null?1:o.height,seed=o.seed||2209,Z0=24,DZ=60,N=4,lamp=o.lamp,dxW=o.dx==null?-1:o.dx,
     SKY=sky({pal,h:hz+10,seed:seed+1,dx:dxW,w,lightning:o.lightning,clear:o.clear,period:o.period});
   const bump=s=>{const q=fr(s+.5)-.5;return Math.exp(-(q/.15)*(q/.15))},
@@ -395,12 +396,16 @@ function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
     g.restore()};
   /* the water on the deck: its leading edge at x, running toward us and down the wind, from where it came over first */
   const runAt=(x,f)=>smooth(t0(x)+.035,t0(x)+.22,f),
-    sheetEdge=(x,f,t)=>{const p=runAt(x,f),lob=Math.sin(x/23+1.3)*3+Math.sin(x/9.5+t/300)*1.2+Math.sin(x/51)*4;return D0+(152-D0)*Math.pow(p,.85)+lob*p*(1-p*.3)};
-  const wetAt=(x,y,e)=>{const f=fr(inner(e,o));return f>t0(x)+.035&&f<.86&&y>=D0&&y<=sheetEdge(x,f,0)-1};
+    sheetEdge=(x,f,t,F0=foot(x))=>{const p=runAt(x,f),lob=Math.sin(x/23+1.3)*3+Math.sin(x/9.5+t/300)*1.2+Math.sin(x/51)*4;return F0+(152-F0)*Math.pow(p,.85)+lob*p*(1-p*.3)};
+  const wetAt=(x,y,e)=>{const f=fr(inner(e,o));return f>t0(x)+.035&&f<.86&&y>=foot(x)&&y<=sheetEdge(x,f,0)-1};
+  /* a band that follows the deck's far edge: a 2-pixel column at each x of FT, the gradient gr (made for an edge at y = 0) moved down to it */
+  const along=(g,FT,gr,y0,h)=>{g.fillStyle=gr;for(let j=0;j<FT.length;j++){const x=-6+2*j;g.save();g.translate(0,FT[j]);g.fillRect(x,y0,2,h);g.restore()}};
   /* the sea that comes aboard: its crest falls on her, highest and first at the windward end and then all along the rail; white water
      pours over the rail, churns brightest where it lands, and runs across the deck toward us in streaks down the flow, a thin bright
      edge in front; then it drains away and the planks show through */
   function aboard(g,t,e,K){const b=inner(e,o),f=fr(b);if(f<.55)return;const C=NEAR&&NEAR.b===b?NEAR.pts:null,xs=xsh(f),
+      /* the deck's far edge, every 2 pixels from -6 to w+6, and its lowest point */
+      FT=[],ft=x=>FT[clamp(Math.round((x+6)/2),0,FT.length-1)];for(let x=-6;x<=w+6;x+=2)FT.push(foot(x));const FM=Math.max(...FT),
       /* the crest is the sea's, which does not sway: carried into her own frame, so that the white water meets it */
       W=swayAt(b,K),ca=Math.cos(-W.a),sa=Math.sin(-W.a),inv=(x,y)=>{const X=x-W.px-W.dx,Y=y-W.py-W.dy;return W.py+(sa*X+ca*Y)/W.sy},
       cy=x=>{if(!C)return RAIL-26*ht;const j=clamp(Math.round((x+6)/2),0,C.length/2-1);return Math.min(RAIL,inv(x,C[2*j+1]))};
@@ -408,15 +413,15 @@ function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
     const top=[],bot=[];let any=0;
     for(let x=-6;x<=w+6;x+=2){const s0=t0(x),fall=smooth(s0-.01,s0+.09,f),gone=smooth(s0+.1,s0+.16,f),y=cy(x);
       const gr=smooth(s0-.04,s0+.02,f);if(gr<=0){top.push(x,y);bot.push(x,y);continue}any=1;
-      const m=Math.exp(-((x-xs)/110)*((x-xs)/110)),yt=y+(RAIL-y)*fall*(.9-.25*m)+gone*(D0-RAIL)*.5,yf=RAIL+(D0+1-RAIL)*smooth(s0+.01,s0+.06,f),yb=y+(Math.max(yf,y)-y)*gr;
+      const F0=ft(x),m=Math.exp(-((x-xs)/110)*((x-xs)/110)),yt=y+(RAIL-y)*fall*(.9-.25*m)+gone*(F0-RAIL)*.5,yf=RAIL+(F0+1-RAIL)*smooth(s0+.01,s0+.06,f),yb=y+(Math.max(yf,y)-y)*gr;
       top.push(x,Math.min(yt,yb-.5));bot.push(x,yb)}
     const MA=1-smooth(.68,.75,f);if(any&&MA>0){g.save();g.globalAlpha=MA;const p=top.slice();for(let i=bot.length-2;i>=0;i-=2)p.push(bot[i],bot[i+1]);
       let mn=1e9;for(let i=1;i<top.length;i+=2)mn=Math.min(mn,top[i]);
-      poly(g,p);g.fillStyle=lg(g,0,mn,0,D0+2,[cs('#ffffff',.97),cs(mix(P.foam,P.glass,.22),.94),cs(mix(P.foam,P.glass,.32),.92),cs(P.foam,.98)]);g.fill();
+      poly(g,p);g.fillStyle=lg(g,0,mn,0,FM+2,[cs('#ffffff',.97),cs(mix(P.foam,P.glass,.22),.94),cs(mix(P.foam,P.glass,.32),.92),cs(P.foam,.98)]);g.fill();
       clipTo(g,()=>poly(g,p),()=>{const r=rng(seed+78),mv=(f-.56)*80;
         /* thin level streaks in the white, carried down with it; strands of the green water showing through */
-        for(let i=0;i<260;i++){const x=r()*(w+12)-6,y=mn+r()*(D0+4-mn)+mv*r(),ln=2+r()*10,c=r()<.35?P.glass:r()<.6?P.foamS:'#ffffff';R(g,x,y,ln,.5,cs(c,.25+.35*r()))}
-        g.fillStyle=lg(g,0,D0-5,0,D0+2,[cs('#ffffff',0),cs('#ffffff',.6)]);g.fillRect(-6,D0-5,w+12,8)});
+        for(let i=0;i<260;i++){const x=r()*(w+12)-6,y=mn+r()*(FM+4-mn)+mv*r(),ln=2+r()*10,c=r()<.35?P.glass:r()<.6?P.foamS:'#ffffff';R(g,x,y,ln,.5,cs(c,.25+.35*r()))}
+        along(g,FT,lg(g,0,-5,0,2,[cs('#ffffff',0),cs('#ffffff',.6)]),-5,8)});
       /* the top: a bright edge, and spray thrown up off it, blown down the wind */
       for(let i=0;i<top.length-2;i+=2)if(top[i+1]<RAIL)R(g,top[i],top[i+1]-.3,2,.5,cs('#ffffff',.85));
       for(let j=0;j<6;j++){const x=xs+(j-2.5)*34;if(x<-10||x>w+10)continue;const u=clamp((f-t0(clamp(x,0,w)))/.12,0,1);if(u<=0||u>=1)continue;
@@ -424,19 +429,20 @@ function deckSea(o){o=o||{};const w=o.w||320,pal=o.pal||'day',P=PAL[pal],hz=o.hz
       if(lamp)glowOn(g,p,lamp,1);g.restore()}
     /* on the deck */
     const dr=smooth(.8,.97,f);if(f<.6||dr>=1)return;
-    const pts=[];for(let x=-6;x<=w+6;x+=2)pts.push(x,sheetEdge(x,f,t));
-    const p=[-6,D0-1,w+6,D0-1];for(let i=pts.length-2;i>=0;i-=2)p.push(pts[i],pts[i+1]);
+    /* its far side follows the deck's far edge (the foot of the bulwark, or whatever closes the deck there), never a level line */
+    const pts=[];for(let j=0,x=-6;x<=w+6;x+=2,j++)pts.push(x,sheetEdge(x,f,t,FT[j]));
+    const p=[];for(let j=0;j<FT.length;j++)p.push(-6+2*j,FT[j]-1);for(let i=pts.length-2;i>=0;i-=2)p.push(pts[i],pts[i+1]);
     /* green water, clear enough that the deck shows through, more so as it drains */
     poly(g,p);g.fillStyle=lg(g,0,D0,0,150,[cs(P.water,.85*(1-dr*.6)),cs(P.water,.65*(1-dr*.8))]);g.fill();
     clipTo(g,()=>poly(g,p),()=>{
       /* the churn where it lands: brightest along the foot of the bulwark, thinning toward us */
-      const land=1-smooth(.64,.8,f);g.fillStyle=lg(g,0,D0-1,0,D0+22,[cs(P.foam,.95*land),cs(P.foam,.5*land),cs(P.foam,0)]);g.fillRect(-6,D0-1,w+12,24);
+      const land=1-smooth(.64,.8,f);along(g,FT,lg(g,0,-1,0,22,[cs(P.foam,.95*land),cs(P.foam,.5*land),cs(P.foam,0)]),-1,24);
       /* streaks of foam along the flow, toward us and down the wind: stairs of level strands that never cross */
       const r=rng(seed+303),mv=(f-.6)*80;
-      for(let i=0;i<120;i++){const x0=r()*(w+60)-30,y0=D0+r()*30+mv*(.5+.5*r()),a=(.35+.4*r())*(1-dr),n2=Math.round(5+r()*14);
+      for(let i=0;i<120;i++){const x0=r()*(w+60)-30,y0=ft(x0)+r()*30+mv*(.5+.5*r()),a=(.35+.4*r())*(1-dr),n2=Math.round(5+r()*14);
         lace(g,x0,y0,n2,dxW*(1+r()*.6),r()<.7?P.foam:P.foamS,a,r,150)}});
     /* the leading edge: a thin bright line */
-    for(let i=0;i<pts.length-2;i+=2){const x=pts[i],y=pts[i+1],s=clamp((y-D0)/30,.4,1.6);if(runAt(x,f)<=0)continue;
+    for(let i=0;i<pts.length-2;i+=2){const x=pts[i],y=pts[i+1],s=clamp((y-FT[i>>1])/30,.4,1.6);if(runAt(x,f)<=0)continue;
       R(g,x,y-.8*s,2,.8*s+.5,cs('#ffffff',.9*(1-dr)));R(g,x,y-1.3*s-.5,2,.5,cs(P.foamS,.6*(1-dr)))}
     if(lamp)glowOn(g,p,lamp,1-dr)}
   /* a lamp's light on the water: warm, long and low */

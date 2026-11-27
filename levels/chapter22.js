@@ -512,7 +512,15 @@ const DS22={};
 /* the uprights that stand against the sea, on the screen: the swan's neck and the mast, [middle, half width with a margin for the sway,
    how far the seas' outline falls across it] */
 const POSTS22=[[152,11,7],[271,16,9]];
-const ds22=v=>DS22[v]||(DS22[v]=SHARED.storm.deckSea({pal:v==='n'?'night':'day',dx:1,slant:.9,rail:70,deck0:82,height:v==='s'?.72:1,seed:2209,
+/* the deck's far edge on the screen at x (in her own frame): the top of her floor, where the foot of the port bulwark and the cabin's
+   front close it. The sea that comes aboard runs from there, so that its far side follows the deck in perspective and is never a level
+   line across it. Worked out once, every pixel from -40 to 360 */
+let FOOT22=null;
+function foot22(x){if(!FOOT22){const FL=wet22()[0],n=FL.length/2;FOOT22=[];
+    for(let X=-40;X<=360;X++){let y=1e9;for(let i=0;i<n;i++){const j=(i+1)%n,x0=FL[2*i],y0=FL[2*i+1],x1=FL[2*j],y1=FL[2*j+1];
+      if((X-x0)*(X-x1)>0||x0===x1)continue;y=Math.min(y,y0+(y1-y0)*(X-x0)/(x1-x0))}FOOT22.push(y<1e9?y:82)}}
+  return FOOT22[clamp(Math.round(x)+40,0,400)]}
+const ds22=v=>DS22[v]||(DS22[v]=SHARED.storm.deckSea({pal:v==='n'?'night':'day',dx:1,slant:.9,rail:70,deck0:82,height:v==='s'?.72:1,seed:2209,foot:foot22,
   lightning:true,clear:[132,300],lamp:v==='n'?[lant22().p[0],lant22().p[1]+4,34]:undefined,
   /* the swan's neck and the mast stand against the seas: there every outline runs down a flank, never level behind them */
   posts:POSTS22}));
