@@ -60,32 +60,6 @@ The events themselves are from the Scriptures. All dialogue is dramatization, in
 
 The story of Acts ends where Acts ends: in Rome, inside the two years of Acts 28:30, 31, with Paul still in custody and his door open. After it one more morning is played, "After Acts": the morning of his release, which the Scriptures do not tell and the publications on wol.jw.org give with "apparently", about 61 C.E. Its details (the soldier's orders, the morning itself) are dramatization, and nobody named in the Scriptures is placed there. Then a map lights the places that Paul's later letters name, Crete, Ephesus, Nicopolis, Troas and Miletus, and Spain as a perhaps. His second imprisonment and his death are not part of the game.
 
-- [Chapter One: Escape from Damascus](docs/chapter-1.md#about-the-content)
-- [Chapter Two: A Friend in Jerusalem](docs/chapter-2.md#about-the-content)
-- [Chapter Three: Called to Antioch](docs/chapter-3.md#about-the-content)
-- [Chapter Four: Sent Out to Cyprus](docs/chapter-4.md#about-the-content)
-- [Chapter Five: A Light of Nations](docs/chapter-5.md#about-the-content)
-- [Chapter Six: The Door to Faith](docs/chapter-6.md#about-the-content)
-- [Chapter Seven: Timothy of Lystra](docs/chapter-7.md#about-the-content)
-- [Chapter Eight: The Man from Macedonia](docs/chapter-8.md#about-the-content)
-- [Chapter Nine: Midnight in Philippi](docs/chapter-9.md#about-the-content)
-- [Chapter Ten: Is It So?](docs/chapter-10.md#about-the-content)
-- [Chapter Eleven: The Unknown God](docs/chapter-11.md#about-the-content)
-- [Chapter Twelve: Tentmakers of Corinth](docs/chapter-12.md#about-the-content)
-- [Chapter Thirteen: The Hall of Tyrannus](docs/chapter-13.md#about-the-content)
-- [Chapter Fourteen: Two Hours in the Theater](docs/chapter-14.md#about-the-content)
-- [Chapter Fifteen: Until Daybreak](docs/chapter-15.md#about-the-content)
-- [Chapter Sixteen: These Hands](docs/chapter-16.md#about-the-content)
-- [Chapter Seventeen: The Belt](docs/chapter-17.md#about-the-content)
-- [Chapter Eighteen: On the Stairs](docs/chapter-18.md#about-the-content)
-- [Chapter Nineteen: The Sister's Son](docs/chapter-19.md#about-the-content)
-- [Chapter Twenty: Some Other Time](docs/chapter-20.md#about-the-content)
-- [Chapter Twenty-One: To Caesar](docs/chapter-21.md#about-the-content)
-- [Chapter Twenty-Two: Euroaquilo](docs/chapter-22.md#about-the-content)
-- [Chapter Twenty-Three: All Safe to Land](docs/chapter-23.md#about-the-content)
-- [Chapter Twenty-Four: He Took Courage](docs/chapter-24.md#about-the-content)
-- [Chapter Twenty-Five: Without Hindrance](docs/chapter-25.md#about-the-content)
-
 This is an independent, non-commercial fan project. It is not produced, endorsed or reviewed by Jehovah's Witnesses or the Watch Tower Bible and Tract Society, and it is not affiliated with jw.org. It contains no material from jw.org or its subdomains; it only refers to them as sources that its authors read. Their [Terms of Use](https://www.jw.org/en/terms-of-use/) apply to their content.
 
 ## Development
