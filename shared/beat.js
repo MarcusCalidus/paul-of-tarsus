@@ -131,9 +131,11 @@ function start(o={}){stop();const k=fast()?.3:1,period=(o.period||6000)*k,pause=
     stop};
   B=G.beat=b;timer=setInterval(tick,100);tick();return b}
 
-/* the sailor's call, and any other caption over the picture: small letters with a dark edge, fitted to their width */
+/* the sailor's call, and any other caption over the picture: small letters with a dark edge, fitted to their width. It is queued last in
+   the room's depth order (depth), so that no prop or figure in front, such as the deckhouse of Chapter Twenty-Two, covers part of it */
 const FONT=z=>`bold ${z}px "Lucida Console",Monaco,"Courier New",monospace`;
-function cap(g,key,x,y,o={}){const s=T(key),w=o.w||60;let sz=o.sz||6.4;g.save();g.font=FONT(sz);g.textBaseline='middle';
+function cap(g,key,x,y,o={}){depth(1e9,()=>cap1(g,key,x,y,o))}
+function cap1(g,key,x,y,o){const s=T(key),w=o.w||60;let sz=o.sz||6.4;g.save();g.font=FONT(sz);g.textBaseline='middle';
   while(g.measureText(s).width>w&&sz>3.2){sz-=.2;g.font=FONT(sz)}const tx=x-g.measureText(s).width/2;
   const tw=g.measureText(s).width;g.strokeStyle='rgba(8,6,10,.85)';g.lineWidth=1.2;g.lineJoin='round';g.strokeText(s,tx,y);g.fillStyle=o.c||'#f8ecc4';g.fillText(s,tx,y);g.restore();
   /* what was written last, for the playtest: it must fit its width in every language */
