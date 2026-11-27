@@ -23,6 +23,7 @@ TEXTS('de','main',{
   "pray_to_jehovah":["Zu Jehova beten","05egjqx"],
   "think_it_over":["Nachdenken","1cd24pa"],
   "play_as_name_c":["Als {name} spielen (C)","0ynroom"],
+  "you_are_playing_name":["Du spielst {name}","0ztq4pv"],
   "speaker_name":["{name}:","1vxb8dm"],
   "take_this_name":["Nimm das, {name}.","0362dh3"],
   "give_item_to_thing":["Gib {item} an {thing}","1e4szy4"],
