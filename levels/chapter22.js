@@ -565,8 +565,15 @@ function paintStorm22(g,v){const N=v==='n',GS=SHARED.grainship,r=rng(2204);
   if(N){const L=lant22(),[lx,ly]=L.p;
     /* the lantern's light: the eave above it keeps it from the roof, so it falls outward and down the cabin's front, widening, in soft
        steps; and a long low pool on the deck before it. Nothing round, nothing above the lantern */
-    clipTo(g,()=>{g.beginPath();g.rect(110,ly-1,84,89-ly)},()=>{for(const[w,a]of[[26,.05],[18,.07],[11,.09]])comp(g,'lighter',a,()=>{poly(g,[lx-3,ly,lx+3,ly,lx+w,88,lx-w,88]);g.fillStyle=lg(g,0,ly,0,88,['#ffb060','#a05a20']);g.fill()})});
-    comp(g,'lighter',.13,()=>pool(g,lx,L.floor[1]+3,40,4,'#ffa050',1,'source-over'));
+    /* From here the hatch hides the deck before the cabin (its far coaming stands level with the cabin's foot), so the light and its
+       pool are never laid over the hatch's opening, which stays dark with the hold below it, nor over the coaming's front, which is
+       turned away from the lantern: only the top of the coaming, facing up, catches it, and the deck beside the hatch */
+    const D=gd22(),[hx0,hx1,hz0,hz1,hh]=D.things.hatch,cw=.22,hp=(x,y,z)=>D.P(x,y,z),
+      dark=[[...hp(hx0,D.s(hz0),hz0),...hp(hx1,D.s(hz0),hz0),...hp(hx1,D.s(hz0)+hh,hz0),...hp(hx0,D.s(hz0)+hh,hz0)],
+        [...hp(hx0+cw,D.s(hz0)+hh,hz0+cw),...hp(hx1-cw,D.s(hz0)+hh,hz0+cw),...hp(hx1-cw,D.s(hz1)+hh,hz1-cw),...hp(hx0+cw,D.s(hz1)+hh,hz1-cw)]],
+      offHatch=(x,y,w,h)=>{g.beginPath();g.rect(x,y,w,h);for(const q of dark){g.moveTo(q[0],q[1]);for(let i=2;i<q.length;i+=2)g.lineTo(q[i],q[i+1]);g.closePath()}g.clip('evenodd')};
+    clipTo(g,()=>offHatch(110,ly-1,84,89-ly),()=>{for(const[w,a]of[[26,.05],[18,.07],[11,.09]])comp(g,'lighter',a,()=>{poly(g,[lx-3,ly,lx+3,ly,lx+w,88,lx-w,88]);g.fillStyle=lg(g,0,ly,0,88,['#ffb060','#a05a20']);g.fill()})});
+    clipTo(g,()=>offHatch(100,ly,140,40),()=>comp(g,'lighter',.13,()=>pool(g,lx,L.floor[1]+1,40,4,'#ffa050',1,'source-over')));
     /* the cords, parting upward to the eave, and the lantern: clay and horn, small; the flame is drawn in draw */
     stroke(g,[lx-.7,ly-1.6,L.a[0],L.a[1]],'#4a3a28',.5);stroke(g,[lx+.7,ly-1.6,L.b[0],L.b[1]],'#4a3a28',.5);
     poly(g,[lx-1.6,ly-1.6,lx+1.6,ly-1.6,lx+1.9,ly+2.6,lx-1.9,ly+2.6],'#4a3220');R(g,lx-1.9,ly+2.6,3.8,.6,'#2a1a10');R(g,lx-1.6,ly-1.6,3.2,.5,'#7a5a38')}}
