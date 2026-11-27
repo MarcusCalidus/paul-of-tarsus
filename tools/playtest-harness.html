@@ -945,11 +945,11 @@
     {const ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'&&!LOOK[k].stone),bad=[],tall=[];let n=0;
       const at=(o,id,fr,d)=>sprite(['kneel',id,fr,d].join('|'),q=>person(q,0,0,o,d,fr,0,0,0,0,0),d),
         top=c=>{const d=c.getContext('2d').getImageData(0,0,FIG.W,FIG.H).data;for(let y=0;y<FIG.H;y++)for(let x=0;x<FIG.W;x++)if(d[(y*FIG.W+x)*4+3])return y;return FIG.OY};
-      for(const id of ids){const o=LOOK[id],h0=FIG.OY-top(o.spear==='slant'?at(Object.assign({},o,{spear:0}),id+'-nospear',0,1):at(o,id,0,1));   /* a spearman puts his slanting spear down to kneel: measure him standing without it */for(const fr of[-2,-3,-4,-5])for(const d of[1,-1]){n++;const c=at(o,id,fr,d);if(parts(c)!==1)bad.push(id+' '+fr+(d<0?' left':''));
+      for(const id of ids){const o=LOOK[id],h0=FIG.OY-top(o.spear==='slant'||o.spear==='pole'?at(Object.assign({},o,{spear:0}),id+'-nospear',0,1):at(o,id,0,1));   /* a spearman puts his slanting spear down to kneel, and a boatman his pole: measure him standing without it */for(const fr of[-2,-3,-4,-5])for(const d of[1,-1]){n++;const c=at(o,id,fr,d);if(parts(c)!==1)bad.push(id+' '+fr+(d<0?' left':''));
         const r=(FIG.OY-top(c))/h0;if(d>0&&(r<.7||r>.9))tall.push(id+' '+fr+': '+r.toFixed(2))}}
       ok(!bad.length,`kneeling: ${n} poses of ${ids.length} looks (both knees or one, arms down or hands folded, both ways), and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):''));
       ok(!tall.length,'a kneeling figure stands between seven and nine tenths of its height'+(tall.length?'. NOT: '+tall.slice(0,8).join('; '):''));
-      {const a=ACT[Object.keys(ACT)[0]],was=[a.kneel,a.fr];a.kneel=KNEEL.bothFolded;a.walk=null;await wait(80);const f=a.fr,st=!!still(a);a.kneel=0;await wait(80);
+      {const a=ACT[Object.keys(ACT)[0]],was=[a.kneel,a.fr];a.kneel=KNEEL.bothFolded;a.walk=null;const till=async fn=>{for(let i=0;i<70&&!fn();i++)await wait(30)};await till(()=>a.fr===-3);const f=a.fr,st=!!still(a);a.kneel=0;await till(()=>a.fr===0);   /* a frame on a busy machine may come later than 80 ms */
         ok(f===-3&&st&&a.fr===0&&walkSw(a.look,-3)<walkSw(a.look,-4)&&kneelX(a.look,-2)<0,'a.kneel makes an actor kneel (fr '+f+'), he does not turn meanwhile, and he stands again when it is cleared; his contact shadow lies under his knees and feet')}
       const B={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
         WHO=[['Paul',paulLook(16)],['a youth, no mantle',{...B,hair:'#3a2616',slim:1}],['a veiled woman',{...fm,veil:'#6a2a5a'}],['hair bound',{...fm,hair:'#3a2616',fem:1,band:'#a8402c',longSleeve:0}],
@@ -2488,8 +2488,9 @@
      its span of Acts. A click on a part opens it and closes the other; a click on the open one closes it; the name above the list and the
      lines below it never move. The keys reach every line. The stops: `title` (a first visit, the first part open), `titlepart` (the third
      journey opened), `titlescroll` (a returning player in the second journey, the longest part), `titlelast` (a returning player in the
-     last part, with the hidden treasures too: all of it fits), `plans` (the line of the chapters in preparation, its part open). */
-  {const fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))),seen=el=>!!el&&el.getClientRects().length>0,R=el=>el.getBoundingClientRect(),
+     last part, with the hidden treasures too: all of it fits), `plans` (the line of the chapters in preparation, its part open). On a phone
+     the title is a menu of buttons with no such box, which phoneall checks; a chapter's own phone stop (phonedeck22, phonewalk24) passes here. */
+  if(!/^phone/.test(stop)){const fade=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))),seen=el=>!!el&&el.getClientRects().length>0,R=el=>el.getBoundingClientRect(),
       L0=()=>ov.querySelector('.chs'),parts=()=>[...L0().querySelectorAll('.part')],openOf=()=>parts().filter(p=>p.classList.contains('open')),
       still=()=>[R(ov.querySelector('h1')).top,R(ov.querySelector('p.small:not(.lede)')).top].map(Math.round).join(),
       inBox=el=>{const a=R(L0()),q=R(el);return q.height>0&&q.top>=a.top-1&&q.bottom<=a.bottom+1},
