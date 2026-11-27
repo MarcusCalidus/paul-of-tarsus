@@ -1686,19 +1686,23 @@ async function board24(){if(F.sailed)return;if(written24()<3)return think('luke_
   codeBtn()}
 
 /* ---- the news goes ahead: one hand-over ---- */
-/* relay24(n): the giver tells the four parts, the receiver says them back one by one, and the player lets each stand or says it again */
+/* relay24(n): the giver tells the four parts, the receiver says all four back, and the player picks the part to say again, or lets it all
+   stand. A part that was right gets "That's what I said" and leaves the choice; letting a slip stand makes the giver stop him ("Wait. One
+   thing again.") and the choice comes back without "let it stand", so the slip is found by listening and nobody can get stuck */
 async function relay24(n){const H=HAND24[n],gv=ACT[H.giver],rc=ACT[H.to];if(F['given'+(n+1)])return spoke(rc,H.off);
   for(const k of MSG24)await say(gv,k,{to:rc});
   await say(rc,'let_me_say_it_back',{to:gv});
-  let left=H.slip;
-  for(let i=0;i<4;i++){await say(rc,H.say[i],{to:gv});
-    const c=await choose(['let_it_stand',MSG24[i]]);
-    if(c===0)continue;
+  for(let i=0;i<4;i++)await say(rc,H.say[i],{to:gv});
+  let left=[0,1,2,3],stand=1;
+  for(;;){const opts=(stand?['let_it_stand']:[]).concat(left.map(i=>MSG24[i]));
+    const c=await choose(opts);
+    if(stand&&c===0){if(H.slip<0)break;
+      stand=0;await say(gv,'wait_one_thing_again',{to:rc});continue}
+    const i=left[c-stand];left=left.filter(j=>j!==i);
     await say(gv,MSG24[i],{to:rc});
-    if(i===H.slip){left=-1;await say(rc,H.fix,{to:gv})}else await say(rc,'thats_what_i_said',{to:gv})}
-  /* he turns to go; if the wrong thing was let stand, the giver notices and says that part once more */
+    if(i===H.slip){await say(rc,H.fix,{to:gv});break}
+    await say(rc,'thats_what_i_said',{to:gv})}
   rc.dir=-rc.dir;
-  if(left>=0){await tw(300);await say(gv,'wait_one_thing_again',{to:rc});rc.dir=-rc.dir;await say(gv,MSG24[left],{to:rc});await say(rc,H.fix,{to:gv})}
   F['given'+(n+1)]=1;SFX.good();
   return[afterCourt24,afterCapua24,afterCanal24,afterAppius24][n]()}
 async function afterCourt24(){await say(CA,'carter_ill_tell_the_first_traveler',{to:LK});await go24(CA,COURT24.gate[0]+16,116,50);CA.room=null;
