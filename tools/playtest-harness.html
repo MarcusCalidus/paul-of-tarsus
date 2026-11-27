@@ -5949,6 +5949,8 @@
         psyrtis22:[upto('skiff'),'storm22'],pload22:[upto('skiff'),'storm22'],pnight22:[upto('load3').concat(['t1','t2']),'storm22'],ptablet22:[upto('load3').concat(['t1','m1a','t2','m2b']),'tablet22'],
         pmidst22:[upto('t6'),'storm22'],pbale22:[upto('skiff'),'storm22']}[stop];
     if(!S)throw new Error('no such stop '+stop);await open22(S[0],S[1]);L('CODE '+stop+' '+(G.room&&G.room!=='girded22'?makeCode():'-'));
+    /* who is played is fixed by the scene (swap:false): the greyed button beside the prayer names him, Paul or Luke */
+    {await wait(60);const b=$('#swap'),nm=T(storyName(PC()));ok(getComputedStyle(b).display!=='none'&&b.disabled&&b.textContent===nm,'the greyed button names whoever is played: '+b.textContent+' (expected '+nm+')')}
     if(stop==='pscroll22'){G.scene=DARK;narr(C.told.v1,{dur:60000})}
     if(stop==='pmap22'){const M=await need('map');M.pick(C.out.ids,'myra',{view:'outward',legs:C.out.legs,hint:'click_myra_where_we_put_in'})}
     /* pbale22: the next day, Paul with a bale at the cask, waiting for the pause (the picture of the bales on the beat, docs/screenshots) */

@@ -20,6 +20,7 @@ TEXTS('en','main',{
   "pray_to_jehovah":"Pray to Jehovah",
   "think_it_over":"Think it over",
   "play_as_name_c":"Play as {name} (C)",
+  "you_are_playing_name":"You're playing {name}",
   "speaker_name":"{name}:",
   "take_this_name":"Take this, {name}.",
   "give_item_to_thing":"Give {item} to {thing}",
