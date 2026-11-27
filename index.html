@@ -235,7 +235,7 @@ html.phone #overlay.closing .small{font-size:calc(var(--s)*4.6px)}
 #codebox .big{font-size:calc(var(--s)*17px);line-height:1.1;color:var(--hi);letter-spacing:.12em;-webkit-user-select:text;user-select:text;
   text-shadow:0 calc(var(--s)*1px) #7a3b12,calc(var(--s)*1px) calc(var(--s)*2px) #000}
 #codebox .row{display:flex;gap:calc(var(--s)*2px)}
-#codebox input{font:inherit;font-size:calc(var(--s)*8px);width:calc(var(--s)*104px);text-align:center;text-transform:uppercase;background:#150f26;
+#codebox input{font:inherit;font-size:calc(var(--s)*8px);width:calc(var(--s)*158px);text-align:center;text-transform:uppercase;background:#150f26;
   color:var(--hi);border:calc(var(--s)*1px) solid var(--dim);padding:calc(var(--s)*2px);letter-spacing:.1em;outline:none;-webkit-user-select:text;user-select:text}
 #codebox input:focus{border-color:var(--gold)}
 #codebox button{font:inherit;font-size:calc(var(--s)*6px);color:var(--gold);background:#1b1330;border:calc(var(--s)*1px) solid var(--dim);
@@ -3404,7 +3404,7 @@ function openCode(){audioInit();if(cb.classList.contains('on'))return closeCode(
         '</div><p>'+T('write_it_down')+'</p>'+
         (G.saved?'<p class="kept">'+T('this_point_is_also_saved')+'</p>':'')
       :'<h2>'+T('enter_code')+'</h2><p>'+T('type_a_code_from_an_earlier')+'</p>')+
-      '<div class="row"><input id="codein" maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXX-XXX">'+
+      '<div class="row"><input id="codein" maxlength="32" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXX-XXX">'+
       '<button id="codego" type="button">'+T('GO')+'</button></div><p id="codemsg" class="small">&nbsp;</p>'+
       '<button id="codex" type="button">'+(can?T('back_to_the_game'):T('Back'))+'</button>';
     $('#codein').value=typed;$('#codego').onclick=tryCode;$('#codex').onclick=closeCode;
