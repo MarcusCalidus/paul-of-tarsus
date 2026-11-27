@@ -108,7 +108,8 @@ const _=null,SCALE=[0,2,3,5,7,8,10],
  /* at half its pace: a bar of the tune takes two */
  half17=(k,at)=>{const o=[];for(const[s,n,l]of TUNE[k]){const S=s*2;o.push([at+Math.floor(S/13),S%13,n,Math.min(l*2,13-S%13)])}return o},
  SLOW=(()=>{const L=Array.from({length:16},()=>[]),put=x=>x.forEach(([b,s,n,l])=>L[b].push([s,n,l]));put(half17('A',0));put(half17('B',4));put(half17('C',8));put(half17('D',12));return L})(),
- MUSIC={dt:.18,steps:13,group:[3,2,3,2,3],root:59,scale:SCALE,bars:16,tracks:[
+ /* gain: the whole score +6.4 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
+ MUSIC={gain:2.09,dt:.18,steps:13,group:[3,2,3,2,3],root:59,scale:SCALE,bars:16,tracks:[
   {inst:'lyre',moods:['harbor'],oct:0,loop:8,lines:bars17('ABCD').concat(rock17('ABCD')),vol:.75},
   {inst:'ney',moods:['harbor'],oct:12,loop:8,lines:bars17('____ABCD'),vol:.4},
   {inst:'bass',moods:['harbor'],oct:-12,loop:4,lines:LOW,vol:.45},

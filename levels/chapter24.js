@@ -85,7 +85,8 @@ const SCALE=[0,2,4,5,7,9,11],ST=15,
  bars24=s=>[...s].map(k=>TUNE[k]),
  LOW=[[[0,0,15]],[[0,-2,15]],[[0,-3,15]],[[0,0,10],[10,-3,5]]],
  WALKLOW=[[[0,0,5],[5,4,5],[10,0,5]],[[0,-2,5],[5,2,5],[10,-2,5]],[[0,-3,5],[5,1,5],[10,-3,5]],[[0,-3,5],[5,-1,5],[10,0,5]]],
- MUSIC={dt:.2,steps:ST,group:[5,5,5],root:60,scale:SCALE,bars:16,tracks:[
+ /* gain: the whole score +11.4 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
+ MUSIC={gain:3.7,dt:.2,steps:ST,group:[5,5,5],root:60,scale:SCALE,bars:16,tracks:[
   {inst:'lyre',moods:['quay'],oct:0,loop:8,lines:bars24('ABCD____'),vol:.44},
   {inst:'harp',moods:['quay'],oct:0,loop:8,lines:bars24('____ABCD'),vol:.38},
   {inst:'bass',moods:['quay','house','relay'],oct:-12,loop:4,lines:LOW,vol:.22},

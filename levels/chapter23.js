@@ -90,7 +90,8 @@ const SCALE=[0,2,3,5,7,8,11],ST=18,
  ROCK={A:[[0,0,4],[4,4,5],[9,2,4],[13,4,5]],B:[[0,-2,4],[4,2,5],[9,0,4],[13,2,5]],C:[[0,-3,4],[4,1,5],[9,3,4],[13,1,5]],D:[[0,-1,4],[4,1,5],[9,-1,4],[13,0,5]]},
  rock23=s=>[...s].map(k=>ROCK[k]),
  LOW=[[[0,0,18]],[[0,-2,18]],[[0,-3,18]],[[0,-1,9],[9,0,9]]],
- MUSIC={dt:.15,steps:ST,group:[4,5,4,5],root:46,scale:SCALE,bars:16,tracks:[
+ /* gain: the whole score +11.1 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
+ MUSIC={gain:3.59,dt:.15,steps:ST,group:[4,5,4,5],root:46,scale:SCALE,bars:16,tracks:[
   {inst:'harp',moods:['night'],oct:12,loop:8,lines:bars23('AB__CD__'),vol:.34},
   {inst:'bass',moods:['night','hold','grey','fire','estate'],oct:0,loop:4,lines:LOW,vol:.2},
   {inst:'lyre',moods:['hold'],oct:12,loop:8,lines:bars23('ABCD____'),vol:.36},
