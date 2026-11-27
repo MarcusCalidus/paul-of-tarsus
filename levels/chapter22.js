@@ -950,7 +950,8 @@ async function advise22(){if(known22()<4)return say(P,'paul_not_yet_julius',TH);
   await say(PI,'pilot_this_bay_is_no_place_to_winter',{to:JU});
   await say(OW,'owner_phoenix_is_a_day_west',{to:JU});
   await tell('v11');await tell('v12');
-  F.advised=1;
+  /* from here on Luke may be played, and he carries his tablet (as inv deals it from a code) */
+  F.advised=1;{const L=G.invs.luke22||(G.invs.luke22=[]);if(!L.includes('ltab22'))L.push('ltab22')}
   await say(P,'paul_i_said_it_as_plainly_as_i_could',TH);
   /* 27:13: a soft south wind; the anchor cable comes up over the bow (no anchor is seen) */
   await fade(1,400);await fade(0,400);

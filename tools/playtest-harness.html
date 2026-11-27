@@ -6143,6 +6143,7 @@
   for(const nm of['cask','mast_step','lee_rail']){await tap22(nm,0,calm22)}
   await until(()=>F.load3&&C().phase()==='tablet'&&PC()===LK&&!G.busy,9000);note();
   ok(seenTold.has('v19')&&said('luke_ill_keep_the_days')&&!G.beat&&ART.storm22.variant()==='d'&&ART.storm22.light.amb&&!ART.storm22.light.sun&&!ART.storm22.light.lamps,'the third day the tackling (27:19); the dark days: Luke is played, no beat; the first day is a day, with no sun and no lantern');
+  ok(PC()===LK&&has('ltab22')&&G.inv.length===1,'played through, not restored: Luke carries his tablet and nothing else');
   await code('in the dark days',()=>G.room==='storm22'&&PC()===LK&&F.load3&&!F.t1&&has('ltab22'));
   /* no sun, no stars */
   await hints('hint_the_tablet_1','hint_the_tablet_2','in the dark days');
