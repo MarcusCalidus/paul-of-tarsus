@@ -730,7 +730,10 @@ function pluck(f,t,v,b,d){noise({t,d:d||.012,v,f:Math.min(f*b,6000),q:1.6,dest:A
      {inst, prog:'AABA', seq:{A:[a scale degree per step, null = rest]}} a pattern per bar, chosen by prog
      {inst, from: bar, loop: bars, lines:[[[step,degree,length],..] per bar]}  a melody
    An instrument is called as inst(f, t, d, v, down, track): down on the first step of a bar, track for options such as the aulos's hold.
-   oct shifts a track by semitones, vol scales it, len sets note length in steps.
+   oct shifts a track by semitones, vol scales it, len sets note length in steps. A score's gain scales all its tracks at once: it brings
+   a chapter's music to the level every chapter's music shares (about -28 dB while it plays, as the stop `levels` measures it) and
+   leaves the balance between its tracks and its moods as it was written. While a beat runs (G.beat: the sea of a crossing, the soldier's
+   step, shared/beat.js) every note is played BEATDUCK softer, about 9 dB, so that the beat can be followed by ear over the music.
    A score may bring its own voices, which win over the engine's of the same name for that score only: inst:{name(f,t,d,v,down){..}},
    drums:{x(t,v){..}}. They write to AU.out (the lyre-like to AU.body) and send to the room with echo:1, so the track's fade covers them;
    an instrument with hand:true is played by hand like the engine's plucked strings (drum strokes always are).
@@ -793,7 +796,7 @@ const loose=t=>Math.max(AU.ctx.currentTime,t+(Math.random()*2-1)*.004);
    to AU.toRoom, as it writes to AU.out, and playStep points both at the track's, so a voice fades in the room as it fades dry. Outside the
    score (the fanfares, the map) they are the music bus and AU.send. While the mood holds, every playing track's gains are 1 and its
    notes are exactly what they were without cross-fades. */
-const FADE=1.5,FADEN=7;
+const FADE=1.5,FADEN=7,BEATDUCK=.35;
 function mixFor(sc){const c=AU.ctx,o=AU.mix;if(o&&o.sc===sc&&o.c===c)return o;
   if(o&&o.c===c)setTimeout(()=>o.tr.forEach(x=>{x.g.disconnect();x.r.disconnect()}),4000);
   return AU.mix={sc,c,tr:sc.tracks.map(tr=>{const g=c.createGain(),r=c.createGain();g.connect(AU.mus);r.connect(AU.send);return{g,r,body:tr.inst==='lyre'?lyreBody(c,g):null,on:null,off:0}})}}
@@ -807,7 +810,7 @@ function playStep(st,t){const sc=AU.score;if(!sc)return;const N=sc.steps||16,
     else if(want!==x.on)for(const p of[x.g.gain,x.r.gain])p.setTargetAtTime(want?1:0,t,FADE*sc.dt);
     const join=want&&x.on===false;x.on=want;x.off=want?0:x.off+1;if(!want&&x.off>FADEN)return;
     AU.out=x.g;AU.toRoom=x.r;AU.body=x.body||body;
-    const own=sc.inst&&sc.inst[tr.inst],play=own||INST[tr.inst],v=tr.vol==null?1:tr.vol,pr=tr.prog||'A',hand=tr.drum||(own?!!own.hand:LOOSE.has(tr.inst)),tt=()=>hand?loose(t):t,vv=hand?v*accent(s,N,tr.group||sc.group):v;
+    const own=sc.inst&&sc.inst[tr.inst],play=own||INST[tr.inst],v=(tr.vol==null?1:tr.vol)*(sc.gain||1)*(G.beat&&G.beat.on?BEATDUCK:1),pr=tr.prog||'A',hand=tr.drum||(own?!!own.hand:LOOSE.has(tr.inst)),tt=()=>hand?loose(t):t,vv=hand?v*accent(s,N,tr.group||sc.group):v;
     if(tr.drone){const ev=tr.every||2*N;if(want&&(st%ev===0||join))for(const n of tr.drone)(sc.inst&&sc.inst.drone||INST.drone)(mtof(sc.root+n),t,(ev-st%ev)*sc.dt+.4,v)}
     else if(tr.drum){const ch=tr.seq[pr[bar%pr.length]][s],hit=ch&&(sc.drums&&sc.drums[ch]||DRUMS[ch]);if(hit)hit(tt(),vv)}
     else if(tr.seq){const p=tr.seq[pr[bar%pr.length]],n=p[s];if(want&&s===0&&tr.hold!=null&&play.hold&&p.some(x=>x!=null))held(tr,play,t,v);

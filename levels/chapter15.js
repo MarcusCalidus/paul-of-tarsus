@@ -84,7 +84,8 @@ const _=null,SCALE=[0,2,4,5,7,9],
    put(slow15('A',0));put(slow15('B',4));put(slow15('C',11));put(slow15('D',15));put(slow15('A',22,1).slice(0,3));put(slow15('D',26).slice(3));return L})(),
  /* and the low note of the night: it comes in under each half of the tune and is gone before the rest is over */
  HUM=Array.from({length:32},(x,i)=>i===0||i===11?[[0,0,84]]:[]),
- MUSIC={dt:.24,steps:12,group:[3,3,3,3],root:48,scale:SCALE,bars:32,tracks:[
+ /* gain: the whole score +5.3 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
+ MUSIC={gain:1.84,dt:.24,steps:12,group:[3,3,3,3],root:48,scale:SCALE,bars:32,tracks:[
   {inst:'lyre',moods:['house'],oct:12,loop:8,lines:bars15('ABCDIJIK'),vol:.8},
   {inst:'bass',moods:['house','dawn'],loop:8,lines:LOW8,vol:.5},
   {inst:'ney',moods:['harbor'],oct:24,loop:8,lines:bars15('ABCD____'),vol:.5},

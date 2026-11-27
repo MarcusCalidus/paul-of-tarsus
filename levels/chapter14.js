@@ -39,7 +39,8 @@ const L=SHARED.lanes;
 const _=null,SCALE=[0,2,3,5,7,9,10],
  TUNE={A:[0,_,2,_,3,_,4,_],B:[5,_,4,_,3,_,2,_],C:[4,_,5,_,6,_,7,_],D:[6,_,4,_,1,_,0,_]},
  SLOW={A:[0,_,_,_,2,_,_,_],B:[4,_,_,_,3,_,_,_],C:[5,_,_,_,4,_,_,_],D:[2,_,_,_,0,_,_,_]},
- MUSIC={dt:.19,steps:8,group:[3,3,2],root:50,scale:SCALE,bars:16,tracks:[
+ /* gain: the whole score +2.2 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
+ MUSIC={gain:1.29,dt:.19,steps:8,group:[3,3,2],root:50,scale:SCALE,bars:16,tracks:[
   {inst:'lyre',moods:['work'],prog:'ABCD',len:2,seq:TUNE},
   {inst:'bass',moods:['work'],prog:'ABAB',len:5,seq:{A:[-7,_,_,_,-3,_,_,_],B:[-5,_,_,_,-7,_,_,_]},vol:.7},
   {drum:1,moods:['work'],prog:'AAAB',seq:{A:'d..t..d.',B:'d..t.kd.'},vol:.45},

@@ -98,7 +98,8 @@ const SCALE=[0,2,4,5,7,8,11],ST=21,
  /* the low string under each bar of the tune: on the first beat and on the third, long one */
  LOWS={A:[[0,0,12],[12,-3,9]],B:[[0,0,6],[6,-1,6],[12,-3,9]],C:[[0,-4,12],[12,-2,9]],O:[[0,-4,12],[12,-3,9]],D:[[0,-3,12],[12,0,9]]},
  low22=s=>[...s].map(k=>LOWS[k]),
- MUSIC={dt:.14285714285714285,steps:ST,group:[6,6,9],root:45,scale:SCALE,bars:16,tracks:[
+ /* gain: the whole score +7.8 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
+ MUSIC={gain:2.45,dt:.14285714285714285,steps:ST,group:[6,6,9],root:45,scale:SCALE,bars:16,tracks:[
   {inst:'lyre',moods:['quay'],oct:24,loop:8,lines:bars22('ABCO____'),vol:.5},
   {inst:'harp',moods:['quay'],oct:12,loop:8,lines:bars22('____ABCO'),vol:.5},
   {drum:1,moods:['quay'],prog:'AAAB',seq:{A:'d.....k.....d..k..k..',B:'d.....k.....d..k.kk..'},vol:.2},

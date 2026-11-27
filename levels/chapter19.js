@@ -96,7 +96,8 @@ const SCALE=[0,1,3,5,7,8,10],ST=7,
  /* at half its pace: a bar of the tune takes two */
  half19=(k,at)=>{const o=[];for(const[s,n,l]of TUNE[k]){const S=s*2;o.push([at+Math.floor(S/ST),S%ST,n,Math.min(l*2,ST-S%ST)])}return o},
  SLOW=(()=>{const L=Array.from({length:8},()=>[]),put=x=>x.forEach(([b,s,n,l])=>L[b].push([s,n,l]));put(half19('A',0));put(half19('B',2));put(half19('C',4));put(half19('D',6));return L})(),
- MUSIC={dt:.2,steps:ST,group:[2,2,3],root:52,scale:SCALE,bars:16,tracks:[
+ /* gain: the whole score +8.4 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
+ MUSIC={gain:2.63,dt:.2,steps:ST,group:[2,2,3],root:52,scale:SCALE,bars:16,tracks:[
   {inst:'lyre',moods:['council'],oct:12,loop:8,lines:bars19('ABCD____'),vol:.5},
   {inst:'bass',moods:['council'],oct:0,loop:4,lines:LOW,vol:.3},
   {drone:[0],every:56,moods:['council'],vol:.05},

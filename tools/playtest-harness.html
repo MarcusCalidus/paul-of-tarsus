@@ -1062,6 +1062,33 @@
      (mixFor). score(n, then) plays the bar once and hands over to then, or to silence in the bar's key. tunes-sheet.png
      (de-tunes-sheet.png) is a piano roll of every bar, steps across and pitch up, one color to an instrument and the drum strokes under
      it, with the chapter's name in the stop's language, its key and scale, its length, and where in the chapter's score it comes from. */
+  /* The level of every chapter's music (decided 2026-11-27): each chapter's score is played offline through the engine's own playStep in
+     every mood its rooms name, eight bars each, and measured while it sounds (the frames above -55 dB, so that a rest does not count as
+     quiet music), weighted by how many rooms play each mood. From Chapter Three on every chapter lies within 2.5 dB of LEVEL, none
+     clips or peaks above -6 dB, and while a beat runs (G.beat) the same notes are played BEATDUCK softer, so the sea or the step can be
+     followed by ear. Chapters One and Two open the game a little louder, as they were written. levels-sheet: a bar for each chapter. */
+  if(stop==='levels'){const LEVEL=-28.5,SR=22050,rows=[],bad=[];
+    const render=async(sc,mood,bars,beat)=>{const N=sc.steps||16,len=bars*N*sc.dt+2,o=new OfflineAudioContext(1,Math.ceil(SR*len),SR),keep=Object.assign({},AU),gb=G.beat,R=Math.random;let z=11;
+        Math.random=()=>(z=z*16807%2147483647)/2147483647;
+        try{AU.ctx=o;AU.mix=null;audioGraph(o);AU.score=sc;AU.mood=mood;G.beat=beat?{on:true}:null;let t=.05;for(let st=0;st<bars*N;st++){playStep(st,t);t+=sc.dt}}
+        finally{G.beat=gb;Math.random=R;for(const k in AU)AU[k]=keep[k];AU.mix=null}
+        const x=(await o.startRendering()).getChannelData(0),w=Math.round(SR*.05);let ae=0,an=0,pk=0,e=0;for(let i=0;i<x.length;i++)e+=x[i]*x[i];
+        for(let i=Math.round(SR);i+w<=x.length-Math.round(SR*2);i+=w){let s=0;for(let j=i;j<i+w;j++){s+=x[j]*x[j];pk=Math.max(pk,Math.abs(x[j]))}if(10*Math.log10(s/w+1e-12)>=-55){ae+=s;an+=w}}
+        return{act:an?10*Math.log10(ae/an):-120,all:10*Math.log10(e/x.length+1e-12),pk:20*Math.log10(pk+1e-12)}};
+    for(const n of Object.keys(CHAP).map(Number).sort((a,b)=>a-b)){await loadLevel(n);setChapter(n);const c=CHAP[n],sc=c.music,tm=new Set(sc.tracks.flatMap(t=>t.moods||[])),used={};
+      for(const id of c.rooms||[]){let m=null;try{m=ROOMS[id]&&ROOMS[id].mood}catch(e){}if(m&&tm.has(m))used[m]=(used[m]||0)+1}
+      let W=0,A=0,PK=-200;for(const m in used){const r=await render(sc,m,8);W+=used[m];A+=used[m]*Math.pow(10,r.act/10);PK=Math.max(PK,r.pk)}
+      const act=W?10*Math.log10(A/W):-120;rows.push([n,act,PK]);
+      if(n>=3&&Math.abs(act-LEVEL)>2.5)bad.push(`Chapter ${n} plays at ${act.toFixed(1)} dB`);if(PK>-6)bad.push(`Chapter ${n} peaks at ${PK.toFixed(1)} dB`)}
+    ok(!bad.length,`every chapter's music from Chapter Three on plays within 2.5 dB of ${LEVEL} dB (${rows.filter(r=>r[0]>=3).map(r=>r[0]+': '+r[1].toFixed(1)).join(', ')}), and none peaks above -6 dB`+(bad.length?'. NOT: '+bad.join('; '):''));
+    {await loadLevel(23);const sc=CHAP[23].music,a=await render(sc,'tense',8),b=await render(sc,'tense',8,1),d=a.all-b.all;
+      ok(Math.abs(d-(-20*Math.log10(BEATDUCK)))<.6,`while a beat runs the music stands back: Chapter Twenty-Three's surf plays ${d.toFixed(1)} dB softer under the beat of the sea`)}
+    {const Z=3,W0=26*28*Z,H=220*Z,cv=document.createElement('canvas');cv.width=W0;cv.height=H;const g=cv.getContext('2d');g.fillStyle='#14100c';g.fillRect(0,0,W0,H);
+      /* a bar for each chapter, from -15 dB at the top; the band is LEVEL +-2.5 dB, and each bar has its chapter's number over it */
+      const y=v=>(-v-15)*10*Z;g.fillStyle='#3a3020';g.fillRect(0,y(LEVEL+2.5),W0,5*10*Z);g.font=`bold ${8*Z}px monospace`;
+      rows.forEach(([n,a],i)=>{g.fillStyle='#e8c547';g.fillRect(i*28*Z+6*Z,y(a),16*Z,H-y(a));g.fillStyle='#f4f0e6';g.fillText(String(n),i*28*Z+6*Z,y(a)-3*Z)});
+      window.SHEETS={'levels-sheet':cv.toDataURL()}}
+    halt('levels')}
   if(stop==='tunes'){await need('tunes');const TU=SHARED.tunes,IDS=['pro',...Object.keys(CHAP).map(Number)],J=JSON.stringify,miss=[],keys=[],notes=[],loud=[],even=[],lev=[],rows=[];
     /* evs: the notes playStep plays for steps from..from+n-1 of a score in a mood, counted from from; the track a note is played for is
        the one whose gain playStep points AU.out at */
@@ -1085,7 +1112,7 @@
       db=v=>(20*Math.log10(v)).toFixed(1);
     for(const id of IDS){const n=id==='pro'?1:id;if(!TU.has(id)){miss.push(id);continue}
       await loadLevel(n);const sc=CHAP[n].music,b=TU.BARS[id],src=b.src,N=sc.steps||16,len=b.bars*N;
-      for(const[k,a,c]of[['dt',b.dt,sc.dt],['steps',b.steps,N],['group',J(b.group),J(sc.group)],['root',b.root,sc.root],['scale',J(b.scale),J(sc.scale)]])
+      for(const[k,a,c]of[['gain',b.gain||1,sc.gain||1],['dt',b.dt,sc.dt],['steps',b.steps,N],['group',J(b.group),J(sc.group)],['root',b.root,sc.root],['scale',J(b.scale),J(sc.scale)]])
         if(a!==c)keys.push(`chapter ${id}: ${k} is ${a} here and ${c} in its score`);
       if(b.tracks.length>4||b.tracks.length!==src.tracks.length||b.tracks.some(t=>t.moods||t.from!=null||t.loop!=null))keys.push(`chapter ${id}: more than four tracks, not one to each of src.tracks, or one with moods, from or loop`);
       const A=evs(sc,src.mood,src.bar*N,len),B=evs(b,'none',0,len),hold=+(len*b.dt+.4).toFixed(4),key=e=>[e.s,e.inst,e.m,e.d,e.v].join(),by=(p,q)=>p.s-q.s||key(p).localeCompare(key(q));
@@ -1103,7 +1130,7 @@
       L(`     ${id}: ${b.bars} bar${b.bars>1?'s':''}, ${TU.len(id).toFixed(2)} s, ${b.tracks.length} tracks, ${B.length} notes; peak ${db(r.pk)} dB, RMS ${db(r.rms)} dB (the chapter in that bar ${db(f.pk)}, ${db(f.rms)} dB), rings ${r.tail.toFixed(2)} s on`);
       rows.push({id,b,ev:B,name:id==='pro'?T('Prologue')+': '+T(PRO.title):T(CHAP[n].label)+': '+T(CHAP[n].title)})}
     ok(!miss.length,`every chapter that exists has its bar in shared/tunes.js: ${IDS.length-miss.length} of ${IDS.length}`+(miss.length?'. MISSING: '+miss.join(', '):''));
-    ok(!keys.length,'each bar has its chapter\'s dt, steps, group, root and scale, and at most four tracks, none of which depends on the mood'+(keys.length?'. NOT: '+keys.join('; '):''));
+    ok(!keys.length,'each bar has its chapter\'s gain, dt, steps, group, root and scale, and at most four tracks, none of which depends on the mood'+(keys.length?'. NOT: '+keys.join('; '):''));
     ok(!notes.length,'each bar plays, track by track, the notes its chapter\'s score plays in that bar and mood: instrument, step, pitch, length and level'+(notes.length?'. DIFFERS: '+notes.join('; '):''));
     ok(!loud.length,'each bar sounds unclipped, no louder than its chapter plays that bar, and dies away within 3.5 s of its end'+(loud.length?'. NOT: '+loud.join('; '):''));
     ok(!even.length,`for the look back each bar's own level is noted, and evened out the bars lie between ${Math.min(...lev).toFixed(1)} and ${Math.max(...lev).toFixed(1)} dB, none clipped`+(even.length?'. NOT: '+even.join('; '):''));
