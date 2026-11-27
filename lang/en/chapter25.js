@@ -210,7 +210,7 @@ TEXTS('en',25,{
   "valens_my_mother_has_a_fever":"My mother has a fever. I'd rather be home today.",
   "bassus_my_last_post_was_a_granary":"My last post was a granary. It had fewer visitors.",
   "macer_ive_guarded_worse":"I've guarded worse than you.",
-  "valens_her_fever_is_long_gone":"My mother got over that fever long ago, if you're wondering.",
+  "valens_her_fever_is_long_gone":"My mother got over that fever long ago.",
   "fulvius_twenty_six_days":"Twenty-six days left. Then home.",
   "celer_its_quiet_here":"It's quieter here than in the camp.",
   "soldier_one_thing_before_my_relief":"My relief will be here soon. One thing before I go.",

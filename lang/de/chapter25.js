@@ -212,7 +212,7 @@ TEXTS('de',25,{
   "valens_my_mother_has_a_fever":["Meine Mutter hat Fieber. Heute wäre ich lieber zu Hause.","0tkrib4"],
   "bassus_my_last_post_was_a_granary":["Mein letzter Posten war ein Kornspeicher. Der hatte weniger Besuch.","1tubqj3"],
   "macer_ive_guarded_worse":["Ich habe schon Schlimmere als dich bewacht.","0qnuese"],
-  "valens_her_fever_is_long_gone":["Das Fieber meiner Mutter ist längst vorbei, falls du dich das fragst.","0deuonh"],
+  "valens_her_fever_is_long_gone":["Das Fieber meiner Mutter ist längst vorbei.","1voiuvi"],
   "fulvius_twenty_six_days":["Noch sechsundzwanzig Tage. Dann nach Hause.","1snwyhr"],
   "celer_its_quiet_here":["Hier ist es ruhiger als im Lager.","1y6e3e9"],
   "soldier_one_thing_before_my_relief":["Meine Ablösung kommt gleich. Eins noch, bevor ich gehe.","0uke05q"],
