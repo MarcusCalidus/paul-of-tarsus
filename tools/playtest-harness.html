@@ -6544,7 +6544,7 @@
      once, with the story's flags set for it, and say its safe-point code (CODE): pscroll24 · pquay24 · pcourt24 · pcapua24 · pcanal24 (the
      treasure's point) · pdawn24 · pstones24 · prome24 · pboard24 · phills24 · pmarsh24 · pmarsh24b · pmeet24 · ptaverns24 · pfar24 · pcapena24
      · pcamp24 · plane24 · pflat24 · pstreet24 · pgarret24 · psmall24; and three that go one step further, for the pictures of the
-     chapter's page: prelay24 (the carter has given the message, the trader has said its first two parts back, and the choice stands),
+     chapter's page: prelay24 (the carter has given the message, the trader has said all four parts back, and the choice stands),
      ppegs24 (four pegs on the board, Vibia's in hand) and pcall24 (the road in the hills, the soldier's call standing for a long pause).
      The timed walk, driven by the beat's exposed phase: beatwalk24 (a hit,
      a miss with no line, the call after three, the carry after six, a stretch walked to its stone) and phonewalk24 (the same tapped on a phone
@@ -6580,8 +6580,8 @@
        the soldier, at the game's pace, for a long pause (a step that takes no time) */
     const choices24=async()=>{for(let i=0;i<600&&!$('#choices').classList.contains('on');i++){if(G.skip)G.skip();await wait(40)}await wait(200)};
     if(stop==='prelay24'){const TR=ACT.trader24;verb('talk');clickView(TR.x,TR.y-10,TR.hs);await choices24();
-      const b=[...document.querySelectorAll('#choices button')].find(x=>x.dataset.src==='let_it_stand');if(!b)throw new Error('no choice let_it_stand');b.click();
-      await wait(300);await choices24();ok($('#choices').classList.contains('on')&&[...document.querySelectorAll('#choices button')].some(x=>x.dataset.src===CHAP[24].msg[1]),'the trader has said the road back, and the choice stands: let it stand, or say it again')}
+      const bs=[...document.querySelectorAll('#choices button')].map(x=>x.dataset.src);
+      ok(bs.length===5&&bs.includes('let_it_stand')&&CHAP[24].msg.every(k=>bs.includes(k)),'the trader has said all four parts back, and the choice stands: let it all stand, or say one part again')}
     if(stop==='ppegs24'){G.tok24={sextus24:'M',mikon24:'M',postumus24:'T',thallos24:'T'};G.sel24='vibia24';await wait(300)}
     if(stop==='pcall24'){for(let i=0;i<300&&!G.beat;i++)await wait(20);const k=SHARED.beat.start(Object.assign({sticky:true,room:'hills24',sound:false},CHAP[24].beat,{pause:2600,at:.1,need:0,phase:.11}));
       k.st24='s1';k.misses=3;k.help=1;for(let i=0;i<200&&!k.calling();i++)await wait(20);ok(k.calling(),'the soldier calls the step while his foot is up')}
@@ -6675,21 +6675,24 @@
   ok(ROADS24.join()==='malta-syracuse,syracuse-rhegium,rhegium-puteoli','the sea on the map: Malta, Syracuse, Rhegium, Puteoli');
   halt('court24');
   await hints('hint_the_news_for_rome_1','hint_the_news_for_rome_2','at Puteoli');
-  /* the news goes ahead: Luke to the carter. A harmless change set right: "That's what I said"; the day set right */
-  heard.length=0;talkTo(CA);{const o=await asked();ok(MSG.every(k=>said(k))&&said('let_me_say_it_back')&&said(H[0].say[0])&&o.length===2&&o.includes('let_it_stand')&&o.includes(MSG[0]),
-      'Luke gives the four parts; the carter says the first back in his own words; let it stand, or say it again (every correction on offer is the part itself, and true)')}
-  await line(MSG[0]);ok(said('thats_what_i_said'),'a harmless change set right: that\'s what I said');
-  await line('let_it_stand');ok(said(H[0].say[2]),'the carter: seven weeks in Puteoli');await line('let_it_stand');await line('let_it_stand');
+  /* the news goes ahead: Luke to the carter. A harmless change set right: "That's what I said"; the slip let stand: "Wait. One thing
+     again.", and the choice comes back without "let it stand"; the day set right */
+  heard.length=0;talkTo(CA);{const o=await asked();ok(MSG.every(k=>said(k))&&said('let_me_say_it_back')&&H[0].say.every(k=>said(k))&&o.length===5&&o.includes('let_it_stand')&&MSG.every(k=>o.includes(k)),
+      'Luke gives the four parts; the carter says all four back in his own words (seven weeks in Puteoli); then one choice: let it all stand, or say one part again (every correction on offer is the part itself, and true)')}
+  await line(MSG[0]);{const o=await asked();ok(said('thats_what_i_said')&&o.length===4&&!o.includes(MSG[0])&&o.includes('let_it_stand'),'a harmless change set right: that\'s what I said, and that part leaves the choice')}
+  heard.length=0;await line('let_it_stand');{const o=await asked();ok(said('wait_one_thing_again')&&!F.given1&&o.length===3&&[1,2,3].every(i=>o.includes(MSG[i])),
+      'the slip let stand: Luke stops him (wait, one thing again), and the choice comes back with the parts not yet said, without let it stand')}
+  await line(MSG[1]);ok(said('thats_what_i_said')&&!F.given1,'another harmless part: that\'s what I said');
+  await line(MSG[2]);
   await until(()=>G.room==='capua24'&&!G.busy,9000);
-  ok(F.given1&&said('wait_one_thing_again')&&said(H[0].fix)&&PC()===CA&&CA.noPray&&said('carter_capua_who_goes_on_to_the_coast'),
-    'the day let stand ("weeks"): Luke notices as the carter turns to go, and says it once more; the carter has it right. Capua: the carter is played, and he does not worship Jehovah');
+  ok(F.given1&&said(H[0].fix)&&PC()===CA&&CA.noPray&&said('carter_capua_who_goes_on_to_the_coast'),
+    'the day said again: the carter has it right. Capua: the carter is played, and he does not worship Jehovah');
   ok(ART.capua24.light.sun,'the station by Capua in the afternoon light');
   halt('capua24');
   await thinks('think_the_trader_1','think_the_trader_2','at Capua');
-  /* the carter to the trader: the road set right; every other change let stand */
-  heard.length=0;talkTo(TR);await line('let_it_stand');
+  /* the carter to the trader: the road set right at once */
+  heard.length=0;talkTo(TR);await asked();
   ok(said(H[1].say[1]),'the trader: by sea, to Ostia');await line(MSG[1]);ok(said(H[1].fix),'the road set right: on foot, up the Appian Way');
-  await line('let_it_stand');await line('let_it_stand');
   await until(()=>G.room==='canal24'&&!G.busy,9000);
   ok(F.given2&&!said('wait_one_thing_again')&&PC()===TR&&TR.noPray&&!ROOMS.canal24.birds&&!ART.canal24.light.sun,'set right in time, nobody has to call him back. The canal at dusk: the trader is played; no birds, no sun');
   await code('by the canal at dusk',()=>G.room==='canal24'&&PC()===TR&&F.given2&&!F.given3&&!P.room);
@@ -6700,14 +6703,14 @@
   heard.length=0;talkTo(BO);{const o=await asked();ok(o.join()==='trader_i_have_a_message_for_rome,never_mind','and only once: asked, the question leaves the menu')}await line('never_mind');
   {const was=JSON.stringify([F,G.invs]),cd=makeCode();heard.length=0;await onH('reeds','use');
     ok(said('trader_the_whole_marsh_sings')&&G.frogs24&&treasures().has(24)&&JSON.stringify([F,G.invs])===was&&makeCode()===cd,'the reeds touched: the frogs croak the chapter\'s tune, the reeds stir and rings spread (the hidden treasure); nothing has changed ('+cd+')')}
-  heard.length=0;talkTo(BO);await line('trader_i_have_a_message_for_rome');for(let i=0;i<3;i++)await line('let_it_stand');
+  heard.length=0;talkTo(BO);await line('trader_i_have_a_message_for_rome');await asked();
   ok(said(H[2].say[3]),'the boatman: Fabia\'s house');await line(MSG[3]);ok(said(H[2].fix),'the name set right: Vibia');
   await until(()=>G.room==='appius24'&&!G.busy,9000);
   ok(F.given3&&PC()===BO&&ART.appius24.variant()==='dawn'&&DE.room==='appius24','the Marketplace of Appius at daybreak: the boatman is played; a young carrier is loading for Rome');
   halt('dawn24');
   await thinks('think_the_young_man_1','think_the_young_man_2','at daybreak');
   /* the boatman to Sextus, who gets it all right in his own words: every correction is answered kindly and changes nothing */
-  heard.length=0;talkTo(DE);await line(MSG[0]);ok(said('thats_what_i_said'),'a correction of nothing: that\'s what I said');for(let i=1;i<4;i++)await line('let_it_stand');
+  heard.length=0;talkTo(DE);await line(MSG[0]);ok(said('thats_what_i_said'),'a correction of nothing: that\'s what I said');await line('let_it_stand');
   await until(()=>PC()===DE&&!G.busy,6000);
   ok(F.given4&&!said('wait_one_thing_again')&&said('sextus_how_far_is_it_really')&&$('#pray').dataset.k==='pray_to_jehovah','Sextus has it right; he is played now, and he prays');
   heard.length=0;await onH('road_north','walk');ok(said('sextus_first_what_the_stone_says')&&G.room==='appius24','first the stone');
