@@ -2716,6 +2716,13 @@
     const c=makeCode();for(const k in F)delete F[k];G.room=null;
     ok($('#code').textContent===T('enter_code'),'title shows ENTER CODE');$('#code').click();
     ok(cb.classList.contains('on')&&!$('#codebox .big'),'title: entry-only screen');
+    {/* the longest code any chapter can make fits the box: maxlength lets it be typed or pasted in full, and it is seen whole. A value set
+        from a script passes maxlength by, so the length is checked against it here (Chapter Twenty-Four's codes are 26 long) */
+      const L={};for(const k of Object.keys(CHAP)){const n=+k;await loadLevel(n);const C=CHAP[n];if(!wide(C))continue;const{ps,fb,rb,pb,sb}=layout(C),
+        bits=fb+ps.length*rb+pb+sb*pb,len=Math.max(9,Math.ceil((bits+9)/15)*3);L[n]=String(n).length+len+len/3}
+      const top=Math.max(...Object.values(L)),n=Object.keys(L).find(k=>L[k]===top),i=$('#codein');
+      i.value=n+'-888'.repeat((top-n.length)/4);await wait(60);const sw=i.scrollWidth,cw=i.clientWidth;i.value='';
+      ok(top<=i.maxLength&&sw<=cw+1,`the longest code of any chapter (${top} characters, Chapter ${n}) can be typed into the box (it takes ${i.maxLength}) and is seen whole (${sw} of ${cw} pixels)`)}
     $('#codein').value=c;$('#codego').click();await idle();
     ok(G.room==='street'&&!G.scene&&!ov.classList.contains('on')&&!G.busy&&has('longrope')&&has('patch')&&has('basket')&&!has('pouch'),'code from title starts mid-game: '+c);
     await act(null,'eliabs_door');ok(G.room==='workshop','playable after title code');halt('titlecode')}
