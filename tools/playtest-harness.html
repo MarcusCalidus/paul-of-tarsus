@@ -894,8 +894,9 @@
     {const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[0,0,MV.fwd],[0,0,MV.back|MV.glance],[3,0,MV.dip],[4,0,MV.lift|MV.brow],[3,0,MV.back],[2,1,MV.fwd],[2,2,0],[0,3,0],[3,3,MV.dip],[2,1,MV.lean|MV.fwd],[4,2,MV.lean],[0,4,0],[0,5,0],[0,6,0],[0,7,0],[0,8,0],[0,9,0],[2,9,0],[0,10,0]],
         ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'),bad=[],apart=[],stone=[],seatBad=[];let n=0;
       for(const id of ids){const o=LOOK[id],at=(t,g,m,d)=>sprite(['pose',id,d<0?'-1':'1',t,g,m].join('|'),q=>person(q,0,0,o,d,0,t,0,g,0,m),d),rest=at(0,0,0,1),r0=parts(rest);if(r0!==1)apart.push(id+' ('+r0+')');
-        for(const[t,g,m]of POSES)for(const d of m&MV.lean?[1,-1]:[1]){n++;const c=at(t,g,m,d);if(parts(c)!==r0)bad.push(id+' '+[t,g,m,d]);if(o.stone&&!g&&d>0&&c.toDataURL()!==rest.toDataURL())stone.push(id)}
-        if(!o.stone)for(const bw of[0,1]){const sc=sprite(['seat',id,bw].join('|'),q=>person(q,0,0,o,1,-1,0,bw,0,bw,0),1);if(parts(sc)!==1)seatBad.push(id+' seat '+bw)}}
+        if(parts(at(0,0,0,-1))!==1)apart.push(id+' left ('+parts(at(0,0,0,-1))+')');
+        for(const[t,g,m]of POSES)for(const d of[1,-1]){n++;const c=at(t,g,m,d);if(parts(c)!==r0)bad.push(id+' '+[t,g,m,d]);if(o.stone&&!g&&d>0&&c.toDataURL()!==rest.toDataURL())stone.push(id)}
+        if(!o.stone)for(const bw of[0,1])for(const d of[1,-1]){const sc=sprite(['seat',id,d,bw].join('|'),q=>person(q,0,0,o,d,-1,0,bw,0,bw,0),d);if(parts(sc)!==1)seatBad.push(id+' seat '+d+' '+bw)}}
       ok(!apart.length,'every figure at rest is one piece: '+ids.length+' looks'+(apart.length?'. IN PIECES: '+apart.join(', '):''));
       ok(!bad.length&&!seatBad.length,`speaking, seated and leading by the hand: ${n} poses of mouth, head and hand, plus seated bowed/upright, and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):'')+(seatBad.length?'. SEAT: '+seatBad.join(', '):''));
       ok(ids.some(k=>LOOK[k].stone)&&!stone.length,'a statue never moves: its picture is the same with any mouth and any head'+(stone.length?'. MOVED: '+[...new Set(stone)].join(', '):''));
@@ -924,9 +925,9 @@
        moment, three times enlarged: look there for legs that cross below the hem, for a foot that reaches across the foot of a spear, and for an
        arm that lies across the body as a bar (CONTRIBUTING section 3). */
     {const ids=Object.keys(LOOK).filter(k=>LOOK[k]&&typeof LOOK[k]==='object'&&!LOOK[k].stone),bad=[],legacy=[];let n=0;
-      ids.forEach((id,j)=>{const o=LOOK[id],at=fr=>sprite(['walk',id,fr].join('|'),q=>person(q,0,0,o,1,fr,0,0,0,0,0),1);
-        for(let a=0;a<3;a++)for(let k=0;k<16;k+=a?2:1){n++;if(parts(at(4+k+16*a))!==1)bad.push(id+' '+(4+k+16*a))}
-        if(j%20===0&&[[1,4],[2,8],[3,12]].some(([x,y])=>at(x).toDataURL()!==at(y).toDataURL()))legacy.push(id)});
+      ids.forEach((id,j)=>{const o=LOOK[id],at=(fr,d)=>sprite(['walk',id,d,fr].join('|'),q=>person(q,0,0,o,d,fr,0,0,0,0,0),d);
+        for(const d of[1,-1])for(let a=0;a<3;a++)for(let k=0;k<16;k+=a||d<0?2:1){n++;if(parts(at(4+k+16*a,d))!==1)bad.push(id+' '+(d<0?'L':'R')+(4+k+16*a))}
+        if(j%20===0&&[[1,4],[2,8],[3,12]].some(([x,y])=>at(x,1).toDataURL()!==at(y,1).toDataURL()))legacy.push(id)});
       ok(!bad.length,`walking: ${n} frames of ${ids.length} looks, and none comes apart`+(bad.length?'. IN PIECES: '+bad.slice(0,12).join('; '):''));
       ok(!legacy.length,'the three frames of the old walk are three moments of the new stride'+(legacy.length?'. NOT: '+legacy.join(', '):''));
       const B={skin:'#c08a5c',tunic:'#c4b08a',belt:'#3a2414'},fm={skin:'#c8a078',tunic:'#ece4d0',long:1,belt:'#c9a14a',slim:1,longSleeve:1,trim:'#6a2a5a',brow:'#3a2414'},
@@ -973,6 +974,17 @@
         Z=8,cw=208,chh=300,[c,g]=sheet(4*cw,2*chh);
       HEAD.forEach((o,i)=>{const x=(i%4)*cw,y=Math.floor(i/4)*chh,f=o.veil||o.fem,top=4+(o.h?19:23)+(o.h?13:16)+3+(o.h?22:f?24:26)+20;field(g,i+Math.floor(i/4),x,y,cw,chh);cut(g,spr(o,'close'+i,1),-13,-top-6,26,39,x,y-6,Z)});
       SHEETS['cast-closeup']=c.toDataURL()}
+    /* left vs right facing sheet: asymmetric garments & gear must stay on the same anatomical side when turning */
+    {await need('cast');const C=SHARED.cast,
+        WHO=[['Paul (mantle)',paulLook(7)],['Pharisee (fringe)',C.SANHEDRIN.pharisee_1],['Greek (himation)',{skin:'#c08a5c',tunic:'#dcd4c0',cloak:'#5a6a8a',hair:'#3a2616',beard:'#3a2616',long:1,himation:1}],
+          ['Governor (toga)',C.ROMAN.felix],['Centurion (sash)',C.ROMAN.centurion_crested],['Tribune (clavus)',C.ROMAN.tribune],
+          ['Watch (drape)',C.ROMAN.praetorian_watch],['Escort (cape)',C.ROMAN.escort_cloak],['Carrier (pad/whip)',{...C.ROME.carter,pad:'#b8a484'}],['Freedman (pen/torn)',{...C.ROME.freedman,torn:1}]],
+        COLS=[[1,0,0,0,'facing R'],[-1,0,0,0,'facing L'],[-1,8,0,0,'walk L'],[-1,0,2,2,'talk L'],[-1,0,0,3,'chest L'],[-1,-1,0,0,'seated L']],
+        Z=3,cw=150,chh=392,[c,g]=sheet(COLS.length*cw,34+WHO.length*chh);
+      text(g,'Left vs. right facing: sashes, mantles, cloaks and hip gear keep their anatomical side (3x)',10,23,17,'#f4f0e6');
+      WHO.forEach(([nm,o],r)=>COLS.forEach(([d,fr,tk,ge,cap],i)=>{const x=i*cw,y=34+r*chh;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+10,y+chh-20,cw-20,2);
+        cut(g,sprite(['facing',r,d,fr,tk,ge].join('|'),q=>person(q,0,0,o,d,fr,tk,0,ge,0,0),d),-25,-124,50,125,x,y+chh-20-124*Z,Z);text(g,i?cap:nm,x+5,y+chh-6,11)}));
+      SHEETS['cast-facing']=c.toDataURL()}
     window.SHEETS=SHEETS;halt('cast')}
   /* The working poses of the sea chapters (POSE, person's ps; Acts 27 and 28): hauling a rope, holding on, carrying a sack or a bundle, in
      the water at a plank or swimming, lying and sitting up in bed, huddled and warming by a fire, a hand laid on someone, shaking something
@@ -1117,10 +1129,10 @@
       spr=(o,key,dir,fr,talk,bow,ges)=>sprite([stop,key,dir,fr||0,talk||0,bow||0,ges||0].join('|'),q=>person(q,0,0,o,dir,fr||0,talk||0,bow||0,ges||0,0),dir);
     const checkSet=(map,label)=>{const POSES=[[1,0,0],[2,0,0],[3,0,0],[4,0,0],[0,0,MV.dip],[0,0,MV.lift|MV.brow],[2,1,MV.fwd],[2,2,0],[0,3,0],[2,1,MV.lean|MV.fwd]],
         bad=[],wbad=[],sbad=[];let pn=0,wn=0;
-      for(const[id,o]of Object.entries(map)){const r0=parts(spr(o,id,1));if(r0!==1)bad.push(id+' rest('+r0+')');
-        for(const[t,ge,m]of POSES){pn++;const c=sprite([stop,'p',id,t,ge,m].join('|'),q=>person(q,0,0,o,1,0,t,0,ge,0,m),1);if(parts(c)!==1)bad.push(id+' '+[t,ge,m])}
-        for(const bw of[0,1]){const sc=sprite([stop,'s',id,bw].join('|'),q=>person(q,0,0,o,1,-1,0,bw,0,bw,0),1);if(parts(sc)!==1)sbad.push(id+' seat'+bw)}
-        for(let a=0;a<3;a++)for(let k=0;k<16;k+=a?2:1){wn++;if(parts(spr(o,id,1,4+k+16*a))!==1)wbad.push(id+' f'+(4+k+16*a))}}
+      for(const[id,o]of Object.entries(map)){for(const d of[1,-1]){const r0=parts(spr(o,id,d));if(r0!==1)bad.push(id+(d<0?'L':'')+' rest('+r0+')');
+        for(const[t,ge,m]of POSES){pn++;const c=sprite([stop,'p',id,d,t,ge,m].join('|'),q=>person(q,0,0,o,d,0,t,0,ge,0,m),d);if(parts(c)!==1)bad.push(id+(d<0?'L':'')+' '+[t,ge,m])}
+        for(const bw of[0,1]){const sc=sprite([stop,'s',id,d,bw].join('|'),q=>person(q,0,0,o,d,-1,0,bw,0,bw,0),d);if(parts(sc)!==1)sbad.push(id+(d<0?'L':'')+' seat'+bw)}
+        for(let a=0;a<3;a++)for(let k=0;k<16;k+=a||d<0?2:1){wn++;if(parts(spr(o,id,d,4+k+16*a))!==1)wbad.push(id+(d<0?'L':'')+' f'+(4+k+16*a))}}}
       ok(!bad.length&&!sbad.length,`${label}: ${Object.keys(map).length} looks, ${pn} speaking/gesture + seated poses all one piece`+(bad.length?'. BAD: '+bad.slice(0,8).join(', '):'')+(sbad.length?'. SEAT: '+sbad.join(', '):''));
       ok(!wbad.length,`${label}: ${wn} walking frames all one piece`+(wbad.length?'. BAD: '+wbad.slice(0,8).join(', '):''))};
     if(stop==='shipwreck'){const S=C.SHIPWRECK;checkSet(S,'shipwreck');
