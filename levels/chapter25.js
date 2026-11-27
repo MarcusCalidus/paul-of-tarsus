@@ -201,12 +201,12 @@ const SEATP25=LG.POS.benches.map(b=>({y:b.foot,shape(){},foot:[b.x0,b.foot-4,b.x
    shadow to the right and down: its outline a little uneven and frayed where the fibers end, its fibers running across only, as strips
    of their own tone and fine threads that stop and start; inside the box of the writing (x 72..248, y 13..131) the threads are fewer and
    fainter and no stain lies, so that nothing competes with the letters. Nothing is ruled.
-   Paul's left hand holds the sheet still (paulHand25): seen from above, the back of the hand toward us, it lies over the sheet's lower
-   left corner, the forearm coming in from the lower edge of the picture, the fingers relaxed and pointing away to the upper left, onto
-   the wood beside the sheet; the thumb lies on the sheet along its left margin, parallel to the edge, pointing up, its nail toward us.
-   So the sheet's left edge shows only above the thumb and its lower edge only to the right of the forearm: neither crosses anything, and
-   the hand stays out of the box of the writing. No arm reaches across the sheet. The hand is placed by hand, each part at its own size,
-   and set in a short scale of skin tones made from Paul's own, with the backdrops' dither, lit from the upper left.
+   Paul's left hand holds the sheet still (paulHand25): seen from above, the back of the hand toward us, the forearm coming in diagonally
+   from the lower left, the fingers relaxed and angled up and right on the wood just beside the sheet, and the thumb reaching onto the
+   sheet's lower left corner with its nail in three-quarter profile. So the sheet's left edge shows only above the thumb and its lower
+   edge only to the right of the thumb: neither crosses anything, and the hand stays out of the box of the writing. No arm reaches across
+   the sheet. The hand is painted with smooth splines, lit from the upper left, and set in a short scale of skin tones made from Paul's
+   own with the backdrops' ordered dither.
    At the sheet's lower right, on the table: the inkwell, a squat pot of red clay seen a little from above, its mouth a small square with
    the ink dark in it (ink25); and the reed pen lying beside it, slanting, its cut point toward the sheet, wet with ink, crossing nothing
    (pen25). Nothing is tied or sealed.
@@ -285,59 +285,202 @@ function pen25(g){const a=[266,133.4],b=[314,123],w=1.15,dx=b[0]-a[0],dy=b[1]-a[
   stroke(g,[p0[0]-nx*.5,p0[1]-ny*.5,b[0]-nx*.5,b[1]-ny*.5],'rgba(255,244,210,.45)',.4);
   /* the cut: tapering to its point, dark with ink */
   poly(g,[p0[0]+nx,p0[1]+ny,a[0],a[1],p0[0]-nx,p0[1]-ny],'#2a1a0e');poly(g,[p0[0]-nx*.6+ux*.4,p0[1]-ny*.6+uy*.4,a[0]+ux*.8,a[1]+uy*.8,p0[0]-nx*.2+ux*1.4,p0[1]-ny*.2+uy*1.4],'rgba(120,110,120,.5)')}
-/* paulHand25: Paul's left hand on the sheet's lower left corner, seen from above, the back of the hand toward us (see above). Each part is
-   drawn in its own frame, along its own direction, at its own size: KN25 the knuckles (the little finger first) with each finger's
-   direction and length and width, HB25 the back of the hand and the forearm in one, TB25 the thumb (its root, its tip, its widths). Painted
-   in greys as light from the upper left, then set in the skin's tones (tones25) */
-const KN25=[[34.6,109.2,-.68,-.73,17,5.8],[39.1,105.6,-.65,-.76,22,6.4],[44,101.7,-.61,-.79,24,6.8],[49.1,97.7,-.57,-.82,21.5,6.8]],
-  HB25=[31.4,113.6,32,108.6,34.6,106,39,102.4,44,98.6,48.6,95.6,52,95.4,54.4,97.4,57,102,59.4,107,62,111.6,64.4,116.4,66,120.4,67.6,131,69.6,139,72.4,147,
-    51.4,147,47.4,136,45.2,129,41,124.4,36,119.6],
-  TB25={x0:60.2,y0:117,x1:65.6,y1:91,w0:9.6,w1:6.6};
-function paulHand25(g){const K=ramp(P.look&&P.look.skin||PAUL_BASE.skin),S=[];
-  /* nine tones from the skin's darkest to its lightest, each between two of its ramp */
-  for(let i=0;i<9;i++){const t=i/8*4,k=Math.min(3,Math.floor(t));S.push(mix(K[4-k],K[3-k],t-k))}
-  const[c,q]=mk(320*HR,144*HR);q.scale(HR,HR);
-  const GV=v=>{const k=Math.round(clamp(v,0,1)*255);return`rgb(${k},${k},${k})`};
-  /* a finger or the thumb in its own frame: from its root at x, y along ux, uy, len long, w wide at the root and wt at the tip */
-  const part=(x,y,ux,uy,len,w,wt,fn)=>{q.save();q.translate(x,y);q.rotate(Math.atan2(ux,-uy));fn(len,w,wt);q.restore()},
-    capsule=(len,w,wt)=>{const P=[-w/2,2,-w/2,-len*.4,-wt/2,-len+wt*.55,-wt*.36,-len+wt*.16,0,-len,wt*.36,-len+wt*.16,wt/2,-len+wt*.55,w/2,-len*.4,w/2,2];poly(q,P);return P};
-  /* the shadows of the hand on the sheet and the wood, soft, to the right and down */
-  const sil=(G,col)=>{poly(G,HB25,col);for(const[x,y,ux,uy,l,w]of KN25){G.save();G.translate(x,y);G.rotate(Math.atan2(ux,-uy));poly(G,[-w/2,2,-w/2,-l*.4,-w*.4,-l+1,0,-l,w*.4,-l+1,w/2,-l*.4,w/2,2],col);G.restore()}
-    const T=TB25;G.save();G.translate(T.x0,T.y0);G.rotate(Math.atan2(T.x1-T.x0,-(T.y1-T.y0)));const L=Math.hypot(T.x1-T.x0,T.y1-T.y0);poly(G,[-T.w0/2,4,-T.w0/2,-L*.4,-T.w1/2,-L+2,0,-L,T.w1/2,-L+2,T.w0/2,-L*.4,T.w0/2,4],col);G.restore()};
-  for(const[dx,dy,a]of[[3.4,3.8,.22],[2.2,2.6,.3],[1.2,1.4,.3]])comp(g,'multiply',a,()=>{g.save();g.translate(dx,dy);sil(g,'#5a4234');g.restore()});
-  /* the fingers, little finger first: each round across, lit along its left side, a fold over its middle joint, its nail at the tip */
-  KN25.forEach(([x,y,ux,uy,len,w],i)=>part(x,y,ux,uy,len,w,w*.84,(L,W,Wt)=>{const P=capsule(L,W,Wt);
-    clipTo(q,()=>poly(q,P),()=>{q.fillStyle=lg(q,-W/2,0,W/2,0,[GV(.4),GV(.68),GV(.52),GV(.32),GV(.18)]);q.fillRect(-W,-L-1,W*2,L+4);
-      q.fillStyle=lg(q,0,-L,0,0,['rgba(0,0,0,.14)','rgba(0,0,0,0)','rgba(0,0,0,0)','rgba(0,0,0,.08)']);q.fillRect(-W,-L-1,W*2,L+4);
-      for(const k of[.36,.62])sline25(q,[-W*.32,-L*k+.3,0,-L*k-.4,W*.3,-L*k+.3],'rgba(0,0,0,.18)',.5);
-      poly(q,[-Wt*.32,-L+4.4,-Wt*.34,-L+1.8,-Wt*.18,-L+.8,Wt*.18,-L+.8,Wt*.34,-L+1.8,Wt*.32,-L+4.4,0,-L+4.9],GV(.8));R(q,-Wt*.2,-L+1.4,Wt*.26,1.6,GV(.96));
-      R(q,-W/2,-L,.8,L,'rgba(0,0,0,.25)');R(q,W/2-.8,-L,.8,L,'rgba(0,0,0,.3)');tex(q,'mott',.16,-W,-L,W*2,L,'overlay',.5)})}));
-  /* the back of the hand and the forearm, over the roots of the fingers: lit at the upper left and darker toward the wrist and the arm's
-     shaded side; the knuckles catching the light, two soft sinews running back from them */
-  poly(q,HB25,GV(.46));clipTo(q,()=>poly(q,HB25),()=>{q.fillStyle=lg(q,34,98,70,140,[GV(.66),GV(.54),GV(.4),GV(.24)]);q.fillRect(28,92,48,56);
-    q.fillStyle=lg(q,0,120,0,147,['rgba(0,0,0,0)','rgba(0,0,0,.12)']);q.fillRect(28,120,48,28);
-    for(const[x,y,ux,uy]of KN25)pool(q,x-ux*1.6+.6,y-uy*1.6+.4,2.8,2.2,'#ffffff',.24,'source-over');
-    for(const[x,y,ux,uy]of KN25.slice(1,3))sline25(q,[x-ux*2.2+.8,y-uy*2.2,x+5.6,y+9,x+8.6,y+18],'rgba(0,0,0,.07)',1.4);
-    sline25(q,[33,112,38,119,44,126,48,136,51,147],'rgba(255,255,255,.14)',1.6);ao(q,58,96,14,52,'r',.22);tex(q,'mott',.18,28,92,48,56,'overlay',.5)});
-  /* the thumb, lying on the sheet along its margin: round across, lit on its left; its nail toward us; two folds of its joint */
-  const T=TB25,TL=Math.hypot(T.x1-T.x0,T.y1-T.y0);
-  part(T.x0,T.y0,(T.x1-T.x0)/TL,(T.y1-T.y0)/TL,TL,T.w0,T.w1,(L,W,Wt)=>{const P=capsule(L,W,Wt);
-    clipTo(q,()=>poly(q,P),()=>{q.fillStyle=lg(q,-W/2,0,W/2,0,[GV(.44),GV(.74),GV(.58),GV(.38),GV(.22)]);q.fillRect(-W,-L-1,W*2,L+6);
-      q.fillStyle=lg(q,0,0,0,5,['rgba(0,0,0,0)','rgba(0,0,0,.16)']);q.fillRect(-W,0,W*2,6);
-      for(const k of[.42,.48])sline25(q,[-W*.34,-L*k+.4,0,-L*k-.4,W*.32,-L*k+.4],'rgba(0,0,0,.16)',.5);
-      poly(q,[-Wt*.36,-L+6,-Wt*.38,-L+2.4,-Wt*.2,-L+1,Wt*.2,-L+1,Wt*.38,-L+2.4,Wt*.36,-L+6,0,-L+6.6],GV(.84));R(q,-Wt*.22,-L+1.8,Wt*.28,2.2,GV(.98));
-      sline25(q,[-Wt*.36,-L+6,0,-L+6.8,Wt*.36,-L+6],'rgba(0,0,0,.2)',.5);
-      R(q,W/2-.9,-L,.9,L+4,'rgba(0,0,0,.28)');tex(q,'mott',.16,-W,-L,W*2,L+4,'overlay',.5)})});
-  tones25(c,q,S);g.drawImage(c,0,0,320,144)}
-/* sline25: a soft curve through its points */
-function sline25(g,p,c,w){g.beginPath();g.moveTo(p[0],p[1]);for(let i=2;i<p.length-2;i+=2){const mx=(p[i]+p[i+2])/2,my=(p[i+1]+p[i+3])/2;g.quadraticCurveTo(p[i],p[i+1],mx,my)}
-  g.lineTo(p[p.length-2],p[p.length-1]);g.strokeStyle=c;g.lineWidth=w;g.lineCap='round';g.stroke()}
-/* tones25: set a layer painted in greys into a short scale of colors, darkest first, with the backdrops' ordered dither, one cell to the
-   room pixel (as the narrator's scroll sets its hands). What is not painted stays clear */
-function tones25(c,g,pal){const w=c.width,h=c.height,im=g.getImageData(0,0,w,h),d=im.data,n=pal.length-1,Q=pal.map(hex);
-  for(let y=0,i=0;y<h;y++)for(let x=0;x<w;x++,i+=4){if(d[i+3]<128){d[i+3]=0;continue}d[i+3]=255;
-    const v=(d[i]*.3+d[i+1]*.59+d[i+2]*.11)/255*n,t=(BAYER[((y>>1)&3)*4+((x>>1)&3)]+.5)/16,p=Q[clamp(Math.floor(v+t),0,n)];d[i]=p[0];d[i+1]=p[1];d[i+2]=p[2]}
-  g.putImageData(im,0,0)}
+/* paulHand25: Paul's left hand resting naturally on the lower-left corner of the sheet, seen from above: forearm entering diagonally from
+   the lower-left, four relaxed fingers angled up-and-right on the wood just beside the sheet (staying left of x=62), and the thumb
+   reaching right over the sheet's lower-left corner (covering x=62, y=137 cleanly, clear of the writing at x=72) with its thumbnail in
+   3/4 profile. Painted in continuous greys with Catmull-Rom splines, lit from the upper-left window, then set in a 9-tone weathered skin
+   scale with the backdrops' ordered dither (as in shared/scroll.js) and grounded by dual-layer cast and contact shadows. */
+function spline25(g,p,closed){const n=p.length/2,P=i=>{i=closed?(i%n+n)%n:clamp(i,0,n-1);return[p[2*i],p[2*i+1]]};
+  g.beginPath();g.moveTo(p[0],p[1]);
+  for(let i=0;i<(closed?n:n-1);i++){const a=P(i-1),b=P(i),c=P(i+1),d=P(i+2);
+    g.bezierCurveTo(b[0]+(c[0]-a[0])/6,b[1]+(c[1]-a[1])/6,c[0]-(d[0]-b[0])/6,c[1]-(d[1]-b[1])/6,c[0],c[1])}
+  if(closed)g.closePath()}
+function blob25(g,p,c){spline25(g,p,1);if(c){g.fillStyle=c;g.fill()}}
+function sline25(g,p,c,w){spline25(g,p,0);g.strokeStyle=c;g.lineWidth=w||.5;g.lineCap='round';g.lineJoin='round';g.stroke()}
+/* build a smooth closed contour along a 4-point finger spine [mcp,pip,dip,tip] with phalanx widths [w0,wMid1,wPip,wMid2,wDip,wTip] */
+function finger25(sp,ws){const evalSp=t=>{const n=sp.length/2-1,u=clamp(t,0,1)*n,i=Math.min(n-1,Math.floor(u)),f=u-i,
+      P=k=>{k=clamp(k,0,n);return[sp[2*k],sp[2*k+1]]},p0=P(i-1),p1=P(i),p2=P(i+1),p3=P(i+2),f2=f*f,f3=f2*f;
+    return[.5*(2*p1[0]+(-p0[0]+p2[0])*f+(2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*f2+(-p0[0]+3*p1[0]-3*p2[0]+p3[0])*f3),
+      .5*(2*p1[1]+(-p0[1]+p2[1])*f+(2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*f2+(-p0[1]+3*p1[1]-3*p2[1]+p3[1])*f3)]},
+    evalW=t=>{const k=[0,.2,.44,.62,.78,.92],i=Math.max(0,Math.min(4,k.findIndex(v=>v>t)-1)),a=k[i],b=k[i+1];
+      return ws[i]+(ws[i+1]-ws[i])*clamp((t-a)/(b-a),0,1)},
+    fr=t=>{const p=evalSp(t),a=evalSp(Math.max(0,t-.02)),b=evalSp(Math.min(1,t+.02)),dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;
+      /* normal points lower-right (+nx,+ny) so -n is upper-left (toward the window light) and +n is lower-right (shadow side) */
+      return{x:p[0],y:p[1],tx:dx/L,ty:dy/L,nx:-dy/L,ny:dx/L,w:evalW(t)}},
+    ts=[0,.14,.28,.44,.60,.74,.85],L=[],Rr=[];
+  for(const t of ts){const s=fr(t),hw=s.w*.5;L.push(s.x-s.nx*hw,s.y-s.ny*hw);Rr.unshift(s.x+s.nx*hw,s.y+s.ny*hw)}
+  const sEnd=fr(.85),tip=fr(1),rSide=sEnd.w*.5,rFwd=Math.hypot(tip.x-sEnd.x,tip.y-sEnd.y),dome=[];
+  for(const a of[-.35*Math.PI,0,.35*Math.PI]){const ca=Math.cos(a),sa=Math.sin(a);
+    dome.push(sEnd.x+tip.tx*rFwd*ca+tip.nx*rSide*sa,sEnd.y+tip.ty*rFwd*ca+tip.ny*rSide*sa)}
+  return{pts:[...L,...dome,...Rr],fr}}
+const FING25=[
+  /* little, ring, middle, index: matched to natural resting proportions, slight pinky bend & spacing on wood left of x=62 */
+  {sp:[23.2,115.2,25.8,106.4,28.8,99.8,32.0,95.0],w:[5.6,5.0,5.2,4.7,4.4,3.9],kn:[23.8,115.4]},
+  {sp:[31.0,113.8,37.5,103.3,43.0,95.6,47.2,90.4],w:[6.3,5.6,5.8,5.2,4.9,4.4],kn:[31.2,114.2]},
+  {sp:[38.2,116.2,45.6,104.6,51.2,96.2,55.0,90.0],w:[6.4,5.7,5.9,5.3,5.0,4.4],kn:[38.0,116.6]},
+  {sp:[45.0,121.8,52.2,112.0,57.1,104.4,60.1,98.6],w:[6.2,5.5,5.7,5.1,4.8,4.2],kn:[44.6,122.2]}];
+/* diagonal left forearm, tapered wrist, sleek ulnar edge, dorsum and deep sweeping thumb-index web */
+const PALM25=[7.4,149,9.8,143.6,11.2,137.4,12.6,131.6,14.6,125.2,17.8,119.2,21.6,114.2,27.2,112.6,34.4,113.6,41.8,117.4,47.4,124.0,
+  47.2,130.6,48.6,136.4,50.4,142.2,43.4,146.0,36.4,148.4,32.2,149];
+/* thumb: slender ~30 deg upward angle with natural proximal waist, covering sheet corner (62,137) cleanly; tip at x=68.3, clear of x=72 */
+const THUMB25=[46.0,136.8,51.9,133.8,57.7,130.4,62.8,127.3,66.8,126.1,68.3,127.6,67.4,130.8,65.0,134.7,62.1,138.1,
+  56.8,141.0,50.4,144.0,44.8,143.0];
+/* compact U-shaped interdigital skin webs tucked neatly at the finger roots */
+const WEBS25=[[25.8,114.2,27.2,112.2,29.0,112.4,29.2,114.6],[33.4,114.4,35.2,112.4,37.0,113.0,36.4,115.4],[40.6,117.8,42.8,116.0,44.4,117.4,43.0,119.8]];
+function paulHand25(g){
+  const base=P.look&&P.look.skin||PAUL_BASE.skin;
+  /* 9-tone weathered skin scale centered on Paul's skin, tempered for finish()'s 1.14 saturation boost */
+  const SKIN25=['#3b2016','#563222','#744731','#905e41','#aa7755',mix(base,'#c1906c',.45),'#d6a984','#e7c4a2','#f3dcc2'];
+  const W_=a=>`rgba(255,255,255,${a})`,K_=a=>`rgba(0,0,0,${a})`,GV=v=>{const k=Math.round(clamp(v,0,1)*255);return`rgb(${k},${k},${k})`};
+  const figs=FING25.map(f=>Object.assign({},f,finger25(f.sp,f.w)));
+  /* 1. Grounding shadows on wood and papyrus: soft directional cast shadow to lower-right + tight dark contact shadow under tips & thumb */
+  const sil=(G,col)=>{blob25(G,PALM25,col);for(const wb of WEBS25)blob25(G,wb,col);for(const f of figs)blob25(G,f.pts,col);blob25(G,THUMB25,col)};
+  for(const[dx,dy,a]of[[3.8,3.6,.13],[2.2,2.2,.20],[1.1,1.2,.26]])comp(g,'multiply',a,()=>{g.save();g.translate(dx,dy);sil(g,'#482e1d');g.restore()});
+  comp(g,'multiply',.38,()=>{
+    for(const f of figs){const t=f.fr(.92),m=f.fr(.68);
+      pool(g,t.x+1.0,t.y+1.2,f.w[5]*.66,f.w[5]*.54,'#321c10',.82,'source-over');
+      pool(g,m.x+1.3,m.y+1.5,f.w[4]*.65,f.w[4]*.56,'#442a1a',.40,'source-over')}
+    /* tight contact shadow under thumb pad and lower edge on the papyrus corner, fading cleanly well before x=72 */
+    sline25(g,[67.2,126.8,68.8,128.4,67.8,131.6,65.2,135.4,61.8,138.8,56.4,141.8,49.8,144.6],'rgba(50,30,16,.48)',2.1);
+    sline25(g,[68.0,127.4,69.4,129.0,68.4,132.4,65.8,136.4,62.2,139.8],'rgba(68,44,24,.22)',3.8);
+    /* contact shade along lower wrist/palm edge on the table */
+    sline25(g,[49.5,144.8,40.5,147.4,33.5,149.0],'rgba(42,24,12,.44)',3.2)});
+  /* 2. Unified alpha mask (mc), greyscale light map (q), subtle color tint layer (ac), and scratch blend canvas (lc) */
+  const[mc,mg]=mk(320*HR,144*HR),[c,q]=mk(320*HR,144*HR),[ac,ag]=mk(320*HR,144*HR),[lc,lq]=mk(320*HR,144*HR);
+  for(const ctx of[mg,q,ag,lq])ctx.scale(HR,HR);
+  sil(mg,'#ffffff');
+  /* 3. Continuous sculptural base light across forearm, wrist and dorsum (upper-left window light + subtle outer-ulnar turn-away roll) */
+  q.fillStyle=lg(q,12,109,56,148,[[0,GV(.52)],[.18,GV(.78)],[.52,GV(.60)],[.80,GV(.34)],[1,GV(.18)]]);
+  q.fillRect(0,80,76,72);
+  /* gentle tonal falloff back down the wrist/forearm toward bottom-left */
+  q.fillStyle=lg(q,44,113,6,148,[[0,W_(.06)],[.50,K_(0)],[.78,K_(.16)],[1,K_(.30)]]);
+  q.fillRect(0,80,76,72);
+  /* 4. Paint each finger with cylindrical upper-left lighting, soft creases and clean natural nails; feather root into dorsum */
+  figs.forEach((f,idx)=>{const r0=f.fr(0),r5=f.fr(.5),r1=f.fr(1),hw=f.w[0]*.55;
+    lq.save();lq.setTransform(1,0,0,1,0,0);lq.clearRect(0,0,lc.width,lc.height);lq.scale(HR,HR);
+    clipTo(lq,()=>spline25(lq,f.pts,1),()=>{
+      /* cylindrical light across finger: sunlit upper-left (-n), core shadow on lower-right (+n) */
+      lq.fillStyle=lg(lq,r5.x-r5.nx*hw*1.08,r5.y-r5.ny*hw*1.08,r5.x+r5.nx*hw*1.08,r5.y+r5.ny*hw*1.08,
+        [[0,GV(.52)],[.24,GV(.84-idx*.01)],[.50,GV(.64)],[.76,GV(.33)],[.93,GV(.18)],[1,GV(.23)]]);
+      lq.fillRect(14,80,56,50);
+      /* longitudinal arch: proximal phalanx bright, gently sloping down toward fingertip */
+      lq.fillStyle=lg(lq,r0.x,r0.y,r1.x,r1.y,[[0,K_(.05)],[.24,W_(.10)],[.56,W_(.03)],[.84,K_(.07)],[1,K_(.16)]]);
+      lq.fillRect(14,80,56,50);
+      /* subtle sunlit crest along upper-left ridge and PIP/DIP joint swells */
+      for(const t of[.22,.46,.68]){const s=f.fr(t);pool(lq,s.x-s.nx*s.w*.18,s.y-s.ny*s.w*.18,s.w*.34,s.w*.54,'#ffffff',.12,'source-over')}
+      for(const t of[.44,.74]){const s=f.fr(t);pool(lq,s.x-s.nx*s.w*.10,s.y-s.ny*s.w*.10,s.w*.34,s.w*.28,'#ffffff',t<.6?.14:.09,'source-over')}
+      /* delicate curved joint creases stopping cleanly inside the finger edges */
+      for(const[t,sp_,al]of[[.42,.28,.22],[.47,.22,.15],[.73,.22,.16]]){const s=f.fr(t),e=s.w*sp_;
+        const p=[s.x-s.nx*e-s.tx*.30,s.y-s.ny*e-s.ty*.30,s.x+s.tx*.30,s.y+s.ty*.30,s.x+s.nx*e-s.tx*.30,s.y+s.ny*e-s.ty*.30];
+        sline25(lq,p,K_(al),.46);sline25(lq,p.map((v,i)=>v+(i%2?s.ty:s.tx)*.46),W_(.10),.40)}
+      /* clean, smooth, lifelike fingernail inset inside rounded fingertip */
+      const nb=f.fr(.75),nm=f.fr(.84),nt=f.fr(.925),nw=f.w[5]*.34;
+      const np=[nb.x-nb.nx*nw*.82,nb.y-nb.ny*nw*.82,nm.x-nm.nx*nw,nm.y-nm.ny*nw,nt.x-nt.nx*nw*.52,nt.y-nt.ny*nw*.52,
+        nt.x+nt.tx*.24,nt.y+nt.ty*.24,nt.x+nt.nx*nw*.52,nt.y+nt.ny*nw*.52,nm.x+nm.nx*nw,nm.y+nm.ny*nw,nb.x+nb.nx*nw*.82,nb.y+nb.ny*nw*.82,
+        nb.x-nb.tx*.38,nb.y-nb.ty*.38];
+      clipTo(lq,()=>spline25(lq,np,1),()=>{
+        lq.fillStyle=lg(lq,nm.x-nm.nx*nw,nm.y-nm.ny*nw,nm.x+nm.nx*nw,nm.y+nm.ny*nw,[GV(.88),GV(.82),GV(.66),GV(.50)]);
+        lq.fillRect(14,80,56,50);
+        sline25(lq,[nm.x-nm.nx*nw*.40-nm.tx*.32,nm.y-nm.ny*nw*.40-nm.ty*.32,nt.x-nt.nx*nw*.20-nt.tx*.22,nt.y-nt.ny*nw*.20-nt.ty*.22],W_(.30),.65)});
+      sline25(lq,[nb.x-nb.nx*nw*.80,nb.y-nb.ny*nw*.80,nb.x-nb.tx*.40,nb.y-nb.ty*.40,nb.x+nb.nx*nw*.80,nb.y+nb.ny*nw*.80],K_(.24),.44);
+      blob25(ag,np,'rgba(238,212,196,.34)');
+      pool(ag,r1.x,r1.y,f.w[5]*.64,f.w[5]*.54,'#c45036',.13,'source-over');
+      const spip=f.fr(.44);pool(ag,spip.x,spip.y,f.w[2]*.50,f.w[2]*.40,'#c05034',.10,'source-over')});
+    const rFade=f.fr(.24);
+    lq.globalCompositeOperation='destination-in';
+    lq.fillStyle=lg(lq,r0.x,r0.y,rFade.x,rFade.y,['rgba(255,255,255,0)','rgba(255,255,255,1)']);
+    lq.fillRect(14,80,56,50);
+    lq.restore();
+    q.save();q.setTransform(1,0,0,1,0,0);q.drawImage(lc,0,0);q.restore();
+    /* soft dark ambient occlusion in the interdigital valleys */
+    if(idx<3){const nf=figs[idx+1],a=f.fr(.18),b=nf.fr(.18),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+      pool(q,mx,my,2.3,2.5,'#000000',.26,'source-over')}});
+  /* 5. Sculpt dorsal anatomy across back of hand, knuckles, asymmetric extensor tendons, subtle dorsal vein and wrist */
+  /* broad sunlit dorsal plane over the metacarpals & luminous lower-center hand plane */
+  pool(q,34.2,129.6,12.5,9.2,'#ffffff',.23,'source-over');
+  pool(q,38.4,136.2,9.2,5.6,'#ffffff',.16,'source-over');
+  /* subtle ulnar styloid bone prominence & hollow on upper-left wrist */
+  pool(q,16.8,130.4,3.0,2.8,'#ffffff',.20,'source-over');
+  pool(q,20.2,132.4,3.2,2.6,'#000000',.10,'source-over');
+  /* first dorsal interosseous cushion between index metacarpal and thumb web */
+  pool(q,42.6,130.6,6.0,5.4,'#ffffff',.22,'source-over');
+  /* rich shadow turning under the lower palm/thenar and lower forearm */
+  pool(q,36.5,145.6,14.5,6.8,'#000000',.30,'source-over');
+  pool(q,15.5,145.2,10.5,7.4,'#000000',.26,'source-over');
+  /* natural asymmetric extensor tendons: prominent middle-finger tendon, merging ring tendon, softer shorter index tendon */
+  const tends=[
+    [[37.2,118.8,30.8,124.8,24.8,130.6,19.4,136.0],.075,.115,2.6],
+    [[31.0,116.4,26.0,122.4,21.6,128.4,17.8,133.4],.055,.085,2.3],
+    [[42.6,123.6,36.8,128.4,31.8,132.6],.045,.075,2.2]];
+  for(const[t,ka,wa,wd]of tends){
+    sline25(q,t.map((v,i)=>i%2?v+.9:v+.9),K_(ka),wd);
+    sline25(q,t.map((v,i)=>i%2?v-.6:v-.6),W_(wa),wd*.82)}
+  /* faint organic curved dorsal vein across lower-left dorsum (subtle older-man character, zero sharp line) */
+  sline25(q,[21.0,136.4,26.4,131.6,31.6,128.8],K_(.045),1.5);
+  sline25(q,[20.4,135.8,25.8,131.0,31.0,128.2],W_(.055),1.2);
+  /* soft shadow hollows between the metacarpal ridges */
+  pool(q,26.8,128.0,3.6,4.2,'#000000',.09,'source-over');
+  pool(q,33.2,126.4,3.6,4.0,'#000000',.08,'source-over');
+  /* four MCP knuckle planes catching soft warm light with natural rosy terracotta warmth & gentle hollows between them */
+  figs.forEach((f,i)=>{const[kx,ky]=f.kn;
+    pool(q,kx-.4,ky-.4,3.5,2.9,'#ffffff',i===0?.18:.24,'source-over');
+    pool(ag,kx,ky,4.2,3.6,'#c64c38',i>=2?.20:.16,'source-over');
+    if(i<3){const[nx,ny]=figs[i+1].kn;pool(q,(kx+nx)/2+.2,(ky+ny)/2+1.0,2.3,2.3,'#000000',.15,'source-over')}});
+  /* warm subsurface glow along the lower-right core-shadow terminator of the hand */
+  pool(ag,37.8,141.0,13.0,5.8,'#b84828',.11,'source-over');
+  /* 6. Paint the angled thumb in 3/4 side-top view onto scratch layer lq, softly dissolving its palm root */
+  lq.save();lq.setTransform(1,0,0,1,0,0);lq.clearRect(0,0,lc.width,lc.height);lq.scale(HR,HR);
+  clipTo(lq,()=>spline25(lq,THUMB25,1),()=>{
+    /* cylindrical light across thumb: sunlit upper edge facing window, rich core shadow along lower curve on papyrus */
+    lq.fillStyle=lg(lq,54,127,62,141,[[0,GV(.54)],[.22,GV(.84)],[.48,GV(.64)],[.76,GV(.32)],[.93,GV(.17)],[1,GV(.22)]]);
+    lq.fillRect(42,123,28,24);
+    /* gentle longitudinal roll from web out to rounded tip */
+    lq.fillStyle=lg(lq,46,139,69,126,[[0,K_(.08)],[.38,W_(.08)],[.74,W_(.04)],[1,K_(.16)]]);
+    lq.fillRect(42,123,28,24);
+    /* soft sunlit ridge along the upper-fleshy side of the thumb */
+    pool(lq,57.8,131.2,6.6,1.9,'#ffffff',.16,'source-over');
+    /* delicate curved IP joint creases across the thumb's dorsal face (curving toward lower-right outer side) */
+    for(const[x0,xm,x1,y0,y1,al]of[[58.6,59.6,59.6,130.8,135.6,.20],[56.6,57.6,57.6,132.0,136.6,.15]]){
+      const p=[x0,y0,xm,(y0+y1)/2,x1,y1];
+      sline25(lq,p,K_(al),.44);sline25(lq,p.map((v,i)=>i%2?v:v+.46),W_(.11),.38)}
+    /* crisp 3/4 side-profile thumbnail on the LOWER-RIGHT (dorsal/outer) side of the left thumb tip; upper-left is smooth fleshy pad skin */
+    const tn=[64.5,129.6,66.9,128.0,68.0,128.8,67.2,131.2,65.4,132.8,64.1,132.0,63.9,130.8];
+    clipTo(lq,()=>spline25(lq,tn,1),()=>{
+      lq.fillStyle=lg(lq,64.5,128.4,67.4,132.6,[GV(.88),GV(.80),GV(.62),GV(.44)]);
+      lq.fillRect(62,127,7,7);
+      blob25(lq,[64.8,129.6,66.6,128.4,67.2,129.3,66.1,130.4,64.7,130.4],W_(.34))});
+    /* clean soft cuticle groove along the left/upper-left edge of the nail */
+    sline25(lq,[64.7,129.5,63.9,130.8,64.2,132.1,65.4,132.8],K_(.30),.46);
+    blob25(ag,tn,'rgba(242,218,202,.40)');
+    pool(ag,65.4,130.2,3.2,2.6,'#c45234',.09,'source-over');
+    /* subtle warm papyrus bounce tucked along the lower edge of the thumb on the sheet */
+    pool(ag,65.2,133.8,3.4,1.3,'#e8cea0',.16,'source-over')});
+  /* dissolve the palm-side root of the thumb smoothly so it grows organically out of the hand */
+  lq.globalCompositeOperation='destination-out';
+  lq.fillStyle=rg(lq,45.6,139.2,8.8,['rgba(0,0,0,1)','rgba(0,0,0,.68)','rgba(0,0,0,0)']);
+  lq.fillRect(36,127,22,22);
+  lq.restore();
+  q.save();q.setTransform(1,0,0,1,0,0);q.drawImage(lc,0,0);q.restore();
+  /* soft dorsal web fold curving gently between index base and thumb */
+  sline25(q,[47.4,131.2,49.0,134.8,51.6,136.8],K_(.20),1.25);
+  sline25(q,[46.4,131.6,48.0,135.0,50.4,137.0],W_(.09),.95);
+  /* organic skin mottling & fine weathered grain */
+  tex(q,'mott',.14,0,80,76,70,'overlay',.55);tex(q,'grain',.05,0,80,76,70,'overlay',.5);
+  /* clip lighting & accent layers to the clean unified silhouette */
+  for(const ctx of[q,ag]){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='destination-in';ctx.drawImage(mc,0,0);ctx.restore()}
+  /* 7. Smoothly map through the 9-tone weathered skin scale + gentle 20% micro-dither; bake()'s finish(12) then applies one crisp VGA dither */
+  const w=c.width,h=c.height,im=q.getImageData(0,0,w,h),d=im.data,ad=ag.getImageData(0,0,w,h).data,
+    P9=SKIN25.map(hex),n=P9.length-1;
+  for(let y=0,i=0;y<h;y++)for(let x=0;x<w;x++,i+=4){
+    if(d[i+3]<128){d[i+3]=0;continue}
+    const raw=clamp((d[i]*.3+d[i+1]*.59+d[i+2]*.11)/255,0,1)*n,
+      jit=((BAYER[((y>>1)&3)*4+((x>>1)&3)]+.5)/16-.5)*.22,
+      v=clamp(raw+jit,0,n),k=Math.min(n-1,Math.floor(v)),f=v-k,
+      a=P9[k],b=P9[k+1],aa=ad[i+3]/255;
+    let r=a[0]+(b[0]-a[0])*f,gg=a[1]+(b[1]-a[1])*f,bb=a[2]+(b[2]-a[2])*f;
+    if(aa>0){r=r*(1-aa)+ad[i]*aa;gg=gg*(1-aa)+ad[i+1]*aa;bb=bb*(1-aa)+ad[i+2]*aa}
+    d[i]=clamp(Math.round(r),0,255);d[i+1]=clamp(Math.round(gg),0,255);d[i+2]=clamp(Math.round(bb),0,255);d[i+3]=255}
+  q.putImageData(im,0,0);g.drawImage(c,0,0,320,144)}
 /* the lines on the sheet: the largest of four sizes at which every line fits the sheet */
 function fit25(g,lines,w,h){for(const z of[5.2,4.6,4,3.4]){g.font=FONT25(z);const lh=z*1.25,out=[];
     /* a reference stays in one piece: "(Philemon 18, 19)" is never broken after its comma */
