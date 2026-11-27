@@ -54,5 +54,37 @@ const SWEEP=[[0,4,2],[2,7,2],[4,9,2],[6,11,2],[8,14,8]],L17=[[0,7,6],[6,6,2],[8,
   {name:'roll',inst:'roll',vol:.7,lines:{13:[[0,-7,16]],21:[[8,-7,8]],28:[[8,-6,8]]}},
   {name:'braam',inst:'braam',vol:.5,lines:{14:[[0,[-7,-3],16]],29:[[0,[-7,-3],32]]}},
   {name:'cymbal',drum:1,vol:2,prog:'b.b. .... .... .. ............ . .. .b.',seq:{b:'b...............'}},
-  {name:'cuts',fx:[[3,8,'swell',8,.35],[13,0,'riser',16,.9],[14,0,'boom',0,.9],[17,8,'swell',8,.4],[22,0,'boom',0,.5],[23,0,'boom',0,.45],[26,0,'riser',16,1],[27,0,'boom',0,.7],[28,8,'swell',8,.7],[29,0,'boom',0,1.1]]}]}}
+  {name:'cuts',fx:[[3,8,'swell',8,.35],[13,0,'riser',16,.9],[14,0,'boom',0,.9],[17,8,'swell',8,.4],[22,0,'boom',0,.5],[23,0,'boom',0,.45],[26,0,'riser',16,1],[27,0,'boom',0,.7],[28,8,'swell',8,.7],[29,0,'boom',0,1.1]]}]};
+
+ /* The same score cut down to eighteen bars (57 seconds), for the upright film of a phone's status (the cut "status" in
+    tools/trailer/shots.js; the maintainer asked for the trailer's music, shorter, on 2026-11-26). Nothing in it is new: every bar is a
+    bar of the score above, with its own voices, and only the way from one to the next is shorter. The ney begins at once with the
+    theme's first half over the harp (bars 4 to 7 above); the strings climb through its rising phrase to the roll and the riser (12, 13);
+    the key lifts a step for the theme on strings, horns and voices, its first half (14 to 17) and then its second, the height (22 to
+    25), where the low horns come in; the last turn follows without the breath (27, 28), a riser under the height's last bar in its
+    place; and the final chord stands under the title for two bars (29, 30). */
+ const END2='GG DE D---',LAST=[[0,4,6,.55],[6,5,2,.55],[8,4,8,.55]];
+ TR.SCORES.trailer=TR.SCORE;
+ TR.SCORES.status={name:'S',title:'The Road in the Light (the short cut)',dt:.1875,root:50,scale:HIJAZ,bars:18,tail:3,trans:[[6,2]],
+  sections:[[0,'the ney'],[4,'the climb'],[6,'a step higher'],[10,'the height'],[14,'the last turn'],[16,'the title']],
+  tracks:[
+  {name:'sub',inst:'sub',oct:-12,vol:.9,env:[[0,.5],[6,1]],lines:hold(TH+' GGDD |'+TH+' '+TL+' '+END2,RT)},
+  {name:'basses',inst:'str',vol:.8,bright:2.2,env:[[0,.6],[4,.8],[6,1]],lines:hold(TH+' GGDD |'+TH+' '+TL+' '+END2,RT2)},
+  {name:'violas',inst:'str',vol:.6,env:[[0,.5],[4,.8],[6,1]],lines:hold(TH+' GGDD |'+TH+' '+TL+' '+END2,CH)},
+  {name:'violins',inst:'str',oct:12,vol:.85,bright:3.4,env:[[4,.8],[6,1]],lines:join(from(4,T1.slice(2,4)),from(6,T1),{14:L17,15:L18,16:[[0,[7,9,11],28]]})},
+  {name:'violins low',inst:'str',vol:.5,lines:join(from(6,T1),{14:L17,15:L18})},
+  {name:'ney',inst:'ney',oct:12,vol:.6,room:.5,lines:join(from(0,T1.slice(0,4)),{17:LAST})},
+  {name:'harp',inst:'harp',vol:1.1,room:.45,prog:'DDGD GD DDGD EYGD GX ZZ',seq:HA},
+  {name:'horns',inst:'horn',vol:.9,lines:join({4:[[0,5,16,.6]],5:[[0,4,16,.65]]},from(6,T1),{14:L17,15:L18,16:[[0,[0,4],28]]})},
+  {name:'horns low',inst:'horn',oct:-12,vol:.7,lines:join(from(10,T1.slice(4)),{14:L17,15:L18})},
+  {name:'choir oo',inst:'choir',oct:12,vow:'o',vol:.6,lines:hold('........ GGDD',CH)},
+  {name:'choir',inst:'choir',oct:12,vow:'a',vol:.85,lines:hold('........ .... |'+TH+' '+TL+' '+END2,CH)},
+  {name:'spiccato',inst:'spic',vol:.7,env:[[4,.35],[6,.75],[10,1]],prog:'.... GD DDGD EYGD GX ..',seq:SP},
+  {name:'great drums',drum:1,vol:.9,env:[[4,.6],[5,.8],[6,.88],[10,1]],prog:'.... QF RRRF RRRF RF X.',
+   seq:{Q:'G.......g...g...',F:'G...g...G.g.GgGg',R:'G..gG...G..gG.g.',X:'G...............'}},
+  {name:'timpani',inst:'timp',vol:.9,env:[[4,.7],[6,1]],prog:'.... GD DDGD EYGD GX Z.',seq:TP},
+  {name:'roll',inst:'roll',vol:.7,lines:{5:[[0,-7,16]],9:[[8,-7,8]],15:[[8,-6,8]]}},
+  {name:'braam',inst:'braam',vol:.5,lines:{6:[[0,[-7,-3],16]],16:[[0,[-7,-3],28]]}},
+  {name:'cymbal',drum:1,vol:2,prog:'.... .. .... .... .. .b',seq:{b:'b...............'}},
+  {name:'cuts',fx:[[5,0,'riser',16,.9],[6,0,'boom',0,.9],[9,8,'swell',8,.4],[10,0,'boom',0,.5],[11,0,'boom',0,.45],[13,0,'riser',16,.7],[14,0,'boom',0,.7],[15,8,'swell',8,.7],[16,0,'boom',0,1.1]]}]}}
 })();
