@@ -985,6 +985,12 @@
       WHO.forEach(([nm,o],r)=>COLS.forEach(([d,fr,tk,ge,cap],i)=>{const x=i*cw,y=34+r*chh;field(g,i+r,x,y,cw,chh);g.fillStyle='rgba(60,48,40,.28)';g.fillRect(x+10,y+chh-20,cw-20,2);
         cut(g,sprite(['facing',r,d,fr,tk,ge].join('|'),q=>person(q,0,0,o,d,fr,tk,0,ge,0,0),d),-25,-124,50,125,x,y+chh-20-124*Z,Z);text(g,i?cap:nm,x+5,y+chh-6,11)}));
       SHEETS['cast-facing']=c.toDataURL()}
+    /* an actor given another look is drawn in it at once, in every pose already kept for the old one: Julius on the quay at Caesarea in
+       his cuirass and at sea in his tunic (Chapter Twenty-Two), with no wear set. The poses are kept by the look itself (lookTag). */
+    {const C=SHARED.cast,A={id:'lookcheck',look:C.ROMAN.centurion_julius,x:40,y:120,dir:1,fr:0,talk:false,bow:false},
+        shot=(L,d,fr)=>{A.look=L;A.dir=d;A.fr=fr;const c=document.createElement('canvas');c.width=80;c.height=130;DQ=null;drawActor(c.getContext('2d'),A,0,null);return c.toDataURL()},
+        POS=[[1,0],[-1,0],[1,8],[-1,8]],before=POS.map(([d,fr])=>shot(C.ROMAN.centurion_julius,d,fr)),stale=POS.filter(([d,fr],i)=>shot(C.SEA.julius_sea,d,fr)===before[i]);
+      ok(!stale.length,'an actor given another look is drawn in it in every pose, facing either way, with no wear set (Julius from the quay to the sea)'+(stale.length?'. STILL THE OLD LOOK: '+stale.map(p=>p.join(' ')).join(', '):''))}
     window.SHEETS=SHEETS;halt('cast')}
   /* The working poses of the sea chapters (POSE, person's ps; Acts 27 and 28): hauling a rope, holding on, carrying a sack or a bundle, in
      the water at a plank or swimming, lying and sitting up in bed, huddled and warming by a fire, a hand laid on someone, shaking something

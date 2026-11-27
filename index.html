@@ -2778,9 +2778,14 @@ function figure(g,x,y,lit,key,fn,sw,cxOff,z){x=hp(x);y=hp(y);sw=sw==null?8.5:sw;
   figSprite(g,x,y,lit,c)}
 const blinks=(o,ts)=>((ts+o.ph)%4300)<140;
 /* man: a person by look id, for scenes that pose figures themselves (the ship, the road, the prologue). */
-function man(g,x,y,id,dir,fr,lit,ges,sw,bow,bl,pz,ps){const o=LOOK[id];figure(g,x,y,lit,id+dir+'f'+fr+(ges?'g'+ges:'')+(bow?'b':'')+(bl?'k':'')+(pz||'')+(ps?'p'+ps:''),s=>person(s,0,0,o,dir,fr,0,bow||0,ges||0,bl||0,0,pz,ps),sw!=null?sw:ps?poseSw(o,ps,fr):walkSw(o,fr),dir*kneelX(o,fr))}
-/* An actor whose dress changes with the story (a cloak torn off him) is given another look and says so in wear, a letter or two that
-   names it: the poses of each look are kept apart. A chapter's start gives everyone his own look back (see setChapter). */
+/* lookTag: a short mark for each look object, set the first time it is drawn. It stands in the key of every pose that is kept, so that an
+   actor who is given another look (Julius in his cuirass on the quay and in his tunic at sea) is never drawn from the poses of the old one,
+   even where a chapter forgets to set wear. */
+const LOOKTAG=new WeakMap();let lookN=0;
+function lookTag(o){if(!o||typeof o!=='object')return'';let t=LOOKTAG.get(o);if(!t)LOOKTAG.set(o,t='~'+(++lookN)+'~');return t}
+function man(g,x,y,id,dir,fr,lit,ges,sw,bow,bl,pz,ps){const o=LOOK[id];figure(g,x,y,lit,id+lookTag(o)+dir+'f'+fr+(ges?'g'+ges:'')+(bow?'b':'')+(bl?'k':'')+(pz||'')+(ps?'p'+ps:''),s=>person(s,0,0,o,dir,fr,0,bow||0,ges||0,bl||0,0,pz,ps),sw!=null?sw:ps?poseSw(o,ps,fr):walkSw(o,fr),dir*kneelX(o,fr))}
+/* An actor whose dress changes with the story (a cloak torn off him) is given another look, and may say so in wear, a letter or two that
+   names it. The poses of each look are kept apart by lookTag in any case, so a look that is changed without wear is drawn at once. A chapter's start gives everyone his own look back (see setChapter). */
 /* moves: what a figure does at this moment, as [mouth, far hand, eyes shut, a sum of MV]. o: the actor; L: its look; ln: the line it is
    speaking (cur), if it has one on the screen; ts: now.
    Who speaks: the mouth follows the line's cadence. The head dips on a stressed syllable, lifts with raised brows as a question ends,
@@ -2830,10 +2835,10 @@ function drawActor(g,o,ts,id){const pl=planOf(id);if(pl)return pl.drawActor(g,o,
      walks, stands and bows with the actor, a step behind and beside, and has a mouth of her own: when she talks, the line on the screen is hers.
      voice is the one who speaks her lines (say(voice, ...)), with her room, x and y: she turns to whom she speaks with (see mateFacing). */
   const m=o.mate;if(m){const L=LOOK[m.fig],mx=o.x+m.dx*o.dir,md=mateFacing(o,mx),[mt,mg,mb,mm]=moves({talk:m.talk,bow:o.bow,fr:o.fr,x:mx},L,m.talk&&ln&&ln.a&&ln.a!==o?ln:null,ts);
-    figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+md+'f'+(o.fr===-1?'s':o.fr)+'t'+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,md,o.fr,mt,bow,mg,mb,mm),walkSw(L,o.fr),md*kneelX(L,o.fr))}
+    figure(g,mx,o.y-1,lightAt(id,mx,o.y),m.fig+lookTag(L)+md+'f'+(o.fr===-1?'s':o.fr)+'t'+mt+bow+mg+mb+'m'+mm,s=>person(s,0,0,L,md,o.fr,mt,bow,mg,mb,mm),walkSw(L,o.fr),md*kneelX(L,o.fr))}
   /* custody (see CUFF): the pose, and a soldier's grip */
   const pz=poseOf(o),gs=o.grips?10:ges,ly=pz==='l'?LIFT:0,ps=o.pose&&POSE[o.pose]?o.pose+(o.pk|0):'';
-  figure(g,o.x,o.y-ly,lightAt(id,o.x,o.y),o.id+(o.wear||'')+dir+'f'+(o.fr===-1?'s':o.fr)+'t'+talk+bow+gs+bl+'m'+mv+pz+(ps?'p'+ps:''),s=>person(s,0,0,o.look,dir,o.fr,talk,bow,gs,bl,mv,pz,ps),ly?0:ps?poseSw(o.look,ps,o.fr):walkSw(o.look,o.fr),dir*kneelX(o.look,o.fr),ly?o.y:null)}
+  figure(g,o.x,o.y-ly,lightAt(id,o.x,o.y),o.id+(o.wear||'')+lookTag(o.look)+dir+'f'+(o.fr===-1?'s':o.fr)+'t'+talk+bow+gs+bl+'m'+mv+pz+(ps?'p'+ps:''),s=>person(s,0,0,o.look,dir,o.fr,talk,bow,gs,bl,mv,pz,ps),ly?0:ps?poseSw(o.look,ps,o.fr):walkSw(o.look,o.fr),dir*kneelX(o.look,o.fr),ly?o.y:null)}
 function render(ts){G.t=ts;update(ts);LID=null;cx.setTransform(HR,0,0,HR,0,0);cx.imageSmoothingEnabled=false;cx.fillStyle='#000';cx.fillRect(0,0,VW,VH);
   G.sway=G.room&&!G.scene?swayOf(G.room,ts):null;
   if(G.scene)G.scene(cx,ts);
