@@ -61,40 +61,56 @@ LEVEL(21,()=>{
 
 /* ==== MUSIC: begin ==== */
 /* One tune for the last hearings at Caesarea. It is in A, in the Aeolian mode (A, B, C, D, E, F, G), in bars of twenty steps that fall
-   three, three, four, three, three, four: no earlier chapter has this key or this bar. The tune is four bars long (A B C D): up the
-   triad, round the fourth and the sixth, down from the octave, and home by the second. It grows out of the palace music of the chapters
-   before it: at Caesarea ("court") lyre and harp still take turns over a low string, and the sea is heard. In the writing room ("write")
-   the harp has the tune alone over the low string. For the great show of 25:23 ("show") a horn calls the first two bars over a steady
-   drum, and lyre and harp answer; in the audience chamber ("hall") lyre and harp at half their strength. While the road is told ("road")
-   the ney has the tune and the harp rocks. In the hearing and when Festus breaks in ("tense") the low string plucks the keynote and leans
-   on the note above, a drum ticks with it and almost stops every fourth bar, and the ney begins the tune and breaks off before it comes
-   home; no louder than the rest. Nothing is claimed about how music was played then. */
+   three, three, four, three, three, four: no earlier chapter has this key or this bar. The tune is eight bars long, in two phrases that
+   answer each other. Its first bar is the chapter's own, as it always was: up the triad, back a step and up to the fifth again (bar 1).
+   Then it leans long on the sixth and climbs to the seventh (2); comes down past the keynote to the G below it, and only touches the
+   keynote in passing (3); and climbs back from the second to the fifth, which it holds for half a bar, open (4). The answer starts on
+   the fifth, leaps to the octave and the ninth (5), reaches the high C, the top of the tune, and falls by steps and a leap to the fifth
+   (6); holds the seventh and recalls the end of the first bar (7); and comes home from the fourth by way of the G below, the keynote
+   held for half a bar (8). It grows out of the palace music of the chapters before it: at Caesarea ("court") the lyre plays it once
+   and the harp plays it again, over a low string that follows its chords, and the sea is heard. In the writing room ("write") the
+   harp has the tune alone over the low string. For the great show of 25:23 ("show") a horn calls its first two bars over a steady
+   drum, and the lyre answers with the rest while the harp rocks on its chords; in the audience chamber ("hall") the lyre has the whole
+   tune and the harp rocks, at half their strength. While the road is told ("road") the ney has the tune and the harp rocks. In the
+   hearing and when Festus breaks in ("tense") the low string plucks the keynote and leans on the note above, a drum ticks with it and
+   almost stops every fourth bar, and the ney begins the tune and breaks off in its third bar, on the second, before it comes home; no
+   louder than the rest. Nothing is claimed about how music was played then. */
 const SCALE=[0,2,3,5,7,8,10],ST=20,
- /* the tune, a bar to a letter: [step, degree of the scale, length in steps]; E is D broken off before it comes home */
- TUNE={A:[[0,0,3],[3,2,3],[6,4,4],[10,3,3],[13,2,3],[16,4,4]],B:[[0,5,3],[3,4,3],[6,3,4],[10,4,3],[13,5,3],[16,6,4]],
-   C:[[0,7,6],[6,6,4],[10,5,3],[13,4,3],[16,3,4]],D:[[0,3,3],[3,2,3],[6,1,4],[10,0,10]],E:[[0,3,3],[3,2,3],[6,1,14]],_:[]},
- bars21=s=>[...s].map(k=>TUNE[k]),
- ROCK={A:[[0,0,3],[3,4,3],[6,2,4],[10,4,3],[13,2,3],[16,4,4]],B:[[0,-2,3],[3,3,3],[6,1,4],[10,3,3],[13,1,3],[16,3,4]],
-   C:[[0,-4,3],[3,0,3],[6,2,4],[10,0,3],[13,2,3],[16,0,4]],D:[[0,-3,3],[3,1,3],[6,-1,4],[10,0,10]]},
- rock21=s=>[...s].map(k=>ROCK[k]),
- LOW=[[[0,0,20]],[[0,-2,20]],[[0,-4,20]],[[0,0,10],[10,-3,10]]],
+ /* the tune, a bar to an entry: [step, degree of the scale, length in steps] */
+ TUNE=[[[0,0,3],[3,2,3],[6,4,4],[10,3,3],[13,2,3],[16,4,4]],
+  [[0,5,6],[6,4,2],[8,3,2],[10,4,3],[13,6,3],[16,5,4]],
+  [[0,4,3],[3,2,1],[4,3,2],[6,1,4],[10,-1,6],[16,0,4]],
+  [[0,1,2],[2,2,1],[3,3,3],[6,2,4],[10,4,10]],
+  [[0,4,3],[3,5,3],[6,7,4],[10,8,6],[16,7,4]],
+  [[0,9,3],[3,8,3],[6,7,4],[10,5,3],[13,6,1],[14,5,2],[16,4,4]],
+  [[0,6,6],[6,4,4],[10,3,3],[13,2,3],[16,4,4]],
+  [[0,3,3],[3,1,3],[6,-1,4],[10,0,10]]],
+ /* a bar of rest */
+ REST=[],rest21=n=>Array.from({length:n},()=>REST),
+ /* the chords under it, two to a bar (the root of each half bar): A A, D C, E C, G E, A E, F C, C E, G A */
+ CHORDS=[[0,0],[-4,-5],[-3,-5],[-1,-3],[0,-3],[-2,-5],[-5,-3],[-1,0]],
+ /* what rocks under it: root, fifth and third of each half bar's chord, on its beats */
+ ROCK=CHORDS.map(([a,b],i)=>i?[[0,a,3],[3,a+4,3],[6,a+2,4],[10,b,3],[13,b+4,3],[16,b+2,4]]:[[0,0,3],[3,4,3],[6,2,4],[10,4,3],[13,2,3],[16,4,4]]),
+ /* the low string: the root of each half bar, held */
+ LOW=CHORDS.map(([a,b])=>a===b?[[0,a,20]]:[[0,a,10],[10,b,10]]),
  /* gain: the whole score +9.3 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
  MUSIC={gain:2.92,dt:.12,steps:ST,group:[3,3,4,3,3,4],root:57,scale:SCALE,bars:16,tracks:[
-  {inst:'lyre',moods:['court'],oct:12,loop:8,lines:bars21('ABCD____'),vol:.52},
-  {inst:'harp',moods:['court'],oct:12,loop:8,lines:bars21('____ABCD'),vol:.46},
-  {inst:'bass',moods:['court','write'],oct:0,loop:4,lines:LOW,vol:.26},
-  {inst:'harp',moods:['write'],oct:12,loop:8,lines:bars21('ABCD____'),vol:.42},
-  {inst:'horn',moods:['show'],oct:0,loop:8,lines:bars21('AB______'),vol:.3},
+  {inst:'lyre',moods:['court'],oct:12,loop:16,lines:TUNE.concat(rest21(8)),vol:.52},
+  {inst:'harp',moods:['court'],oct:12,loop:16,lines:rest21(8).concat(TUNE),vol:.46},
+  {inst:'bass',moods:['court','write'],oct:0,loop:8,lines:LOW,vol:.26},
+  {inst:'harp',moods:['write'],oct:12,loop:8,lines:TUNE,vol:.42},
+  {inst:'horn',moods:['show'],oct:0,loop:8,lines:TUNE.slice(0,2).concat(rest21(6)),vol:.3},
   {drum:1,moods:['show'],prog:'AAAB',seq:{A:'d..t..d...t..t..d...',B:'d..t..d...t..t..dkt.'},vol:.2},
-  {inst:'lyre',moods:['show','hall'],oct:12,loop:8,lines:bars21('__CD__CD'),vol:.4},
-  {inst:'harp',moods:['show','hall'],oct:12,loop:4,lines:rock21('ABCD'),vol:.3},
-  {inst:'bass',moods:['show','hall'],oct:0,loop:4,lines:LOW,vol:.24},
-  {inst:'ney',moods:['road'],oct:12,loop:8,lines:bars21('ABCD____'),vol:.3},
-  {inst:'harp',moods:['road'],oct:12,loop:4,lines:rock21('ABCD'),vol:.28},
+  {inst:'lyre',moods:['show','hall'],oct:12,loop:8,lines:rest21(2).concat(TUNE.slice(2)),vol:.4},
+  {inst:'lyre',moods:['hall'],oct:12,loop:8,lines:TUNE.slice(0,2).concat(rest21(6)),vol:.4},
+  {inst:'harp',moods:['show','hall'],oct:12,loop:8,lines:ROCK,vol:.3},
+  {inst:'bass',moods:['show','hall'],oct:0,loop:8,lines:LOW,vol:.24},
+  {inst:'ney',moods:['road'],oct:12,loop:8,lines:TUNE,vol:.3},
+  {inst:'harp',moods:['road'],oct:12,loop:8,lines:ROCK,vol:.28},
   /* tension: the keynote plucked, leaning on the step above; the drum ticks and almost stops every fourth bar; the ney breaks off */
   {inst:'bass',moods:['tense'],oct:0,loop:1,lines:[[[0,0,3],[3,1,3],[6,0,4],[10,0,3],[13,1,3],[16,0,4]]],vol:.38},
   {drum:1,moods:['tense'],prog:'AAAB',seq:{A:'t..t..t...t..t..t...',B:'t...................'},vol:.17},
-  {inst:'ney',moods:['tense'],oct:12,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.26}]};
+  {inst:'ney',moods:['tense'],oct:12,loop:8,lines:[TUNE[0],TUNE[1],TUNE[2].slice(0,4)].concat(rest21(5)),vol:.26}]};
 
 /* ---- around you ---- */
 const AMB={court21:{waves:.4,gulls:.4,wind:.15},write21:{waves:.14,wind:.06},report21:{waves:.08,wind:.04},hall21:{crowd:.07,wind:.03}};

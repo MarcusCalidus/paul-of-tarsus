@@ -78,46 +78,52 @@ LEVEL(19,()=>{
 
 /* ==== MUSIC: begin ==== */
 /* One tune for a man passed from hand to hand. It is in E, in the Phrygian mode (E, F, G, A, B, C, D: the note above the keynote only a
-   half step up), in bars of seven that fall two, two, three; no earlier chapter has this key or this bar. The tune is four bars long
-   (A B C D): up from the keynote to the third, on to the fourth and the fifth, down from the sixth, and home by way of the half step.
-   In the council ("council") the lyre has it over a low note on the keynote, slow and grave. In the lanes ("lanes") the oud walks it over
-   a hand drum. At the fortress ("fortress") and with the commander ("cmd") the harp takes it at half its pace and the lyre answers. In the
+   half step up), in bars of seven that fall two, two, three; no earlier chapter has this key or this bar. The tune is eight bars long. Its
+   first bar goes up by step from the keynote to the third; it goes on to the fourth and the fifth, turns down from the sixth, and its
+   first half stops open, held on the fifth. The second half answers it: the same three rising steps from the fifth, the high E held in its
+   sixth bar, down by turns, and home by way of the half step. In the council ("council") the lyre has it over a low string that follows
+   its harmony and a low note on the keynote, slow and grave. In the lanes ("lanes") the oud walks it over a hand drum. At the fortress
+   ("fortress") and with the commander ("cmd") the harp takes it at half its pace, all sixteen bars, and the lyre rocks under it. In the
    yard at the third hour ("march") a drum keeps a steady step and the low string walks under the ney. At Antipatris at dawn ("dawn") the
-   ney has it and the harp rocks. At Caesarea ("palace") lyre and harp take turns. In the session and in the plot ("tense") the low string
-   plucks the keynote and leans on the half step above, a drum ticks with it and almost stops every fourth bar, and the ney begins the tune
-   and breaks off before it comes home; no louder than the rest. Nothing is claimed about how music was played then. */
+   ney has it and the harp rocks. At Caesarea ("palace") the lyre plays it through and the harp plays it again. In the session and in the
+   plot ("tense") the low string plucks the keynote and leans on the half step above, a drum ticks with it and almost stops every fourth
+   bar, and the ney begins the tune and breaks off on the first note of its second bar; no louder than the rest. Nothing is claimed about
+   how music was played then. */
 const SCALE=[0,1,3,5,7,8,10],ST=7,
- /* the tune, a bar to a letter: [step, degree of the scale, length in steps]; E is D broken off before it comes home */
- TUNE={A:[[0,0,2],[2,1,2],[4,2,3]],B:[[0,3,2],[2,4,2],[4,3,3]],C:[[0,5,2],[2,4,2],[4,3,3]],D:[[0,2,2],[2,1,2],[4,0,3]],E:[[0,2,2],[2,1,5]],_:[]},
- bars19=s=>[...s].map(k=>TUNE[k]),
- ROCK={A:[[0,0,2],[2,4,2],[4,2,3]],B:[[0,3,2],[2,5,2],[4,4,3]],C:[[0,-2,2],[2,2,2],[4,0,3]],D:[[0,-3,2],[2,1,2],[4,0,3]]},
- rock19=s=>[...s].map(k=>ROCK[k]),
- LOW=[[[0,0,7]],[[0,-4,7]],[[0,-2,7]],[[0,0,4],[4,1,3]]],
- /* at half its pace: a bar of the tune takes two */
- half19=(k,at)=>{const o=[];for(const[s,n,l]of TUNE[k]){const S=s*2;o.push([at+Math.floor(S/ST),S%ST,n,Math.min(l*2,ST-S%ST)])}return o},
- SLOW=(()=>{const L=Array.from({length:8},()=>[]),put=x=>x.forEach(([b,s,n,l])=>L[b].push([s,n,l]));put(half19('A',0));put(half19('B',2));put(half19('C',4));put(half19('D',6));return L})(),
+ /* the tune, a bar to a line: [step, degree of the scale, length in steps] */
+ TUNE=[[[0,0,2],[2,1,2],[4,2,3]],[[0,3,4],[4,4,3]],[[0,5,2],[2,3,1],[3,4,1],[4,2,3]],[[0,3,2],[2,4,5]],
+  [[0,4,2],[2,5,2],[4,6,3]],[[0,7,4],[4,6,1],[5,5,2]],[[0,4,2],[2,2,2],[4,3,1],[5,2,2]],[[0,1,2],[2,0,5]]],
+ _=[],
+ /* the low string under the tune, a bar of it to a line: E, A, C, A and G, G, C, G and A, F and E */
+ LOW=[[[0,0,7]],[[0,-4,7]],[[0,-2,7]],[[0,-4,4],[4,-5,3]],[[0,-5,7]],[[0,-2,7]],[[0,-5,4],[4,-4,3]],[[0,-6,2],[2,0,5]]],
+ /* what rocks under the tune: the note of the low string and the fifth above it; at half its pace, a bar of it to each of its notes */
+ ROCK=LOW.map(b=>[[0,b[0][1],4],[4,b[0][1]+4,3]]),
+ ROCKH=LOW.flatMap(b=>[b[0][1],(b[1]||b[0])[1]].map(r=>[[0,r,4],[4,r+4,3]])),
+ /* at half its pace: a bar of the tune takes two, so the eight bars fill the sixteen of the score */
+ SLOW=(()=>{const L=Array.from({length:16},()=>[]);TUNE.forEach((b,k)=>b.forEach(([s,n,l])=>{const S=s*2;L[k*2+Math.floor(S/ST)].push([S%ST,n,l*2])}));return L})(),
  /* gain: the whole score +8.4 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
  MUSIC={gain:2.63,dt:.2,steps:ST,group:[2,2,3],root:52,scale:SCALE,bars:16,tracks:[
-  {inst:'lyre',moods:['council'],oct:12,loop:8,lines:bars19('ABCD____'),vol:.5},
-  {inst:'bass',moods:['council'],oct:0,loop:4,lines:LOW,vol:.3},
+  {inst:'lyre',moods:['council'],oct:12,loop:8,lines:TUNE,vol:.5},
+  {inst:'bass',moods:['council'],oct:0,loop:8,lines:LOW,vol:.3},
   {drone:[0],every:56,moods:['council'],vol:.05},
-  {inst:'oud',moods:['lanes'],oct:12,loop:4,lines:bars19('ABCD'),vol:.66},
+  {inst:'oud',moods:['lanes'],oct:12,loop:8,lines:TUNE,vol:.66},
   {drum:1,moods:['lanes'],prog:'AAAB',seq:{A:'d.k.t..',B:'d.k.tk.'},vol:.22},
-  {inst:'bass',moods:['lanes'],oct:0,loop:4,lines:LOW,vol:.32},
-  {inst:'harp',moods:['fortress','cmd'],oct:12,loop:8,lines:SLOW,vol:.5},
-  {inst:'lyre',moods:['fortress','cmd'],oct:12,loop:4,lines:rock19('ABCD'),vol:.3},
+  {inst:'bass',moods:['lanes'],oct:0,loop:8,lines:LOW,vol:.32},
+  {inst:'harp',moods:['fortress','cmd'],oct:12,loop:16,lines:SLOW,vol:.5},
+  {inst:'lyre',moods:['fortress','cmd'],oct:12,loop:16,lines:ROCKH,vol:.3},
   {drum:1,moods:['march'],prog:'A',seq:{A:'d.t.d..'},vol:.2},
-  {inst:'bass',moods:['march'],oct:0,loop:4,lines:LOW,vol:.34},
-  {inst:'ney',moods:['march'],oct:12,loop:8,lines:bars19('____ABCD'),vol:.28},
-  {inst:'ney',moods:['dawn'],oct:12,loop:8,lines:bars19('ABCD____'),vol:.32},
-  {inst:'harp',moods:['dawn'],oct:12,loop:4,lines:rock19('ABCD'),vol:.34},
-  {inst:'lyre',moods:['palace'],oct:12,loop:8,lines:bars19('ABCD____'),vol:.55},
-  {inst:'harp',moods:['palace'],oct:12,loop:8,lines:bars19('____ABCD'),vol:.48},
-  {inst:'bass',moods:['palace'],oct:0,loop:4,lines:LOW,vol:.28},
-  /* tension: the keynote plucked, leaning on the half step above; the drum ticks and almost stops every fourth bar; the ney breaks off */
+  {inst:'bass',moods:['march'],oct:0,loop:8,lines:LOW,vol:.34},
+  {inst:'ney',moods:['march'],oct:12,loop:8,lines:TUNE,vol:.28},
+  {inst:'ney',moods:['dawn'],oct:12,loop:8,lines:TUNE,vol:.32},
+  {inst:'harp',moods:['dawn'],oct:12,loop:8,lines:ROCK,vol:.34},
+  {inst:'lyre',moods:['palace'],oct:12,loop:16,lines:[...TUNE,_,_,_,_,_,_,_,_],vol:.55},
+  {inst:'harp',moods:['palace'],oct:12,loop:16,lines:[_,_,_,_,_,_,_,_,...TUNE],vol:.48},
+  {inst:'bass',moods:['palace'],oct:0,loop:8,lines:LOW,vol:.28},
+  /* tension: the keynote plucked, leaning on the half step above; the drum ticks and almost stops every fourth bar; the ney begins the
+     tune and breaks off */
   {inst:'bass',moods:['tense'],oct:0,loop:1,lines:[[[0,0,2],[2,1,2],[4,0,3]]],vol:.4},
   {drum:1,moods:['tense'],prog:'AAAB',seq:{A:'t.t.t..',B:'t......'},vol:.18},
-  {inst:'ney',moods:['tense'],oct:12,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.28}]};
+  {inst:'ney',moods:['tense'],oct:12,loop:8,lines:[TUNE[0],TUNE[1].slice(0,1),_,_,_,_,_,_],vol:.28}]};
 
 /* ---- around you ---- */
 /* Birds, wind, leaves, crickets and the murmur of people are the engine's. */

@@ -29,32 +29,42 @@ LEVEL(14,()=>{
 const L=SHARED.lanes;
 
 /* ============ MUSIC AND AMBIENCE (plain data, played by the engine's sequencer) ============ */
-/* One tune, taken over. In the marketplace it is a working tune on the lyre, in bars of eight, on D with a minor third and a major sixth
-   ("work"). In the uproar the same tune is played on a reed pipe an octave up, over a fast hand drum and a low string, with the roar of
-   the crowd under it ("uproar"). In the house ("house") nothing is held: a low string plucks the keynote and leans on the note above
-   it, a drum ticks with it and almost stops every fourth bar, a ney begins the tune and breaks off before it comes home, and the
-   roar is outside. After the city recorder there is
-   silence, then the tune comes back at half its pace on the harp for the farewell ("still"), and far off at the harbor ("harbor").
-   Nothing is claimed about how music was played then. */
+/* One tune, taken over. It is on D with a minor third and a major sixth, in bars of eight that fall three, three, two, and it is eight
+   bars long. It begins with four even steps up from the keynote to the fifth, turns back from the sixth and ends its first half open, held
+   on the fifth; the second half answers it, climbs on by step from the fifth to the octave, reaches the high E in its sixth bar, and comes
+   down by turns to the keynote. In the marketplace it is a working tune on the lyre over a low string that follows its harmony and a hand
+   drum ("work"). In the uproar the same tune is played on a reed pipe an octave up, every note cut a little short, over a fast hand drum
+   and a low string, with the roar of the crowd under it ("uproar"). In the house ("house") nothing is held: a low string plucks the
+   keynote and leans on the note above it, a drum ticks with it and almost stops every fourth bar, a ney begins the tune, breaks off,
+   climbs to the high note and breaks off there, and the roar is outside. After the city recorder there is silence, then the tune comes
+   back at half its pace on the harp for the farewell, all sixteen bars ("still"), and far off at the harbor ("harbor"). Nothing is claimed
+   about how music was played then. */
 const _=null,SCALE=[0,2,3,5,7,9,10],
- TUNE={A:[0,_,2,_,3,_,4,_],B:[5,_,4,_,3,_,2,_],C:[4,_,5,_,6,_,7,_],D:[6,_,4,_,1,_,0,_]},
- SLOW={A:[0,_,_,_,2,_,_,_],B:[4,_,_,_,3,_,_,_],C:[5,_,_,_,4,_,_,_],D:[2,_,_,_,0,_,_,_]},
+ /* the tune, a bar to a line: [step, degree of the scale, length in steps] */
+ TUNE=[[[0,0,2],[2,2,2],[4,3,2],[6,4,2]],[[0,5,3],[3,4,3],[6,2,2]],[[0,3,2],[2,4,1],[3,3,3],[6,1,2]],[[0,2,3],[3,4,5]],
+  [[0,4,2],[2,5,2],[4,6,2],[6,7,2]],[[0,8,3],[3,7,3],[6,5,2]],[[0,6,2],[2,4,1],[3,5,3],[6,3,2]],[[0,2,2],[2,1,1],[3,0,5]]],
+ /* in the uproar: the same notes, each a step shorter */
+ UPROAR=TUNE.map(b=>b.map(([s,n,l])=>[s,n,Math.max(1,l-1)])),
+ /* at half its pace: a bar of the tune takes two, so the eight bars fill the sixteen of the score */
+ SLOW=(()=>{const L=Array.from({length:16},()=>[]);TUNE.forEach((b,k)=>b.forEach(([s,n,l])=>{const S=s*2;L[k*2+(S>>3)].push([S%8,n,l*2])}));return L})(),
  /* gain: the whole score +2.2 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
  MUSIC={gain:1.29,dt:.19,steps:8,group:[3,3,2],root:50,scale:SCALE,bars:16,tracks:[
-  {inst:'lyre',moods:['work'],prog:'ABCD',len:2,seq:TUNE},
-  {inst:'bass',moods:['work'],prog:'ABAB',len:5,seq:{A:[-7,_,_,_,-3,_,_,_],B:[-5,_,_,_,-7,_,_,_]},vol:.7},
+  {inst:'lyre',moods:['work'],loop:8,lines:TUNE},
+  /* the low string under the tune, a bar of it to a letter: D and A, G and D, C and G, F and A, A and C, E and G, C and G, F and D */
+  {inst:'bass',moods:['work'],prog:'ABCDEFCG',len:5,seq:{A:[-7,_,_,_,-3,_,_,_],B:[-4,_,_,_,-7,_,_,_],C:[-8,_,_,_,-4,_,_,_],D:[-5,_,_,_,-3,_,_,_],
+    E:[-3,_,_,_,-1,_,_,_],F:[-6,_,_,_,-4,_,_,_],G:[-5,_,_,_,-7,_,_,_]},vol:.7},
   {drum:1,moods:['work'],prog:'AAAB',seq:{A:'d..t..d.',B:'d..t.kd.'},vol:.45},
-  {inst:'aulos',moods:['uproar'],prog:'ABCD',len:1,oct:12,seq:TUNE,vol:.55},
+  {inst:'aulos',moods:['uproar'],oct:12,loop:8,lines:UPROAR,vol:.55},
   {drum:1,moods:['uproar'],prog:'AAAB',seq:{A:'d.tkd.tk',B:'d.tkdktk'},vol:.75},
   {inst:'bass',moods:['uproar'],prog:'ABAB',len:6,seq:{A:[-7,_,_,_,_,_,_,_],B:[-6,_,_,_,_,_,_,_]},vol:.85},
   {inst:'bass',moods:['house'],prog:'AABC',len:2,vol:.7,seq:{A:[-7,_,_,-7,_,_,-6,_],B:[-7,_,_,-6,_,_,-10,_],C:[-7,_,_,_,_,_,_,_]}},
   {drum:1,moods:['house'],prog:'AABC',seq:{A:'d..k..k.',B:'d..k.kk.',C:'d.......'},vol:.45},
-  /* TUNE as a line, broken off: A, B without its last note, two bars of rest, C, the first two notes of D, two bars of rest */
-  {inst:'ney',moods:['house'],oct:12,loop:8,vol:.6,lines:[[[0,0,2],[2,2,2],[4,3,2],[6,4,2]],[[0,5,2],[2,4,2],[4,3,2]],[],[],
-    [[0,4,2],[2,5,2],[4,6,2],[6,7,2]],[[0,6,2],[2,4,2]],[],[]]},
-  {inst:'harp',moods:['still'],prog:'ABCD',len:5,oct:12,seq:SLOW,vol:.75},
+  /* the tune as a line, broken off: its first bar and the first two notes of its second, two bars of rest; the climb of its fifth bar
+     and the high note of its sixth, two bars of rest */
+  {inst:'ney',moods:['house'],oct:12,loop:8,vol:.6,lines:[TUNE[0],TUNE[1].slice(0,2),[],[],TUNE[4],TUNE[5].slice(0,1),[],[]]},
+  {inst:'harp',moods:['still'],oct:12,loop:16,lines:SLOW,vol:.75},
   {drone:[0],every:32,moods:['still','harbor'],vol:.22},
-  {inst:'harp',moods:['harbor'],prog:'ABCD',len:5,oct:12,seq:SLOW,vol:.32}]};
+  {inst:'harp',moods:['harbor'],oct:12,loop:16,lines:SLOW,vol:.32}]};
 
 /* ---- the crowd's cry (Acts 19:28, 34): heard, never written ---- */
 /* The cry is painted in sound by shared/crowd.js (see there): a crowd of men shouting the same words, no consonants, so that it sounds

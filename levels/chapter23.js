@@ -73,39 +73,51 @@ LEVEL(23,()=>{
 /* ==== MUSIC: begin ==== */
 /* One tune for the last night at sea and the island. It is in B-flat, in the harmonic minor (B-flat, C, D-flat, E-flat, F, G-flat, A), in
    bars of eighteen steps that fall four, five, four, five, a long uneven swell: no earlier chapter has this key, this mode or this bar
-   (Chapter Twenty-Two takes another). The tune is four bars long (A B C D): up the triad to the fourth, up to
-   the raised seventh and the octave, down from the octave, and home through the raised seventh below. It grows from night and storm to
-   the grey morning and the quiet of the estate. On the night deck ("night") the harp alone plays the tune, slowly, over a low string that
-   plucks one note to the bar (a low note under a night scene, never a held drone). At the bow, in the wreck and in the surf ("tense") the
-   low string plucks the keynote and leans on the note above it, a drum ticks with it and almost stops every fourth bar, and the ney begins
-   the tune and breaks off before it comes home (CONTRIBUTING section 4); no louder than the rest. In the hold before daybreak ("hold") the
-   lyre plays the tune over the low string. While the bay is told ("told") the ney has the tune and the harp rocks. On the grey beach
-   ("grey") the harp has the tune in its second half only. At the fire ("fire") lyre and harp take turns; at the estate ("estate") harp and
-   lyre, in the other order. Nothing is claimed about how music was played then. */
+   (Chapter Twenty-Two takes another). The tune is eight bars long, in two phrases. It begins as it always has, up the triad to the fourth
+   and a step back (1); it turns about the fifth and sinks onto the third, held (2); climbs from the fourth through the raised seventh and
+   leaps back (3); and stops open, on the second (4). The answer starts a fifth higher and climbs by the raised seventh to the octave and
+   the ninth (5); from the high point, the tenth above the keynote, it turns down to the octave (6); runs down by steps to the second (7);
+   and comes home through the raised seventh below (8). Long and short notes are mixed: fours and fives, quick twos and threes, and
+   half-bar notes held at the ends of phrases. It grows from night and storm to the grey morning and the quiet of the estate. On the night
+   deck ("night") the harp alone plays the tune, a pair of bars at a time with two bars' breath between, over a low string that plucks one
+   note to the bar (a low note under a night scene, never a held drone). At the bow, in the wreck and in the surf ("tense") the low string
+   plucks the keynote and leans on the note above it, a drum ticks with it and almost stops every fourth bar, and the ney begins the tune
+   and breaks off in its second bar, before it comes home (CONTRIBUTING section 4); no louder than the rest. In the hold before daybreak
+   ("hold") the lyre plays the whole tune over the low string. While the bay is told ("told") the ney has the tune and the harp rocks
+   through its chords. On the grey beach ("grey") the harp has the tune. At the fire ("fire") the lyre plays it and the harp answers with
+   it; at the estate ("estate") harp and lyre, in the other order. Nothing is claimed about how music was played then. */
 const SCALE=[0,2,3,5,7,8,11],ST=18,
- /* the tune, a bar to a letter: [step, degree of the scale, length in steps]; E is D broken off before it comes home */
- TUNE={A:[[0,0,4],[4,2,5],[9,4,4],[13,3,5]],B:[[0,4,4],[4,5,5],[9,6,4],[13,7,5]],C:[[0,7,4],[4,5,5],[9,4,4],[13,2,5]],D:[[0,3,4],[4,1,5],[9,-1,4],[13,0,5]],
-   E:[[0,3,4],[4,1,14]],_:[]},
- bars23=s=>[...s].map(k=>TUNE[k]),
- ROCK={A:[[0,0,4],[4,4,5],[9,2,4],[13,4,5]],B:[[0,-2,4],[4,2,5],[9,0,4],[13,2,5]],C:[[0,-3,4],[4,1,5],[9,3,4],[13,1,5]],D:[[0,-1,4],[4,1,5],[9,-1,4],[13,0,5]]},
- rock23=s=>[...s].map(k=>ROCK[k]),
- LOW=[[[0,0,18]],[[0,-2,18]],[[0,-3,18]],[[0,-1,9],[9,0,9]]],
+ /* the tune, a bar to an element: [step, degree of the scale, length in steps] */
+ TUNE=[[[0,0,4],[4,2,5],[9,4,4],[13,3,5]],[[0,4,4],[4,5,3],[7,4,2],[9,2,9]],[[0,3,4],[4,4,5],[9,5,2],[11,6,2],[13,4,5]],[[0,3,4],[4,2,5],[9,1,9]],
+  [[0,4,4],[4,6,5],[9,7,4],[13,8,5]],[[0,9,4],[4,8,3],[7,7,2],[9,6,4],[13,7,5]],[[0,5,4],[4,4,5],[9,3,2],[11,2,2],[13,1,5]],[[0,2,4],[4,-1,5],[9,0,9]]],
+ /* a line of bars: '1'..'8' a bar of the tune, '_' a bar's rest */
+ tune23=s=>[...s].map(k=>k==='_'?[]:TUNE[k-1]),
+ /* the low string under it, a bar to an element: B-flat, G-flat, E-flat to F, F, B-flat, G-flat, E-flat to F, F to B-flat */
+ LOW=[[[0,0,18]],[[0,-2,18]],[[0,-4,9],[9,-3,9]],[[0,-3,18]],[[0,0,18]],[[0,-2,18]],[[0,-4,9],[9,-3,9]],[[0,-3,9],[9,0,9]]],
+ /* the low string under a line of tune23: in a bar's rest it plucks again the note it ended on */
+ low23=s=>{let r=0;return[...s].map(k=>{if(k==='_')return[[0,r,18]];const b=LOW[k-1];r=b[b.length-1][1];return b})},
+ /* the harp that rocks through the low string's chords: the root, the fifth, the third, the fifth */
+ ROCK=LOW.map(b=>{const r1=b[0][1],r2=b[b.length-1][1];return[[0,r1,4],[4,r1+4,5],[9,r2+2,4],[13,r2+4,5]]}),
+ /* the tune begun and broken off: its first bar, and the second stopped on its second note */
+ BROKE=[TUNE[0],[[0,4,4],[4,5,9]],[],[],[],[],[],[]],
+ NIGHT='12__34__56__78__',
  /* gain: the whole score +11.1 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
  MUSIC={gain:3.59,dt:.15,steps:ST,group:[4,5,4,5],root:46,scale:SCALE,bars:16,tracks:[
-  {inst:'harp',moods:['night'],oct:12,loop:8,lines:bars23('AB__CD__'),vol:.34},
-  {inst:'bass',moods:['night','hold','grey','fire','estate'],oct:0,loop:4,lines:LOW,vol:.2},
-  {inst:'lyre',moods:['hold'],oct:12,loop:8,lines:bars23('ABCD____'),vol:.36},
-  {inst:'ney',moods:['told'],oct:12,loop:8,lines:bars23('ABCD____'),vol:.28},
-  {inst:'harp',moods:['told'],oct:12,loop:4,lines:rock23('ABCD'),vol:.26},
-  {inst:'harp',moods:['grey'],oct:12,loop:8,lines:bars23('____ABCD'),vol:.32},
-  {inst:'lyre',moods:['fire'],oct:12,loop:8,lines:bars23('ABCD____'),vol:.42},
-  {inst:'harp',moods:['fire'],oct:12,loop:8,lines:bars23('____ABCD'),vol:.38},
-  {inst:'harp',moods:['estate'],oct:12,loop:8,lines:bars23('ABCD____'),vol:.42},
-  {inst:'lyre',moods:['estate'],oct:12,loop:8,lines:bars23('____ABCD'),vol:.36},
+  {inst:'harp',moods:['night'],oct:12,loop:16,lines:tune23(NIGHT),vol:.34},
+  {inst:'bass',moods:['night'],oct:0,loop:16,lines:low23(NIGHT),vol:.2},
+  {inst:'bass',moods:['hold','grey','fire','estate'],oct:0,loop:8,lines:LOW,vol:.2},
+  {inst:'lyre',moods:['hold'],oct:12,loop:8,lines:tune23('12345678'),vol:.36},
+  {inst:'ney',moods:['told'],oct:12,loop:8,lines:tune23('12345678'),vol:.28},
+  {inst:'harp',moods:['told'],oct:12,loop:8,lines:ROCK,vol:.26},
+  {inst:'harp',moods:['grey'],oct:12,loop:8,lines:tune23('12345678'),vol:.32},
+  {inst:'lyre',moods:['fire'],oct:12,loop:16,lines:tune23('12345678________'),vol:.42},
+  {inst:'harp',moods:['fire'],oct:12,loop:16,lines:tune23('________12345678'),vol:.38},
+  {inst:'harp',moods:['estate'],oct:12,loop:16,lines:tune23('12345678________'),vol:.42},
+  {inst:'lyre',moods:['estate'],oct:12,loop:16,lines:tune23('________12345678'),vol:.36},
   /* tension: the keynote plucked, leaning on the step above; the drum ticks and almost stops every fourth bar; the ney breaks off */
   {inst:'bass',moods:['tense'],oct:0,loop:1,lines:[[[0,0,4],[4,1,5],[9,0,4],[13,1,5]]],vol:.24},
   {drum:1,moods:['tense'],prog:'AAAB',seq:{A:'t...t....t...t....',B:'t.................'},vol:.13},
-  {inst:'ney',moods:['tense'],oct:12,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.2}]};
+  {inst:'ney',moods:['tense'],oct:12,loop:8,lines:BROKE,vol:.2}]};
 
 /* ---- around you ----
    The sounds of the storm are shared with Chapter Twenty-Two in shared/weather.js (sound): the gale, its gusts, the wind in the rigging, rain
