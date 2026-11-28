@@ -103,6 +103,7 @@ The [Terms of Use](https://www.jw.org/en/terms-of-use/) of jw.org (which cover i
   - Her sternpost ends in a swan's neck and head that looks the way she sails, as the publications draw such a ship. It is a carved ornament of plain wood and not a figurehead: nothing is set under it, nobody looks to it or speaks of it, and it is never seen in close view. Its loop must not stand as a ring round anyone's head.
   - Every other rule of this section holds for the ship: her masts and yards, her oars, her rail, her lantern, her cables and her wreckage.
 - Two shapes are accepted as they are (decided 2026-11-26, issue #98): the end of a figure's belt, which hangs straight down from the buckle at the middle of the belt, and a joist of a beamed ceiling that meets the wall plate upright where we look straight along it. Neither is treated as a cross shape, and neither is changed in passing.
+- In the close view of the letter to Philemon in Chapter Twenty-Five, Paul's thumb lies across the sheet's left edge, so that the hand is the size of the reed pen beside it and his wrist and forearm are seen: the edge shows above and below the thumb, and this is accepted (decided 2026-11-28).
 - Look at screenshots of every changed scene before committing.
 
 ## 4. Look and sound
