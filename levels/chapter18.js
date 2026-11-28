@@ -87,45 +87,51 @@ LEVEL(18,()=>{
 /* ==== MUSIC: begin ==== */
 /* One tune for a city that turns against him. It is in F, a minor key (F, G, A flat, B flat, C, D flat, E flat), in bars of fifteen that
    fall three, two, three, two, three, two: a bar that climbs like a stair and pauses on every second step; no earlier chapter has this
-   key or this bar. The tune is four bars long (A B C D): from the keynote up to the fifth, a turn round the sixth, down to the note
-   below the keynote, and home. At Mnason's ("arrive") lyre and harp take turns, warm and slow. In the street ("city") the oud walks it over
-   a hand drum. With the elders ("elders") the harp plays it at half its pace and the lyre answers. In the temple court ("court") the ney
-   has it over a low note that lies quietly under it, and the harp rocks. In the arrest, on the stairs and in the soldiers' quarters
-   ("tense") the low string plucks the keynote and leans on the note above, a drum ticks with it and almost stops every fourth bar, and
-   the ney begins the tune and breaks off before it comes home; no louder than the rest. While Paul speaks ("speech") only the low string
-   and the harp, far off, the first bar again and again. Nothing is claimed about how music was played then. */
+   key or this bar. The tune is eight bars long. Its first bar goes up from the keynote to the fifth and turns back; then it leans on
+   the sixth, climbs to the seventh, and its first half stops open, held on the second note of the scale. The second half answers it:
+   it begins again from the keynote, climbs on past the seventh to the high G in its sixth bar, comes down by turns, and goes home by
+   way of the note below the keynote. At Mnason's ("arrive") lyre and harp take turns, a half of the tune each, warm and slow, over a
+   low string that follows its harmony. In the street ("city") the oud walks it over a hand drum. With the elders ("elders") the
+   harp plays it at half its pace, all sixteen bars, and the lyre rocks under it. In the temple court ("court") the ney has it over a low
+   note that lies quietly under it, and the harp rocks. In the arrest, on the stairs and in the soldiers' quarters ("tense") the low
+   string plucks the keynote and leans on the note above, a drum ticks with it and almost stops every fourth bar, and the ney begins the
+   tune and breaks off before its first half is out; no louder than the rest. While Paul speaks ("speech") only the low string and the
+   harp, far off, the first bar again and again. Nothing is claimed about how music was played then. */
 const SCALE=[0,2,3,5,7,8,10],ST=15,
- /* the tune, a bar to a letter: [step, degree of the scale, length in steps]; E is D broken off before it comes home */
- TUNE={A:[[0,0,3],[3,2,2],[5,3,3],[8,4,2],[10,2,3],[13,3,2]],B:[[0,4,3],[3,5,2],[5,4,3],[8,2,2],[10,3,3],[13,1,2]],
-  C:[[0,2,3],[3,1,2],[5,0,3],[8,-1,2],[10,0,3],[13,1,2]],D:[[0,2,3],[3,1,2],[5,-1,3],[8,0,7]],E:[[0,2,3],[3,1,2],[5,4,10]],_:[]},
- bars18=s=>[...s].map(k=>TUNE[k]),
- BEAT=[0,3,5,8,10,13],LEN=[3,2,3,2,3,2],
- /* what rocks under the tune: a note on each of the six beats of a bar */
- ROCK={A:[0,4,2,4,0,4],B:[2,4,5,4,2,4],C:[-2,2,0,2,-2,2],D:[-3,1,-1,1,0,0]},
- rock18=s=>[...s].map(k=>ROCK[k].map((n,i)=>[BEAT[i],n,LEN[i]])),
- LOW=[[[0,0,8],[8,-3,7]],[[0,2,8],[8,-1,7]],[[0,-2,8],[8,-3,7]],[[0,-3,8],[8,0,7]]],
- WALK=bars18('ABCD').map(b=>b.map(([,n],i)=>[BEAT[i],n,i===b.length-1?ST-BEAT[i]:LEN[i]])),
- /* at half its pace: a bar of the tune takes two */
- half18=(k,at)=>{const o=[];for(const[s,n,l]of TUNE[k]){const S=s*2;o.push([at+Math.floor(S/ST),S%ST,n,Math.min(l*2,ST-S%ST)])}return o},
- SLOW=(()=>{const L=Array.from({length:8},()=>[]),put=x=>x.forEach(([b,s,n,l])=>L[b].push([s,n,l]));put(half18('A',0));put(half18('B',2));put(half18('C',4));put(half18('D',6));return L})(),
- MUSIC={dt:.17,steps:ST,group:[3,2,3,2,3,2],root:53,scale:SCALE,bars:16,tracks:[
-  {inst:'lyre',moods:['arrive'],oct:12,loop:8,lines:bars18('ABCD____'),vol:.62},
-  {inst:'harp',moods:['arrive'],oct:12,loop:8,lines:bars18('____ABCD'),vol:.5},
-  {inst:'bass',moods:['arrive'],oct:0,loop:4,lines:LOW,vol:.32},
-  {inst:'oud',moods:['city'],oct:12,loop:4,lines:WALK,vol:.7},
+ /* the tune, a bar to a line: [step, degree of the scale, length in steps] */
+ TUNE=[[[0,0,3],[3,2,2],[5,3,3],[8,4,2],[10,2,3],[13,3,2]],[[0,4,5],[5,5,3],[8,4,2],[10,3,5]],[[0,2,3],[3,3,2],[5,4,3],[8,6,2],[10,5,5]],
+  [[0,4,3],[3,2,2],[5,1,10]],[[0,0,3],[3,2,2],[5,4,3],[8,5,2],[10,6,3],[13,5,2]],[[0,7,5],[5,8,3],[8,7,2],[10,5,5]],
+  [[0,6,3],[3,5,2],[5,4,3],[8,3,2],[10,4,3],[13,3,2]],[[0,2,3],[3,1,2],[5,-1,3],[8,0,7]]],
+ _=[],
+ /* the low string under the tune: two notes to a bar of it, on its first and its fourth beat (F and C, A flat and B flat, A flat and
+    D flat, C held, F and D flat, B flat and D flat, A flat and B flat, C and F) */
+ LOW=[[[0,0,8],[8,-3,7]],[[0,-5,8],[8,-4,7]],[[0,-5,8],[8,-2,7]],[[0,-3,15]],[[0,0,8],[8,-2,7]],[[0,-4,8],[8,-2,7]],[[0,-5,8],[8,-4,7]],[[0,-3,8],[8,0,7]]],
+ /* what rocks under the tune: the note of the low string and the fifth above it, twice to a bar; at half its pace, once to a bar */
+ ROCK=LOW.map(b=>{const[r1,r2]=[b[0][1],(b[1]||b[0])[1]];return[[0,r1,5],[5,r1+4,3],[8,r2,5],[13,r2+4,2]]}),
+ ROCKH=LOW.flatMap(b=>[b[0][1],(b[1]||b[0])[1]].map(r=>[[0,r,8],[8,r+4,7]])),
+ /* at half its pace: a bar of the tune takes two, so the eight bars fill the sixteen of the score */
+ SLOW=(()=>{const L=Array.from({length:16},()=>[]);TUNE.forEach((b,k)=>b.forEach(([s,n,l])=>{const S=s*2;L[k*2+Math.floor(S/ST)].push([S%ST,n,l*2])}));return L})(),
+ /* gain: the whole score +7.3 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
+ MUSIC={gain:2.32,dt:.17,steps:ST,group:[3,2,3,2,3,2],root:53,scale:SCALE,bars:16,tracks:[
+  /* the lyre has the first half and the harp the second; then the harp begins and the lyre brings it home */
+  {inst:'lyre',moods:['arrive'],oct:12,loop:16,lines:[...TUNE.slice(0,4),_,_,_,_,_,_,_,_,...TUNE.slice(4)],vol:.62},
+  {inst:'harp',moods:['arrive'],oct:12,loop:16,lines:[_,_,_,_,...TUNE.slice(4),...TUNE.slice(0,4),_,_,_,_],vol:.5},
+  {inst:'bass',moods:['arrive'],oct:0,loop:8,lines:LOW,vol:.32},
+  {inst:'oud',moods:['city'],oct:12,loop:8,lines:TUNE,vol:.7},
   {drum:1,moods:['city'],prog:'AAAB',seq:{A:'d..k.t..k.t..k.',B:'d..k.t..k.tk.k.'},vol:.24},
-  {inst:'bass',moods:['city'],oct:0,loop:4,lines:LOW,vol:.36},
-  {inst:'harp',moods:['elders'],oct:12,loop:8,lines:SLOW,vol:.55},
-  {inst:'lyre',moods:['elders'],oct:12,loop:4,lines:rock18('ABCD'),vol:.34},
-  {inst:'ney',moods:['court'],oct:12,loop:8,lines:bars18('ABCD____'),vol:.34},
-  {inst:'harp',moods:['court'],oct:12,loop:4,lines:rock18('ABCD'),vol:.36},
+  {inst:'bass',moods:['city'],oct:0,loop:8,lines:LOW,vol:.36},
+  {inst:'harp',moods:['elders'],oct:12,loop:16,lines:SLOW,vol:.55},
+  {inst:'lyre',moods:['elders'],oct:12,loop:16,lines:ROCKH,vol:.34},
+  {inst:'ney',moods:['court'],oct:12,loop:8,lines:TUNE,vol:.34},
+  {inst:'harp',moods:['court'],oct:12,loop:8,lines:ROCK,vol:.36},
   {drone:[0],every:60,moods:['court'],vol:.06},
-  /* tension: the keynote plucked, leaning on the note above; the drum ticks and almost stops every fourth bar; the ney breaks off */
+  /* tension: the keynote plucked, leaning on the note above; the drum ticks and almost stops every fourth bar; the ney begins the tune
+     and breaks off on the second note of its second bar */
   {inst:'bass',moods:['tense'],oct:0,loop:1,lines:[[[0,0,2],[3,1,1],[5,0,2],[8,1,1],[10,0,3],[13,1,2]]],vol:.4},
   {drum:1,moods:['tense'],prog:'AAAB',seq:{A:'t..t.t..t.t..t.',B:'t..............'},vol:.18},
-  {inst:'ney',moods:['tense'],oct:12,loop:8,lines:[TUNE.A,TUNE.E.slice(0,2),[],[],[],[],[],[]],vol:.28},
+  {inst:'ney',moods:['tense'],oct:12,loop:8,lines:[TUNE[0],TUNE[1].slice(0,2),_,_,_,_,_,_],vol:.28},
   {inst:'bass',moods:['speech'],oct:0,loop:4,lines:[[[0,0,15]],[[0,-2,15]],[[0,-3,15]],[[0,-2,15]]],vol:.28},
-  {inst:'harp',moods:['speech'],oct:12,loop:8,lines:bars18('A___A___'),vol:.26}]};
+  {inst:'harp',moods:['speech'],oct:12,loop:8,lines:[TUNE[0],_,_,_,TUNE[0],_,_,_],vol:.26}]};
 
 /* ---- around you ---- */
 /* Birds, wind, leaves and the crowd of a city are the engine's. The crowd's cry (21:36; 22:22) and its roar are shared/crowd.js, played

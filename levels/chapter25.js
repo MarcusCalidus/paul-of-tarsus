@@ -84,37 +84,48 @@ const LG=SHARED.lodging,CU=SHARED.cast.custody,RM=SHARED.cast.ROMAN,RO=SHARED.ca
 /* ==== MUSIC: begin ==== */
 /* One tune for two years in one room. It is in A-flat, in the Mixolydian mode (A-flat, B-flat, C, D-flat, E-flat, F, G-flat: a major
    third and a lowered seventh), in bars of seventeen steps that fall four, four, four and five; no earlier chapter has this key or this bar.
-   The tune is four bars long (A B C D): up from the keynote by the third and the fifth to the sixth; down from the lowered seventh; down
-   again from the third to the second; and home, from the fifth by the third and the second to the keynote. Until the last watch it never
-   comes home: its fourth bar (E) stops on the second and holds it. In the last watch ("home") it comes home, on the lyre with the harp an
-   octave under it. By day in the lodging ("lodging") the lyre has it while the harp rocks over a low string; on the day of 28:23 ("day") the
-   harp has it while the lyre rocks; at night ("night") the harp alone at half its pace over a low note held quietly on the keynote; in the
-   close views ("close") the harp alone, quietly. No tense mood: nothing in this chapter is played as a danger. The tune's bar for
-   shared/tunes.js is A. Nothing is claimed about how music was played then. */
+   The tune is eight bars long, in two phrases. It begins as it always has, up from the keynote by the third and the fifth to the sixth
+   (1); it holds the lowered seventh and steps down to the fifth (2); turns quickly about the sixth and sinks to the third (3); and stops
+   open, on the fifth held (4). The answer steps down from the sixth and leaps to the octave, turning about it (5); reaches its high point,
+   the tenth, held, and steps down to the octave (6), as the second bar did a fourth lower; runs down, with a turn, to the third (7); and comes home
+   by the lowered seventh below, the cadence of the mode (8). Long and short notes are mixed: fours and fives, quick ones, twos and threes,
+   and notes held two beats or more. Until the last watch it never comes home: its last bar (E) stops on the second and holds it, and the
+   tune begins again. In the last watch ("home") it comes home, on the lyre with the harp an octave under it. By day in the lodging
+   ("lodging") the lyre has it while the harp rocks over a low string; on the day of 28:23 ("day") the harp has it while the lyre rocks; at
+   night ("night") the harp alone at half its pace, the whole tune over the sixteen bars, over a low note held quietly on the keynote; in
+   the close views ("close") the harp alone, quietly, two bars at a time with two bars' breath between. No tense mood: nothing in this
+   chapter is played as a danger. The tune's bar for shared/tunes.js is its first. Nothing is claimed about how music was played then. */
 const SCALE=[0,2,4,5,7,9,10],ST=17,
- /* the tune, a bar to a letter: [step, degree of the scale, length in steps] */
- TUNE={A:[[0,0,4],[4,2,4],[8,4,4],[12,5,5]],B:[[0,6,4],[4,4,4],[8,5,4],[12,3,5]],C:[[0,2,4],[4,4,4],[8,3,4],[12,1,5]],
-   D:[[0,4,4],[4,2,4],[8,1,4],[12,0,5]],E:[[0,4,4],[4,2,4],[8,1,9]],_:[]},
+ /* the tune, a bar to a key: [step, degree of the scale, length in steps]; 8 comes home, E stops on the second instead */
+ TUNE={1:[[0,0,4],[4,2,4],[8,4,4],[12,5,5]],2:[[0,6,8],[8,5,4],[12,4,5]],3:[[0,3,2],[2,4,2],[4,5,4],[8,4,4],[12,2,5]],4:[[0,3,4],[4,2,4],[8,4,9]],
+  5:[[0,5,4],[4,4,4],[8,7,4],[12,6,3],[15,7,2]],6:[[0,9,8],[8,8,4],[12,7,5]],7:[[0,6,3],[3,5,1],[4,4,4],[8,5,2],[10,3,2],[12,2,5]],
+  8:[[0,1,4],[4,-1,4],[8,0,9]],E:[[0,2,4],[4,1,13]],_:[]},
  bars25=s=>[...s].map(k=>TUNE[k]),
- ROCK={A:[[0,0,4],[8,4,4]],B:[[0,-3,4],[8,1,4]],C:[[0,-2,4],[8,2,4]],D:[[0,-3,4],[8,-1,5]]},
- rock25=s=>[...s].map(k=>ROCK[k]),
- LOW=[[[0,0,8],[8,4,9]],[[0,-3,8],[8,1,9]],[[0,-2,8],[8,2,9]],[[0,-3,8],[8,-1,9]]],
+ /* the low string, a bar to a key, two notes to the bar: A-flat, E-flat, D-flat to F, D-flat to E-flat, A-flat, F, G-flat to D-flat;
+    home by G-flat to A-flat (8), or open, G-flat to E-flat (E) */
+ LOWS={1:[[0,0,8],[8,4,9]],2:[[0,-3,8],[8,1,9]],3:[[0,-4,8],[8,-2,9]],4:[[0,-4,8],[8,-3,9]],5:[[0,0,8],[8,4,9]],6:[[0,-2,8],[8,2,9]],
+  7:[[0,-1,8],[8,-4,9]],8:[[0,-1,8],[8,0,9]],E:[[0,-1,8],[8,-3,9]]},
+ low25=s=>[...s].map(k=>LOWS[k]),
+ /* the harp (or the lyre) that rocks: the low string's two notes, an octave up and short */
+ rock25=s=>[...s].map(k=>LOWS[k].map(([at,n])=>[at,n,4])),
+ OPEN='1234567E',
  /* at half its pace: a bar of the tune takes two */
  half25=(k,at)=>{const o=[];for(const[s,n,l]of TUNE[k]){const S=s*2;o.push([at+Math.floor(S/ST),S%ST,n,Math.min(l*2,ST-S%ST)])}return o},
- SLOW=(()=>{const L=Array.from({length:8},()=>[]),put=x=>x.forEach(([b,s,n,l])=>L[b].push([s,n,l]));put(half25('A',0));put(half25('B',2));put(half25('C',4));put(half25('E',6));return L})(),
- MUSIC={dt:.19,steps:ST,group:[4,4,4,5],root:44,scale:SCALE,bars:16,tracks:[
-  {inst:'lyre',moods:['lodging'],oct:12,loop:8,lines:bars25('ABCE____'),vol:.48},
-  {inst:'harp',moods:['lodging'],oct:12,loop:4,lines:rock25('ABCD'),vol:.28},
-  {inst:'bass',moods:['lodging','day'],oct:0,loop:4,lines:LOW,vol:.24},
-  {inst:'harp',moods:['day'],oct:12,loop:8,lines:bars25('ABCE____'),vol:.46},
-  {inst:'lyre',moods:['day'],oct:12,loop:4,lines:rock25('ABCD'),vol:.26},
-  {inst:'harp',moods:['night'],oct:12,loop:8,lines:SLOW,vol:.38},
+ SLOW=(()=>{const L=Array.from({length:16},()=>[]),put=x=>x.forEach(([b,s,n,l])=>L[b].push([s,n,l]));[...OPEN].forEach((k,i)=>put(half25(k,2*i)));return L})(),
+ /* gain: the whole score +12.0 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
+ MUSIC={gain:4.0,dt:.19,steps:ST,group:[4,4,4,5],root:44,scale:SCALE,bars:16,tracks:[
+  {inst:'lyre',moods:['lodging'],oct:12,loop:8,lines:bars25(OPEN),vol:.48},
+  {inst:'harp',moods:['lodging'],oct:12,loop:8,lines:rock25(OPEN),vol:.28},
+  {inst:'bass',moods:['lodging','day'],oct:0,loop:8,lines:low25(OPEN),vol:.24},
+  {inst:'harp',moods:['day'],oct:12,loop:8,lines:bars25(OPEN),vol:.46},
+  {inst:'lyre',moods:['day'],oct:12,loop:8,lines:rock25(OPEN),vol:.26},
+  {inst:'harp',moods:['night'],oct:12,loop:16,lines:SLOW,vol:.38},
   {drone:[0],every:68,moods:['night'],vol:.04},
-  {inst:'harp',moods:['close'],oct:12,loop:8,lines:bars25('ABCE____'),vol:.34},
+  {inst:'harp',moods:['close'],oct:12,loop:16,lines:bars25('12__34__56__7E__'),vol:.34},
   /* the last watch: the tune comes home */
-  {inst:'lyre',moods:['home'],oct:12,loop:4,lines:bars25('ABCD'),vol:.5},
-  {inst:'harp',moods:['home'],oct:0,loop:4,lines:bars25('ABCD'),vol:.3},
-  {inst:'bass',moods:['home'],oct:0,loop:4,lines:LOW,vol:.22}]};
+  {inst:'lyre',moods:['home'],oct:12,loop:8,lines:bars25('12345678'),vol:.5},
+  {inst:'harp',moods:['home'],oct:0,loop:8,lines:bars25('12345678'),vol:.3},
+  {inst:'bass',moods:['home'],oct:0,loop:8,lines:low25('12345678'),vol:.22}]};
 /* ---- around you ---- */
 /* the flat: the city's murmur far below and a bird now and then; the room at street level: the square's fountain and its people near;
    at night the crickets */

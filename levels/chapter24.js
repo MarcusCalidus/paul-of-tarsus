@@ -72,37 +72,49 @@ LEVEL(24,()=>{
    five: no earlier chapter has this key or this bar. The bar is the bar of the walk: on the road the soldier's foot comes down on its
    first step in the picture, and the beat of the timed walk (BEAT24) is one bar long; the step itself is heard from the beat's own clock
    (shared/beat.js, kind 'step'), never from the music, which cannot be tied to it: so the road's music has no drum.
-   The tune is four bars long (A B C D): up the triad; down from the sixth; up from the second to the seventh; home by the fifth and the
-   second. The tune's bar for shared/tunes.js is A. At the quay ("quay") lyre and harp take turns over a low string; at Puteoli and in
-   the houses ("house") the harp has it; the relay of the news ("relay") a lighter lyre; by the canal at dusk and before daybreak ("dusk")
-   a low note lies quietly under a sparse harp; on the road ("walk") the low string walks, with no drum, and the ney has the
-   tune; weary ("weary") the ney begins it and breaks off before it comes home (E); at the meeting and on into Rome ("meet") lyre and harp
-   have the whole tune again. No tense music: nothing here is a threat. Nothing is claimed about how music was played then. */
+   The tune is eight bars long, in two phrases. It begins as it always has, up the triad, a stride to each note (1); steps on to the sixth
+   and walks back down to the third (2); climbs from the fourth to the seventh (3); and stops open, on the sixth held and the fifth (4).
+   The answer climbs from the fifth to the octave (5); reaches its high point on the ninth and turns about the octave (6); comes down from the
+   sixth to the second (7); and goes home by the seventh below (8). Long and short notes are mixed: strides of five, short threes and twos, and
+   notes held two strides at the ends of phrases. The tune's bar for shared/tunes.js is its first. At the quay ("quay") the lyre plays it
+   and the harp answers with it, over a low string; at Puteoli and in the houses ("house") the harp has it; the relay of the news
+   ("relay") a lighter lyre; by the canal at dusk and before daybreak ("dusk") a low note lies quietly under a sparse harp, two bars at a
+   time with two bars' breath between; on the road ("walk") the low string walks, with no drum, and the ney has the tune; weary ("weary")
+   the ney begins it and breaks off in its second bar, before it comes home; at the meeting and on into Rome ("meet") the lyre has the whole
+   tune and the second time the harp joins it an octave lower. No tense music: nothing here is a threat. Nothing is claimed about how music
+   was played then. */
 const SCALE=[0,2,4,5,7,9,11],ST=15,
- /* the tune, a bar to a letter: [step, degree of the scale, length in steps]; E is D broken off before it comes home */
- TUNE={A:[[0,0,5],[5,2,5],[10,4,5]],B:[[0,5,5],[5,4,3],[8,3,2],[10,2,5]],C:[[0,1,5],[5,3,5],[10,6,5]],D:[[0,4,5],[5,1,5],[10,0,5]],
-   E:[[0,4,5],[5,1,10]],_:[]},
- bars24=s=>[...s].map(k=>TUNE[k]),
- LOW=[[[0,0,15]],[[0,-2,15]],[[0,-3,15]],[[0,0,10],[10,-3,5]]],
- WALKLOW=[[[0,0,5],[5,4,5],[10,0,5]],[[0,-2,5],[5,2,5],[10,-2,5]],[[0,-3,5],[5,1,5],[10,-3,5]],[[0,-3,5],[5,-1,5],[10,0,5]]],
- MUSIC={dt:.2,steps:ST,group:[5,5,5],root:60,scale:SCALE,bars:16,tracks:[
-  {inst:'lyre',moods:['quay'],oct:0,loop:8,lines:bars24('ABCD____'),vol:.44},
-  {inst:'harp',moods:['quay'],oct:0,loop:8,lines:bars24('____ABCD'),vol:.38},
-  {inst:'bass',moods:['quay','house','relay'],oct:-12,loop:4,lines:LOW,vol:.22},
-  {inst:'harp',moods:['house'],oct:0,loop:8,lines:bars24('AB__CD__'),vol:.34},
-  {inst:'lyre',moods:['relay'],oct:0,loop:8,lines:bars24('A_C_ABCD'),vol:.32},
-  {inst:'bass',moods:['dusk'],oct:-12,loop:4,lines:LOW,vol:.16},
-  {inst:'harp',moods:['dusk'],oct:-12,loop:8,lines:bars24('A___C___'),vol:.16},
+ /* the tune, a bar to an element: [step, degree of the scale, length in steps] */
+ TUNE=[[[0,0,5],[5,2,5],[10,4,5]],[[0,5,3],[3,4,2],[5,3,5],[10,2,5]],[[0,3,5],[5,4,3],[8,5,2],[10,6,5]],[[0,5,10],[10,4,5]],
+  [[0,4,3],[3,5,2],[5,7,5],[10,6,5]],[[0,8,5],[5,7,3],[8,5,2],[10,6,5]],[[0,5,5],[5,4,3],[8,2,2],[10,1,5]],[[0,-1,3],[3,1,2],[5,0,10]]],
+ /* a line of bars: '1'..'8' a bar of the tune, '_' a bar's rest */
+ tune24=s=>[...s].map(k=>k==='_'?[]:TUNE[k-1]),
+ /* the low string, a bar to an element: C, A, D to G, F to G, C, G, D to G, G to C */
+ LOW=[[[0,0,15]],[[0,-2,15]],[[0,-6,10],[10,-3,5]],[[0,-4,10],[10,-3,5]],[[0,0,15]],[[0,-3,15]],[[0,-6,10],[10,-3,5]],[[0,-3,5],[5,0,10]]],
+ /* under a line of tune24: in a bar's rest it plucks again the note it ended on */
+ low24=s=>{let r=0;return[...s].map(k=>{if(k==='_')return[[0,r,15]];const b=LOW[k-1];r=b[b.length-1][1];return b})},
+ /* the low string walking, a stride to a note: the root, its fifth, and the next root */
+ WALKLOW=LOW.map(b=>{const r1=b[0][1],r2=b[b.length-1][1];return[[0,r1,5],[5,r1+4,5],[10,r2,5]]}),
+ DUSK='12__34__56__78__',
+ /* gain: the whole score +11.4 dB, to the level every chapter's music shares (decided 2026-11-27; the stop `levels`) */
+ MUSIC={gain:3.7,dt:.2,steps:ST,group:[5,5,5],root:60,scale:SCALE,bars:16,tracks:[
+  {inst:'lyre',moods:['quay'],oct:0,loop:16,lines:tune24('12345678________'),vol:.44},
+  {inst:'harp',moods:['quay'],oct:0,loop:16,lines:tune24('________12345678'),vol:.38},
+  {inst:'bass',moods:['quay','house','relay'],oct:-12,loop:8,lines:LOW,vol:.22},
+  {inst:'harp',moods:['house'],oct:0,loop:8,lines:tune24('12345678'),vol:.34},
+  {inst:'lyre',moods:['relay'],oct:0,loop:8,lines:tune24('12345678'),vol:.32},
+  {inst:'bass',moods:['dusk'],oct:-12,loop:16,lines:low24(DUSK),vol:.16},
+  {inst:'harp',moods:['dusk'],oct:-12,loop:16,lines:tune24(DUSK),vol:.16},
   /* the road: no drum here. The soldier's step is the beat's own sound (shared/beat.js, kind 'step'), from the clock that shows his foot */
-  {inst:'bass',moods:['walk','weary'],oct:-12,loop:4,lines:WALKLOW,vol:.26},
-  {inst:'ney',moods:['walk'],oct:0,loop:8,lines:bars24('ABCD____'),vol:.24},
-  {inst:'ney',moods:['weary'],oct:0,loop:8,lines:[TUNE.A,TUNE.E,[],[],[],[],[],[]],vol:.2},
+  {inst:'bass',moods:['walk','weary'],oct:-12,loop:8,lines:WALKLOW,vol:.26},
+  {inst:'ney',moods:['walk'],oct:0,loop:8,lines:tune24('12345678'),vol:.24},
+  {inst:'ney',moods:['weary'],oct:0,loop:8,lines:[TUNE[0],[[0,5,3],[3,4,12]],[],[],[],[],[],[]],vol:.2},
   /* the meeting, and on into Rome */
-  {inst:'lyre',moods:['meet'],oct:0,loop:8,lines:bars24('ABCDABCD'),vol:.42},
-  {inst:'harp',moods:['meet'],oct:-12,loop:4,lines:bars24('ABCD'),vol:.26},
-  {inst:'bass',moods:['meet'],oct:-12,loop:4,lines:LOW,vol:.22}]};
-/* the frogs' tune (the hidden treasure): the chapter's own, bars A and D, croaked low */
-const FROGS24=[...TUNE.A,...TUNE.D.map(([s,d,l])=>[s+ST,d,l])];
+  {inst:'lyre',moods:['meet'],oct:0,loop:8,lines:tune24('12345678'),vol:.42},
+  {inst:'harp',moods:['meet'],oct:-12,loop:16,lines:tune24('________12345678'),vol:.26},
+  {inst:'bass',moods:['meet'],oct:-12,loop:8,lines:LOW,vol:.22}]};
+/* the frogs' tune (the hidden treasure): the chapter's own, its first bar and its last, croaked low */
+const FROGS24=[...TUNE[0],...TUNE[7].map(([s,d,l])=>[s+ST,d,l])];
 
 /* ---- around you ----
    What the engine has: waves, wind, gulls, crickets and the hull's creak. The marsh's frogs are heard only where the hidden treasure sets
